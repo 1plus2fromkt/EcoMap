@@ -1,4 +1,4 @@
-EcoMap is an android app with map which lets a used find the nearest vegetarian cafes, garbage collection point etc. 
+EcoMap is an android app with map which lets a user find the nearest vegetarian cafes, garbage collection point etc. 
 
 Version history:
 
