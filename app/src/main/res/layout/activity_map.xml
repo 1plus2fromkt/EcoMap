@@ -1,76 +1,82 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:fab="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/map"
-            tools:context="com.twofromkt.ecomap.MapActivity"
-            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+            tools:context="com.twofromkt.ecomap.MapActivity" />
 
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="13dp"
+            android:layout_marginEnd="34dp"
+            fab:menu_backgroundColor="@android:color/transparent"
+            fab:menu_fab_label="Категории"
             fab:menu_fab_size="normal"
             fab:menu_icon="@drawable/fab_add"
-            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
-            fab:menu_labels_textSize="14sp"
             fab:menu_labels_colorNormal="#333333"
             fab:menu_labels_colorPressed="#444444"
             fab:menu_labels_colorRipple="#66FFFFFF"
-            fab:menu_labels_showShadow="true"
+            fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
             fab:menu_labels_position="left"
-            fab:menu_openDirection="up"
-            fab:menu_backgroundColor="@android:color/transparent"
-            fab:menu_fab_label="Категории"
-            android:layout_marginBottom="13dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="34dp">
+            fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+            fab:menu_labels_showShadow="true"
+            fab:menu_labels_textSize="14sp"
+            fab:menu_openDirection="up">
 
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/cafe_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_size="mini"
-                fab:fab_label="Кафешки" />
+                fab:fab_label="Кафешки"
+                fab:fab_size="mini" />
+
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/trash_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_size="mini"
-                fab:fab_label="Мусор" />
+                fab:fab_label="Мусор"
+                fab:fab_size="mini" />
+
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/etc_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_size="mini"
-                fab:fab_label="Прочее" />
+                fab:fab_label="Прочее"
+                fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
 
     </RelativeLayout>
 
 
-    <ListView android:id="@+id/left_drawer"
+    <ListView
+        android:id="@+id/left_drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@android:color/holo_blue_dark"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111"/>
+        android:dividerHeight="0dp" />
+
 </android.support.v4.widget.DrawerLayout>
