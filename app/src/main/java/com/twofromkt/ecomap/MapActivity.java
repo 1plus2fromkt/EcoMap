@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,12 +28,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+//        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
 //        cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
-        fragment = getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+//        fragment = getFragmentManager().findFragmentById(R.id.map);
+//        mapFragment.getMapAsync(this);
+
     }
 
 
