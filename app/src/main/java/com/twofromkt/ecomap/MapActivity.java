@@ -1,5 +1,6 @@
 package com.twofromkt.ecomap;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +17,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Arrays;
+
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback, FloatingActionButton.OnClickListener {
 
     private GoogleMap mMap;
@@ -25,7 +28,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     private FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     Fragment fragment;
+    boolean[] chosen;
+
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM";
+    static final int CHOOSE_TRASH_ACTIVITY = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onClick(View v) {
         if (v == trashButton) {
             Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, CHOOSE_TRASH_ACTIVITY);
         }
     }
 
@@ -85,5 +91,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         state.putDouble(LAT, ll.latitude);
         state.putDouble(LNG, ll.longitude);
         state.putFloat(ZOOM, mMap.getCameraPosition().zoom);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            startPos = CameraPosition.fromLatLngZoom(new LatLng(
+                            (double) savedInstanceState.get(LAT),
+                            (double) savedInstanceState.get(LNG)),
+                    (float) savedInstanceState.get(ZOOM));
+            if (savedInstanceState.getBoolean(MENU_OPENED)) {
+                floatingMenu.open(false);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case (CHOOSE_TRASH_ACTIVITY) : {
+                if (resultCode == Activity.RESULT_OK) {
+                    chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
+                }
+                break;
+            }
+        }
+        System.out.println(Arrays.toString(chosen));
     }
 }

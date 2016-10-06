@@ -24,9 +24,10 @@ public class CategoriesActivity extends Activity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if (v == search) {
-            Intent intent = new Intent(getApplicationContext(), MapActivity.class);
-            intent.putExtra("CHOSEN_KEY", chosen);
-            startActivity(intent);
+            Intent result = new Intent();
+            result.putExtra("CHOSEN_KEY", chosen);
+            setResult(Activity.RESULT_OK, result);
+            finish();
         }
     }
 }
