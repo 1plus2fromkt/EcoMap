@@ -9,18 +9,21 @@
         <Button
             android:id="@+id/trash1"
             android:layout_width="wrap_content"
+            android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Время"/>
         <Button
             android:id="@+id/trash2"
             android:layout_width="wrap_content"
+            android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="И"/>
         <Button
             android:id="@+id/trash3"
             android:layout_width="wrap_content"
+            android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="стекло"/>

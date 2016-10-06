@@ -20,14 +20,22 @@
             android:layout_height="match_parent"
             tools:context="com.twofromkt.ecomap.MapActivity" />
 
+        <EditText
+            android:id="@+id/search_edit"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginRight="40dp"
+            android:background="@color/cast_expanded_controller_text_color"
+            android:textSize="15sp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="20dp"/>
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_above="@+id/location_button"
             android:layout_alignParentEnd="true"
-            android:layout_marginBottom="13dp"
-            android:layout_marginEnd="34dp"
+            android:layout_marginEnd="13dp"
             fab:menu_backgroundColor="@android:color/transparent"
             fab:menu_fab_label="Категории"
             fab:menu_fab_size="normal"
@@ -67,6 +75,15 @@
                 fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
 
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="13dp"
+            android:layout_marginBottom="20dp">
+        </com.github.clans.fab.FloatingActionButton>
     </RelativeLayout>
 
     <android.support.design.widget.NavigationView
