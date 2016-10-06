@@ -59,14 +59,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 .findFragmentById(R.id.map);
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         search_edit = (EditText) findViewById(R.id.search_edit);
-
+        chosen = new boolean[TRASH_N];
         search_edit.setCursorVisible(false);
-        if (savedInstanceState == null)
-            search_edit.setHint("Search query");
+        search_edit.setHint("Search query");
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
-        if (chosen == null)
-            chosen = new boolean[TRASH_N];
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         fragment = getFragmentManager().findFragmentById(R.id.map);
@@ -161,7 +158,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             state.putDouble(LNG, ll.longitude);
             state.putFloat(ZOOM, mMap.getCameraPosition().zoom);
         }
-        state.putCharSequence(CHOSEN_KEY, search_edit.getText());
+        state.putCharSequence(SEARCH_TEXT, search_edit.getText());
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
