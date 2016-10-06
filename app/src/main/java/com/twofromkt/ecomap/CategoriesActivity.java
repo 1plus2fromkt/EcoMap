@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class Categories extends Activity implements View.OnClickListener{
+public class CategoriesActivity extends Activity implements View.OnClickListener{
 
     Button[] buttons;
     Button search;
