@@ -11,25 +11,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Мясо"/>
+            android:text="Время"/>
         <Button
             android:id="@+id/trash2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Сигареты"/>
+            android:text="И"/>
         <Button
             android:id="@+id/trash3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Хуй"/>
-        <Button
-            android:id="@+id/trash4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Пизда"/>
+            android:text="стекло"/>
 
     </LinearLayout>
 

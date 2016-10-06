@@ -3,8 +3,11 @@ package com.twofromkt.ecomap;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -19,7 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Arrays;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, FloatingActionButton.OnClickListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback, FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mMap;
     MapView mapView;
@@ -29,6 +32,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     SupportMapFragment mapFragment;
     Fragment fragment;
     boolean[] chosen;
+    NavigationView nv;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM";
     static final int CHOOSE_TRASH_ACTIVITY = 0;
@@ -55,6 +59,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         mapFragment.getMapAsync(this);
         trashButton.setOnClickListener(this);
+        nv = (NavigationView) findViewById(R.id.nav_view);
+        nv.setNavigationItemSelectedListener(this);
     }
 
     /**
@@ -117,5 +123,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
         }
         System.out.println(Arrays.toString(chosen));
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.nav_settings) {
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            startActivity(intent);
+        }
+        return false;
     }
 }

@@ -15,7 +15,7 @@ public class CategoriesActivity extends Activity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        setContentView(R.layout.categories);
+        setContentView(R.layout.activity_categories);
         search = (Button) findViewById(R.id.trash_search);
         search.setOnClickListener(this);
         chosen = new boolean[]{true};
