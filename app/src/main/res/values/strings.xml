@@ -71,4 +71,16 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="trashItem1">Время</string>
+    <string name="trashItem2">И</string>
+    <string name="trashItem3">стекло</string>
+    <string name="searchButton">Search</string>
+    <string name="appName">EcoMap</string>
+    <string name="menuItem1">Кафе</string>
+    <string name="menuItem2">Мусор</string>
+    <string name="menuItem3">Прочее</string>
+    <string name="menuName">Категории</string>
+    <string name="leftMenuItem1">Map</string>
+    <string name="leftMenuItem2">Places</string>
+    <string name="leftMenuItem3">Settings</string>
 </resources>

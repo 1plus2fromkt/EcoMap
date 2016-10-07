@@ -37,7 +37,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="13dp"
             fab:menu_backgroundColor="@android:color/transparent"
-            fab:menu_fab_label="Категории"
+            fab:menu_fab_label="@string/menuName"
             fab:menu_fab_size="normal"
             fab:menu_icon="@drawable/fab_add"
             fab:menu_labels_colorNormal="#333333"
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_label="Кафешки"
+                fab:fab_label="@string/menuItem1"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_label="Мусор"
+                fab:fab_label="@string/menuItem2"
                 fab:fab_size="mini" />
 
             <com.github.clans.fab.FloatingActionButton
@@ -71,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_star"
-                fab:fab_label="Прочее"
+                fab:fab_label="@string/menuItem3"
                 fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
 

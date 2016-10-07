@@ -13,8 +13,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -32,7 +35,9 @@ import java.util.Arrays;
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
+        FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
+        DrawerLayout.DrawerListener{
 
     GoogleMap mMap;
     MapView mapView;
@@ -41,13 +46,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     EditText search_edit;
-    Fragment fragment;
+    SupportMapFragment fragment;
     boolean[] chosen;
     NavigationView nv;
     Criteria criteria = new Criteria();
     LocationManager locationManager;
+    DrawerLayout drawerLayout;
 
-    static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM", SEARCH_TEXT="SEARCH_TEXT";
+    static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
+            SEARCH_TEXT="SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUED = "IS_EDIT_FOCUED";
     static final int CHOOSE_TRASH_ACTIVITY = 0;
 
     @Override
@@ -60,22 +67,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         search_edit = (EditText) findViewById(R.id.search_edit);
         chosen = new boolean[TRASH_N];
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         search_edit.setCursorVisible(false);
         search_edit.setHint("Search query");
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        fragment = getFragmentManager().findFragmentById(R.id.map);
-        if (savedInstanceState != null) {
-            startPos = CameraPosition.fromLatLngZoom(new LatLng(
-                            (double) savedInstanceState.get(LAT),
-                            (double) savedInstanceState.get(LNG)),
-                    (float) savedInstanceState.get(ZOOM));
-            if (savedInstanceState.getBoolean(MENU_OPENED)) {
-                floatingMenu.open(false);
-            }
-        }
+        fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        if (savedInstanceState == null)
+            mapFragment.setRetainInstance(true);
         mapFragment.getMapAsync(this);
         trashButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
@@ -84,15 +85,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -110,9 +102,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -124,13 +114,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         if (v == locationButton) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             Location location = locationManager.getLastKnownLocation(locationManager
@@ -159,6 +142,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             state.putFloat(ZOOM, mMap.getCameraPosition().zoom);
         }
         state.putCharSequence(SEARCH_TEXT, search_edit.getText());
+        state.putBoolean(NAV_BAR_OPENED, drawerLayout.isDrawerOpen(nv));
+//        state.putBoolean(IS_EDIT_FOCUED, search_edit.isFocused());
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -174,8 +159,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             if (savedInstanceState.getBoolean(MENU_OPENED)) {
                 floatingMenu.open(false);
             }
+            // This crap opens keyboard every single time
+//            if (savedInstanceState.getBoolean(IS_EDIT_FOCUED)) {
+//                search_edit.requestFocus();
+//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//            } else {
+//                drawerLayout.requestFocus();
+//                closeKeyboard();
+//            }
+            if (savedInstanceState.getBoolean(NAV_BAR_OPENED)) {
+                drawerLayout.openDrawer(nv, true);
+            }
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             search_edit.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
+
+        }
+    }
+
+    private void closeKeyboard() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
@@ -193,6 +198,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         System.out.println(Arrays.toString(chosen));
     }
 
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(nv)) {
+            drawerLayout.closeDrawer(nv);
+        } else if (floatingMenu.isOpened()) {
+            floatingMenu.close(true);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.nav_settings) {
@@ -200,5 +218,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             startActivity(intent);
         }
         return false;
+    }
+
+    @Override
+    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+    }
+
+    @Override
+    public void onDrawerOpened(View drawerView) {
+
+    }
+
+    @Override
+    public void onDrawerClosed(View drawerView) {
+
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState) {
+        if (newState == DrawerLayout.STATE_DRAGGING && !drawerLayout.isDrawerOpen(nv)) {
+            nv.requestFocus();
+            closeKeyboard();
+        }
     }
 }

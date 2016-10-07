@@ -12,21 +12,21 @@
             android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Время"/>
+            android:text="@string/trashItem1"/>
         <Button
             android:id="@+id/trash2"
             android:layout_width="wrap_content"
             android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="И"/>
+            android:text="@string/trashItem2"/>
         <Button
             android:id="@+id/trash3"
             android:layout_width="wrap_content"
             android:alpha="0.6"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="стекло"/>
+            android:text="@string/trashItem3"/>
 
     </LinearLayout>
 
@@ -37,6 +37,6 @@
         android:layout_marginBottom="26dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Search"/>
+        android:text="@string/searchButton"/>
 
 </RelativeLayout>
