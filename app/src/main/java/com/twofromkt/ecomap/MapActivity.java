@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -39,7 +40,7 @@ import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        DrawerLayout.DrawerListener{
+        DrawerLayout.DrawerListener, View.OnFocusChangeListener {
 
     GoogleMap mMap;
     MapView mapView;
@@ -47,8 +48,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     CameraPosition startPos;
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
-    EditText search_edit;
-    Fragment fragment;
+    EditText searchField;
     boolean[] chosen;
     NavigationView nv;
     Criteria criteria = new Criteria();
@@ -56,7 +56,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     DrawerLayout drawerLayout;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
-            SEARCH_TEXT="SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUED = "IS_EDIT_FOCUED";
+            SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111;
 
     @Override
@@ -67,31 +67,37 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
-        search_edit = (EditText) findViewById(R.id.search_edit);
+        searchField = (EditText) findViewById(R.id.search_edit);
         chosen = new boolean[TRASH_N];
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        search_edit.setCursorVisible(false);
-        search_edit.setHint("Search query");
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        searchField.setCursorVisible(false);
+        searchField.setHint("Search query");
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        fragment = getFragmentManager().findFragmentById(R.id.map);
-//        if (savedInstanceState == null)
-//            mapFragment.setRetainInstance(true);
+        if (savedInstanceState == null) {
+            mapFragment.setRetainInstance(true);
+        }
         mapFragment.getMapAsync(this);
         trashButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
         nv = (NavigationView) findViewById(R.id.nav_view);
         nv.setNavigationItemSelectedListener(this);
-
+        drawerLayout.addDrawerListener(this);
+//        searchField.clearFocus();
+        System.out.println("search field focus: " + searchField.isFocused());
+        floatingMenu.requestFocus();
+        System.out.println("search field focus: " + searchField.isFocused());
+        searchField.setOnFocusChangeListener(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (startPos != null)
+        if (startPos != null) {
             moveMap(mMap, startPos);
+        }
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -113,7 +119,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
     }
-
+    
     @Override
     public void onClick(View v) {
         if (v == trashButton) {
@@ -127,8 +133,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
             Location location = locationManager.getLastKnownLocation(locationManager
                     .getBestProvider(criteria, false));
-            if (location != null)
+            if (location != null) {
                 moveMap(mMap, fromLatLng(location.getLatitude(), location.getLongitude(), 10));
+            }
         }
     }
 
@@ -150,17 +157,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             state.putDouble(LNG, ll.longitude);
             state.putFloat(ZOOM, mMap.getCameraPosition().zoom);
         }
-        state.putCharSequence(SEARCH_TEXT, search_edit.getText());
+        state.putCharSequence(SEARCH_TEXT, searchField.getText());
         state.putBoolean(NAV_BAR_OPENED, drawerLayout.isDrawerOpen(nv));
-//        state.putBoolean(IS_EDIT_FOCUED, search_edit.isFocused());
+        state.putBoolean(IS_EDIT_FOCUSED, searchField.isFocused());
+
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             try {
-                startPos = CameraPosition.fromLatLngZoom(new LatLng(
-                                (double) savedInstanceState.get(LAT),
-                                (double) savedInstanceState.get(LNG)),
+                startPos = fromLatLng(
+                        (double) savedInstanceState.get(LAT),
+                        (double) savedInstanceState.get(LNG),
                         (float) savedInstanceState.get(ZOOM));
             } catch (Exception ignored) {
 
@@ -169,26 +177,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 floatingMenu.open(false);
             }
             // This crap opens keyboard every single time
-//            if (savedInstanceState.getBoolean(IS_EDIT_FOCUED)) {
-//                search_edit.requestFocus();
+            if (savedInstanceState.getBoolean(IS_EDIT_FOCUSED)) {
+                System.out.println("search field was focused");
+//                searchField.requestFocus();
 //                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-//            } else {
-//                drawerLayout.requestFocus();
-//                closeKeyboard();
-//            }
+            } else {
+                drawerLayout.requestFocus();
+                closeKeyboard();
+            }
             if (savedInstanceState.getBoolean(NAV_BAR_OPENED)) {
                 drawerLayout.openDrawer(nv, true);
             }
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
-            search_edit.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
+            searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
 
         }
+        System.out.println(searchField.isFocused());
     }
 
     private void closeKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
@@ -196,15 +206,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case (CHOOSE_TRASH_ACTIVITY) : {
+        switch (requestCode) {
+            case (CHOOSE_TRASH_ACTIVITY): {
                 if (resultCode == Activity.RESULT_OK) {
                     chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
                 }
                 break;
             }
         }
-        System.out.println(Arrays.toString(chosen));
     }
 
     @Override
@@ -244,7 +253,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onDrawerOpened(View drawerView) {
-
+        closeKeyboard();
+        nv.requestFocus();
     }
 
     @Override
@@ -257,6 +267,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (newState == DrawerLayout.STATE_DRAGGING && !drawerLayout.isDrawerOpen(nv)) {
             nv.requestFocus();
             closeKeyboard();
+        }
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            Toast.makeText(getApplicationContext(), "text view got the focus", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "text view lost the focus", Toast.LENGTH_SHORT).show();
         }
     }
 }
