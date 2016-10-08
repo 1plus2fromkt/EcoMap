@@ -1,5 +1,7 @@
 package com.twofromkt.ecomap;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -46,7 +48,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     EditText search_edit;
-    SupportMapFragment fragment;
+    Fragment fragment;
     boolean[] chosen;
     NavigationView nv;
     Criteria criteria = new Criteria();
@@ -55,7 +57,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT="SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUED = "IS_EDIT_FOCUED";
-    static final int CHOOSE_TRASH_ACTIVITY = 0;
+    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +76,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        fragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        if (savedInstanceState == null)
-            mapFragment.setRetainInstance(true);
+        fragment = getFragmentManager().findFragmentById(R.id.map);
+//        if (savedInstanceState == null)
+//            mapFragment.setRetainInstance(true);
         mapFragment.getMapAsync(this);
         trashButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
@@ -90,7 +92,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mMap = googleMap;
         if (startPos != null)
             moveMap(mMap, startPos);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -98,11 +100,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    GPS_REQUEST);
             return;
         }
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        addLocationSearch(mMap);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+    }
+
+    private void addLocationSearch(GoogleMap map) {
+        map.setMyLocationEnabled(true);
+        map.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
     @Override
@@ -198,7 +207,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         System.out.println(Arrays.toString(chosen));
     }
 
-
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case GPS_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    addLocationSearch(mMap);
+        }
+    }
 
     @Override
     public void onBackPressed() {
