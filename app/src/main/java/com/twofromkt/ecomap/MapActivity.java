@@ -16,6 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,7 +42,7 @@ import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        DrawerLayout.DrawerListener, View.OnFocusChangeListener {
+        DrawerLayout.DrawerListener{
 
     GoogleMap mMap;
     MapView mapView;
@@ -85,11 +87,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         nv = (NavigationView) findViewById(R.id.nav_view);
         nv.setNavigationItemSelectedListener(this);
         drawerLayout.addDrawerListener(this);
-//        searchField.clearFocus();
-        System.out.println("search field focus: " + searchField.isFocused());
-        floatingMenu.requestFocus();
-        System.out.println("search field focus: " + searchField.isFocused());
-        searchField.setOnFocusChangeListener(this);
     }
 
     @Override
@@ -176,11 +173,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             if (savedInstanceState.getBoolean(MENU_OPENED)) {
                 floatingMenu.open(false);
             }
-            // This crap opens keyboard every single time
             if (savedInstanceState.getBoolean(IS_EDIT_FOCUSED)) {
-                System.out.println("search field was focused");
-//                searchField.requestFocus();
-//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                searchField.requestFocus();
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             } else {
                 drawerLayout.requestFocus();
                 closeKeyboard();
@@ -270,12 +265,4 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            Toast.makeText(getApplicationContext(), "text view got the focus", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "text view lost the focus", Toast.LENGTH_SHORT).show();
-        }
-    }
 }

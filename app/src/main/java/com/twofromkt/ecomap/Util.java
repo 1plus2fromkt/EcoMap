@@ -17,6 +17,7 @@ public class Util {
 
     }
     public static class Period {
-        Time open, close;
+        public Time open, close;
     }
+
 }

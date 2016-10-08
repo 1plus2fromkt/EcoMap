@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 import static com.twofromkt.ecomap.Util.*;
 
 import java.io.Serializable;
+import java.sql.Time;
 
 abstract class Place implements Serializable {
     LatLng location;
@@ -15,5 +16,16 @@ abstract class Place implements Serializable {
         this.information = information;
         System.arraycopy(workTime, 0, this.workTime, 0, workTime.length);
         this.img_link = img_link;
+    }
+
+
+    boolean isOpened(Time t, int dayOfWeek) {
+        Time a = workTime[dayOfWeek].open, b = workTime[dayOfWeek].close;
+        boolean bef = t.before(b), aft= t.after(a);
+        if (a.before(b))
+            return (bef && aft);
+        else
+            return (bef || aft);
+
     }
 }
