@@ -7,14 +7,15 @@ import java.io.Serializable;
 import java.sql.Time;
 
 abstract class Place implements Serializable {
-    LatLng location;
+    public LatLng location;
     Period[] workTime;
     String img_link;
-    String information;
+    public String information;
     Place (LatLng location, String information, Period[] workTime, String img_link) {
         this.location = location;
         this.information = information;
-        System.arraycopy(workTime, 0, this.workTime, 0, workTime.length);
+        if (workTime != null)
+            System.arraycopy(workTime, 0, this.workTime, 0, workTime.length);
         this.img_link = img_link;
     }
 

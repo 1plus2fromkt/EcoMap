@@ -14,8 +14,8 @@ public class Util {
                 Math.cos(fi1) * Math.cos(fi2) * Math.sin(lambda / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return a * c;
-
     }
+
     public static class Period {
         public Time open, close;
     }

@@ -1,9 +1,7 @@
 package com.twofromkt.ecomap;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,8 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,7 +30,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.twofromkt.ecomap.data_struct.Pair;
+import com.twofromkt.ecomap.db.Filter;
+import com.twofromkt.ecomap.db.TrashBox;
+import com.twofromkt.ecomap.server.Downloader;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
@@ -65,26 +67,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
-        searchField = (EditText) findViewById(R.id.search_edit);
-        chosen = new boolean[TRASH_N];
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        initFields();
+        setListeners();
+
         searchField.setCursorVisible(false);
         searchField.setHint("Search query");
-        trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
-        floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
-        locationButton = (FloatingActionButton) findViewById(R.id.location_button);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (savedInstanceState == null) {
             mapFragment.setRetainInstance(true);
         }
         mapFragment.getMapAsync(this);
+    }
+
+    private void initFields() {
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
+        searchField = (EditText) findViewById(R.id.search_edit);
+        chosen = new boolean[TRASH_N];
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
+        floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
+        locationButton = (FloatingActionButton) findViewById(R.id.location_button);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        nv = (NavigationView) findViewById(R.id.nav_view);
+    }
+
+    private void setListeners() {
         trashButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
-        nv = (NavigationView) findViewById(R.id.nav_view);
         nv.setNavigationItemSelectedListener(this);
         drawerLayout.addDrawerListener(this);
     }
@@ -109,10 +118,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             return;
         }
         addLocationSearch(mMap);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        displayTrashboxes();
+    }
+
+    private void displayTrashboxes() {
+        ArrayList<Pair<Double, Double>> trashboxesCoords = Downloader.data;
+        ArrayList<TrashBox> trashboxes = new ArrayList<>();
+        for (int i = 0; i < trashboxesCoords.size(); i++) {
+            trashboxes.add(new TrashBox(
+                    new LatLng(trashboxesCoords.get(i).val1, trashboxesCoords.get(i).val2),
+                    "place " + i,
+                    null, null, TrashBox.Category.GLASS));
+        }
+        for (TrashBox trashBox : trashboxes) {
+            if (chosen[2] || trashBox.information.equals("place 0")) { // kek lol
+                addMarker(trashBox.location, trashBox.information);
+            }
+        }
+    }
+
+    private void addMarker(LatLng coord, String name) {
+        mMap.addMarker(new MarkerOptions().position(coord).title(name));
     }
 
     private void addLocationSearch(GoogleMap map) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
     }
@@ -185,9 +217,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
-
         }
-        System.out.println(searchField.isFocused());
     }
 
     private void closeKeyboard() {
@@ -205,6 +235,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             case (CHOOSE_TRASH_ACTIVITY): {
                 if (resultCode == Activity.RESULT_OK) {
                     chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
+                    displayTrashboxes();
                 }
                 break;
             }
@@ -230,6 +261,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         } else {
             super.onBackPressed();
         }
+        System.out.println("back pressed");
     }
 
     @Override
