@@ -9,6 +9,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -19,37 +20,36 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.data_struct.Pair;
-import com.twofromkt.ecomap.db.Filter;
 import com.twofromkt.ecomap.db.TrashBox;
 import com.twofromkt.ecomap.server.Downloader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        DrawerLayout.DrawerListener{
+        DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener{
 
     GoogleMap mMap;
-    MapView mapView;
-    FloatingActionButton cafeButton, trashButton, locationButton;
+    BottomSheetBehavior bottomInfo;
+    View bottomInfoView;
+    FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
     CameraPosition startPos;
+    ArrayList<Marker> currMarkers;
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     EditText searchField;
@@ -89,6 +89,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         nv = (NavigationView) findViewById(R.id.nav_view);
+        navigationButton = (FloatingActionButton) findViewById(R.id.nav_button);
+        bottomInfoView = findViewById(R.id.bottom_sheet);
+        bottomInfo = BottomSheetBehavior.from(bottomInfoView);
+        currMarkers = new ArrayList<>();
     }
 
     private void setListeners() {
@@ -96,22 +100,28 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         locationButton.setOnClickListener(this);
         nv.setNavigationItemSelectedListener(this);
         drawerLayout.addDrawerListener(this);
+        bottomInfo.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                if (newState == BottomSheetBehavior.STATE_HIDDEN)
+                    hideBottom();
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(this);
         if (startPos != null) {
             moveMap(mMap, startPos);
         }
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     GPS_REQUEST);
@@ -119,15 +129,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         addLocationSearch(mMap);
         displayTrashboxes();
+//        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     private void displayTrashboxes() {
         ArrayList<Pair<Double, Double>> trashboxesCoords = Downloader.data;
         ArrayList<TrashBox> trashboxes = new ArrayList<>();
         for (int i = 0; i < trashboxesCoords.size(); i++) {
-            trashboxes.add(new TrashBox(
+            trashboxes.add(new TrashBox("place " + i,
                     new LatLng(trashboxesCoords.get(i).val1, trashboxesCoords.get(i).val2),
-                    "place " + i,
+                    "",
                     null, null, TrashBox.Category.GLASS));
         }
         for (TrashBox trashBox : trashboxes) {
@@ -138,7 +149,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void addMarker(LatLng coord, String name) {
-        mMap.addMarker(new MarkerOptions().position(coord).title(name));
+        Marker m = mMap.addMarker(new MarkerOptions().position(coord).title(name));
+        currMarkers.add(m);
+
     }
 
     private void addLocationSearch(GoogleMap map) {
@@ -256,6 +269,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(nv)) {
             drawerLayout.closeDrawer(nv);
+        } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            hideBottom();
         } else if (floatingMenu.isOpened()) {
             floatingMenu.close(true);
         } else {
@@ -297,4 +314,23 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        showBottom();
+        return true;
+    }
+
+    private void showBottom () {
+        navigationButton.setVisibility(View.VISIBLE);
+        locationButton.setVisibility(View.INVISIBLE);
+        floatingMenu.setVisibility(View.INVISIBLE);
+        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    private void hideBottom() {
+        navigationButton.setVisibility(View.INVISIBLE);
+        locationButton.setVisibility(View.VISIBLE);
+        floatingMenu.setVisibility(View.VISIBLE);
+        bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
 }

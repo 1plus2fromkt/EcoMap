@@ -7,9 +7,9 @@ public class Cafe extends Place {
     String website;
     String menuLink;
     String phone;
-    Cafe (LatLng location, String information, Period[] workTime, String img_link, String phone,
+    Cafe (String name, LatLng location, String information, Period[] workTime, String img_link, String phone,
           String menuLink, String website) {
-        super (location, information, workTime, img_link);
+        super (name, location, information, workTime, img_link);
         this.phone = phone;
         this.menuLink = menuLink;
         this.website = website;

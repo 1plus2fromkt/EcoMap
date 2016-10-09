@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import static com.twofromkt.ecomap.Util.*;
@@ -52,11 +54,16 @@ public class GetPlaces {
         });
     }
 
-    ArrayList<TrashBox> getTrashes(final LatLng x, final double radii, final Set<TrashBox.Category> categories) {
+    ArrayList<TrashBox> getTrashes(final LatLng x, final double radii, boolean[] arr) {
+        Set<TrashBox.Category> s = new HashSet<>();
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i])
+                s.add(TrashBox.Category.fromIndex(i));
+        final Set<TrashBox.Category> finalS = s;
         return getPlaces(new Predicate<TrashBox>() {
             @Override
             public boolean apply(TrashBox o) {
-                return distanceLatLng(x, o.location) < radii && categories.contains(o.category);
+                return distanceLatLng(x, o.location) < radii && finalS.contains(o.category);
             }
         });
     }

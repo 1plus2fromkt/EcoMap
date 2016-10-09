@@ -8,10 +8,12 @@ import java.sql.Time;
 
 abstract class Place implements Serializable {
     public LatLng location;
+    String name;
     Period[] workTime;
     String img_link;
     public String information;
-    Place (LatLng location, String information, Period[] workTime, String img_link) {
+    Place (String name, LatLng location, String information, Period[] workTime, String img_link) {
+        this.name = name;
         this.location = location;
         this.information = information;
         if (workTime != null)
