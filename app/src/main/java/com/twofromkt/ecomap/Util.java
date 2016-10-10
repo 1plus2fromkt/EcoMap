@@ -1,10 +1,16 @@
 package com.twofromkt.ecomap;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.twofromkt.ecomap.db.Place;
 
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Util {
+    public static HashMap<Marker, Place> markersToPlace = new HashMap<>();
+    public static ArrayList<Marker> currMarkers;
     public static double distanceLatLng(LatLng x, LatLng y) {
         double fi1 = x.latitude;
         double fi2 = y.latitude;

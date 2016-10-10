@@ -6,9 +6,9 @@ import static com.twofromkt.ecomap.Util.*;
 import java.io.Serializable;
 import java.sql.Time;
 
-abstract class Place implements Serializable {
+public abstract class Place implements Serializable {
     public LatLng location;
-    String name;
+    public String name;
     Period[] workTime;
     String img_link;
     public String information;

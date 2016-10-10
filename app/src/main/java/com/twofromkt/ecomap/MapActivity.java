@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.data_struct.Pair;
+import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 import com.twofromkt.ecomap.server.Downloader;
 
@@ -39,6 +41,8 @@ import java.util.ArrayList;
 
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
+import static com.twofromkt.ecomap.db.GetPlaces.*;
+import static com.twofromkt.ecomap.Util.*;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
@@ -49,7 +53,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     View bottomInfoView;
     FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
     CameraPosition startPos;
-    ArrayList<Marker> currMarkers;
+    TextView name, category_name;
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     EditText searchField;
@@ -83,6 +87,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
         chosen = new boolean[TRASH_N];
+        name = (TextView) findViewById(R.id.name_text);
+        category_name = (TextView) findViewById(R.id.category_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
@@ -128,7 +134,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             return;
         }
         addLocationSearch(mMap);
-        displayTrashboxes();
 //        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
@@ -143,15 +148,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         for (TrashBox trashBox : trashboxes) {
             if (chosen[2] || trashBox.information.equals("place 0")) { // kek lol
-                addMarker(trashBox.location, trashBox.information);
+                addMarker(trashBox.location, trashBox.information, trashBox);
             }
         }
     }
 
-    private void addMarker(LatLng coord, String name) {
+    private void addMarker(LatLng coord, String name, Place x) {
         Marker m = mMap.addMarker(new MarkerOptions().position(coord).title(name));
         currMarkers.add(m);
-
+        markersToPlace.put(m, x);
     }
 
     private void addLocationSearch(GoogleMap map) {
@@ -164,17 +169,20 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     
     @Override
     public void onClick(View v) {
+        Location location = locationManager.getLastKnownLocation(locationManager
+                .getBestProvider(criteria, false));
         if (v == trashButton) {
+
             Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, chosen);
             startActivityForResult(intent, CHOOSE_TRASH_ACTIVITY);
+            getTrashes(new LatLng(location.getLatitude(), location.getLongitude()), 10, chosen);
         }
         if (v == locationButton) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            Location location = locationManager.getLastKnownLocation(locationManager
-                    .getBestProvider(criteria, false));
+
             if (location != null) {
                 moveMap(mMap, fromLatLng(location.getLatitude(), location.getLongitude(), 10));
             }
@@ -317,6 +325,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public boolean onMarkerClick(Marker marker) {
         showBottom();
+        Place p = markersToPlace.get(marker);
+        name.setText(p.name);
+        category_name.setText(p.getClass().getName());
         return true;
     }
 

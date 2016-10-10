@@ -29,7 +29,7 @@ public class GetPlaces {
         }
     }
 
-    private <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr) {
+    private static <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr) {
         ArrayList<T> ans = new ArrayList<>();
         try {
             FileInputStream in = new FileInputStream(FILE_NAMES[0]);
@@ -45,7 +45,7 @@ public class GetPlaces {
         return ans;
     }
 
-    ArrayList<Cafe> getCafes(final LatLng x, final double radii) {
+    static ArrayList<Cafe> getCafes(final LatLng x, final double radii) {
         return getPlaces(new Predicate<Cafe>() {
             @Override
             public boolean apply(Cafe o) {
@@ -54,7 +54,7 @@ public class GetPlaces {
         });
     }
 
-    ArrayList<TrashBox> getTrashes(final LatLng x, final double radii, boolean[] arr) {
+    public static ArrayList<TrashBox> getTrashes(final LatLng x, final double radii, boolean[] arr) {
         Set<TrashBox.Category> s = new HashSet<>();
         for (int i = 0; i < arr.length; i++)
             if (arr[i])
