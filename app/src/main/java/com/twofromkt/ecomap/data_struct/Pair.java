@@ -1,6 +1,8 @@
 package com.twofromkt.ecomap.data_struct;
 
-public class Pair<T1, T2> {
+import java.io.Serializable;
+
+public class Pair<T1, T2> implements Serializable {
     public T1 val1;
     public T2 val2;
 

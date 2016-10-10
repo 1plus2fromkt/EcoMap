@@ -33,16 +33,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.data_struct.Pair;
+import com.twofromkt.ecomap.db.Cafe;
+import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 import com.twofromkt.ecomap.server.Downloader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 import static com.twofromkt.ecomap.db.GetPlaces.*;
 import static com.twofromkt.ecomap.Util.*;
+import static com.twofromkt.ecomap.db.TrashBox.Category.AND;
+import static com.twofromkt.ecomap.db.TrashBox.Category.GLASS;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
@@ -66,6 +72,12 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        putObjects();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,11 +110,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         navigationButton = (FloatingActionButton) findViewById(R.id.nav_button);
         bottomInfoView = findViewById(R.id.bottom_sheet);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
-        currMarkers = new ArrayList<>();
     }
 
     private void setListeners() {
         trashButton.setOnClickListener(this);
+        cafeButton.setOnClickListener(this);
         locationButton.setOnClickListener(this);
         nv.setNavigationItemSelectedListener(this);
         drawerLayout.addDrawerListener(this);
@@ -118,6 +130,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
             }
         });
+        hideBottom();
     }
 
     @Override
@@ -137,24 +150,40 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 //        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    private void displayTrashboxes() {
-        ArrayList<Pair<Double, Double>> trashboxesCoords = Downloader.data;
-        ArrayList<TrashBox> trashboxes = new ArrayList<>();
-        for (int i = 0; i < trashboxesCoords.size(); i++) {
-            trashboxes.add(new TrashBox("place " + i,
-                    new LatLng(trashboxesCoords.get(i).val1, trashboxesCoords.get(i).val2),
-                    "",
-                    null, null, TrashBox.Category.GLASS));
-        }
-        for (TrashBox trashBox : trashboxes) {
-            if (chosen[2] || trashBox.information.equals("place 0")) { // kek lol
-                addMarker(trashBox.location, trashBox.information, trashBox);
-            }
-        }
+    void putObjects() {
+        GetPlaces.putObject(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
+                null, "", "656-68-52", "", "www.vk.com"), 0, getApplicationContext());
+        GetPlaces.putObject(new Cafe("Кафе 2", new LatLng(60.143175, 30.509615), "Мое второе кафе",
+                null, "", "656-68-53", "", "www.vk.ru"), 0, getApplicationContext());
+        HashSet<TrashBox.Category> h = new HashSet<>();
+        h.add(GLASS);
+        h.add(AND);
+        GetPlaces.putObject(new TrashBox("Урна 1", new LatLng(60.193175, 30.359615), "Моя первая урна",
+                null, "", h), 1, getApplicationContext());
+        h.remove(AND);
+        GetPlaces.putObject(new TrashBox("Урна 2", new LatLng(60.193175, 30.359615), "Моя вторая урна",
+                null, "", h), 1, getApplicationContext());
+
     }
 
-    private void addMarker(LatLng coord, String name, Place x) {
-        Marker m = mMap.addMarker(new MarkerOptions().position(coord).title(name));
+//    private void displayTrashboxes() {
+//        ArrayList<Pair<Double, Double>> trashboxesCoords = Downloader.data;
+//        ArrayList<TrashBox> trashboxes = new ArrayList<>();
+//        for (int i = 0; i < trashboxesCoords.size(); i++) {
+//            trashboxes.add(new TrashBox("place " + i,
+//                    new LatLng(trashboxesCoords.get(i).val1, trashboxesCoords.get(i).val2),
+//                    "",
+//                    null, null, GLASS));
+//        }
+//        for (TrashBox trashBox : trashboxes) {
+//            if (chosen[2] || trashBox.information.equals("place 0")) { // kek lol
+//                addMarker(trashBox.location, trashBox.information, trashBox);
+//            }
+//        }
+//    }
+
+    private void addMarker(Place x) {
+        Marker m = mMap.addMarker(new MarkerOptions().position(fromPair(x.location)).title(x.name));
         currMarkers.add(m);
         markersToPlace.put(m, x);
     }
@@ -176,7 +205,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, chosen);
             startActivityForResult(intent, CHOOSE_TRASH_ACTIVITY);
-            getTrashes(new LatLng(location.getLatitude(), location.getLongitude()), 10, chosen);
+            clearMarkers();
         }
         if (v == locationButton) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -186,6 +215,24 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             if (location != null) {
                 moveMap(mMap, fromLatLng(location.getLatitude(), location.getLongitude(), 10));
             }
+        }
+        if (v == cafeButton) {
+            clearMarkers();
+            ArrayList<Cafe> p = GetPlaces.getCafes(mMap.getCameraPosition().target, 100, getApplicationContext());
+            addMarkers(p);
+        }
+    }
+
+    private void clearMarkers() {
+        for (Marker m : currMarkers)
+            m.remove();
+        currMarkers = new ArrayList<>();
+        markersToPlace = new HashMap<>();
+    }
+
+    private <T extends Place> void addMarkers(ArrayList<T> p) {
+        for (Place place : p) {
+            addMarker(place);
         }
     }
 
@@ -256,7 +303,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             case (CHOOSE_TRASH_ACTIVITY): {
                 if (resultCode == Activity.RESULT_OK) {
                     chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
-                    displayTrashboxes();
+                    Location location = locationManager.getLastKnownLocation(locationManager
+                            .getBestProvider(criteria, false));
+                    ArrayList<TrashBox> t = getTrashes(new LatLng(location.getLatitude(),
+                            location.getLongitude()), 100, chosen, getApplicationContext());
+                    addMarkers(t);
                 }
                 break;
             }

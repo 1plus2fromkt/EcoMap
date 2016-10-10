@@ -1,20 +1,22 @@
 package com.twofromkt.ecomap.db;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.data_struct.Pair;
+
 import static com.twofromkt.ecomap.Util.*;
 
 import java.io.Serializable;
 import java.sql.Time;
 
 public abstract class Place implements Serializable {
-    public LatLng location;
+    public Pair<Double, Double> location;
     public String name;
     Period[] workTime;
     String img_link;
     public String information;
     Place (String name, LatLng location, String information, Period[] workTime, String img_link) {
         this.name = name;
-        this.location = location;
+        this.location = fromLatLng(location);
         this.information = information;
         if (workTime != null)
             System.arraycopy(workTime, 0, this.workTime, 0, workTime.length);

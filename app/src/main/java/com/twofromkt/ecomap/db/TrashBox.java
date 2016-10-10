@@ -2,17 +2,19 @@ package com.twofromkt.ecomap.db;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import static com.twofromkt.ecomap.Util.*;
 
 public class TrashBox extends Place {
 
-    Category category;
+    HashSet<Category> category;
 
-    public TrashBox(String name, LatLng location, String information, Period[] workTime, String img_link, Category cat) {
+    public TrashBox(String name, LatLng location, String information, Period[] workTime, String img_link, Set<Category> cat) {
         super(name, location, information, workTime, img_link);
-        category = cat;
+        category = new HashSet<>(cat);
     }
 
     public enum Category {
