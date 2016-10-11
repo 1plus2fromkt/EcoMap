@@ -26,13 +26,13 @@ public class GetPlaces {
     public static void putObject(Place p, int category, Context cont) {
         try {
             File f = new File(cont.getFilesDir(), FILE_NAMES[category]);
-            boolean q = f.exists(); // might be crap
-            FileOutputStream out = new FileOutputStream(f);
+            boolean q = f.exists() && !f.isDirectory(); // might be crap
+            FileOutputStream out = new FileOutputStream(f, true);
             ObjectOutputStream outO;
-//            if (!q)
+            if (!q)
                 outO = new ObjectOutputStream(out);
-//            else
-//                outO = new AppendingObjectOutputStream(out);
+            else
+                outO = new AppendingObjectOutputStream(out);
             outO.writeObject(p);
             outO.flush();
             outO.close();

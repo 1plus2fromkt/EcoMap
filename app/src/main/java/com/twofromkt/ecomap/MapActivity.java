@@ -70,7 +70,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     DrawerLayout drawerLayout;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
-            SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED";
+            SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
+            NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME", BOTTOM_STATE = "BOTTOM_STATE";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111;
 
     @Override
@@ -161,7 +162,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         GetPlaces.putObject(new TrashBox("Урна 1", new LatLng(60.193175, 30.359615), "Моя первая урна",
                 null, "", h), 1, getApplicationContext());
         h.remove(AND);
-        GetPlaces.putObject(new TrashBox("Урна 2", new LatLng(60.193175, 30.359615), "Моя вторая урна",
+        GetPlaces.putObject(new TrashBox("Урна 2", new LatLng(60.163175, 30.359615), "Моя вторая урна",
                 null, "", h), 1, getApplicationContext());
 
     }
@@ -200,6 +201,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     public void onClick(View v) {
         Location location = locationManager.getLastKnownLocation(locationManager
                 .getBestProvider(criteria, false));
+        if (v == trashButton || v == cafeButton)
+            closeFloatingMenu();
         if (v == trashButton) {
 
             Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
@@ -218,7 +221,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
         if (v == cafeButton) {
             clearMarkers();
-            ArrayList<Cafe> p = GetPlaces.getCafes(mMap.getCameraPosition().target, 100, getApplicationContext());
+            ArrayList<Cafe> p = GetPlaces.getCafes(mMap.getCameraPosition().target, 1e12, getApplicationContext());
             addMarkers(p);
         }
     }
@@ -257,7 +260,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         state.putCharSequence(SEARCH_TEXT, searchField.getText());
         state.putBoolean(NAV_BAR_OPENED, drawerLayout.isDrawerOpen(nv));
         state.putBoolean(IS_EDIT_FOCUSED, searchField.isFocused());
+        state.putInt(BOTTOM_STATE, bottomInfo.getState());
+        if (isBottomOpened()) {
+            state.putCharSequence(NAME, name.getText());
+            state.putCharSequence(CATEGORY_NAME, category_name.getText());
+        }
 
+    }
+
+    private boolean isBottomOpened() {
+        return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -285,6 +297,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
+            bottomInfo.setState((int) savedInstanceState.get(BOTTOM_STATE));
+            if (isBottomOpened()) {
+                name.setText((String)savedInstanceState.get(NAME));
+                category_name.setText((String)savedInstanceState.get(CATEGORY_NAME));
+            }
         }
     }
 
@@ -294,6 +311,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private void closeFloatingMenu() {
+        floatingMenu.close(true);
     }
 
     @Override
@@ -306,7 +327,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                     Location location = locationManager.getLastKnownLocation(locationManager
                             .getBestProvider(criteria, false));
                     ArrayList<TrashBox> t = getTrashes(new LatLng(location.getLatitude(),
-                            location.getLongitude()), 100, chosen, getApplicationContext());
+                            location.getLongitude()), 1e12, chosen, getApplicationContext());
+                    clearMarkers();
                     addMarkers(t);
                 }
                 break;
@@ -333,7 +355,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             hideBottom();
         } else if (floatingMenu.isOpened()) {
-            floatingMenu.close(true);
+            closeFloatingMenu();
+        } else if (currMarkers.size() > 0) {
+            clearMarkers();
         } else {
             super.onBackPressed();
         }
