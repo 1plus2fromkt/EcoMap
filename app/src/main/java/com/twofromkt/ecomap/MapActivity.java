@@ -50,9 +50,7 @@ import static com.twofromkt.ecomap.Util.*;
 import static com.twofromkt.ecomap.db.TrashBox.Category.AND;
 import static com.twofromkt.ecomap.db.TrashBox.Category.GLASS;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
-        FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener{
+public class MapActivity extends FragmentActivity {
 
     GoogleMap mMap;
     BottomSheetBehavior bottomInfo;
@@ -68,6 +66,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
+
+    ListenerAdapter adapter;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
@@ -92,10 +92,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         if (savedInstanceState == null) {
             mapFragment.setRetainInstance(true);
         }
-        mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(adapter);
     }
 
     private void initFields() {
+        adapter = new ListenerAdapter(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
@@ -114,11 +115,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
     }
 
     private void setListeners() {
-        trashButton.setOnClickListener(this);
-        cafeButton.setOnClickListener(this);
-        locationButton.setOnClickListener(this);
-        nv.setNavigationItemSelectedListener(this);
-        drawerLayout.addDrawerListener(this);
+        trashButton.setOnClickListener(adapter);
+        cafeButton.setOnClickListener(adapter);
+        locationButton.setOnClickListener(adapter);
+        nv.setNavigationItemSelectedListener(adapter);
+        drawerLayout.addDrawerListener(adapter);
         bottomInfo.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -132,23 +133,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
             }
         });
         hideBottom();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setOnMarkerClickListener(this);
-        if (startPos != null) {
-            moveMap(mMap, startPos);
-        }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    GPS_REQUEST);
-            return;
-        }
-        addLocationSearch(mMap);
-//        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     void putObjects() {
@@ -183,67 +167,38 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 //        }
 //    }
 
-    private void addMarker(Place x) {
+    protected void addMarker(Place x) {
         Marker m = mMap.addMarker(new MarkerOptions().position(fromPair(x.location)).title(x.name));
         currMarkers.add(m);
         markersToPlace.put(m, x);
     }
 
-    private void addLocationSearch(GoogleMap map) {
+    protected void addLocationSearch(GoogleMap map) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
     }
-    
-    @Override
-    public void onClick(View v) {
-        Location location = locationManager.getLastKnownLocation(locationManager
-                .getBestProvider(criteria, false));
-        if (v == trashButton || v == cafeButton)
-            closeFloatingMenu();
-        if (v == trashButton) {
 
-            Intent intent = new Intent(getApplicationContext(), CategoriesActivity.class);
-            intent.putExtra(CHOSEN_KEY, chosen);
-            startActivityForResult(intent, CHOOSE_TRASH_ACTIVITY);
-            clearMarkers();
-        }
-        if (v == locationButton) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-
-            if (location != null) {
-                moveMap(mMap, fromLatLng(location.getLatitude(), location.getLongitude(), 10));
-            }
-        }
-        if (v == cafeButton) {
-            clearMarkers();
-            ArrayList<Cafe> p = GetPlaces.getCafes(mMap.getCameraPosition().target, 1e12, getApplicationContext());
-            addMarkers(p);
-        }
-    }
-
-    private void clearMarkers() {
+    protected void clearMarkers() {
         for (Marker m : currMarkers)
             m.remove();
         currMarkers = new ArrayList<>();
         markersToPlace = new HashMap<>();
     }
 
-    private <T extends Place> void addMarkers(ArrayList<T> p) {
+    protected  <T extends Place> void addMarkers(ArrayList<T> p) {
         for (Place place : p) {
             addMarker(place);
         }
     }
 
-    private CameraPosition fromLatLng(double a, double b, float z) {
+    protected CameraPosition fromLatLng(double a, double b, float z) {
         return CameraPosition.fromLatLngZoom(new LatLng(a, b), z);
     }
 
-    private void moveMap(GoogleMap map, CameraPosition pos) {
+    protected void moveMap(GoogleMap map, CameraPosition pos) {
         map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
     }
 
@@ -268,7 +223,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
 
     }
 
-    private boolean isBottomOpened() {
+    protected boolean isBottomOpened() {
         return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
     }
 
@@ -305,7 +260,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    private void closeKeyboard() {
+    protected void closeKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -313,7 +268,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
-    private void closeFloatingMenu() {
+    protected void closeFloatingMenu() {
         floatingMenu.close(true);
     }
 
@@ -364,56 +319,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         System.out.println("back pressed");
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.nav_settings) {
-            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
-            startActivity(intent);
-        }
-        return false;
-    }
-
-    @Override
-    public void onDrawerSlide(View drawerView, float slideOffset) {
-
-    }
-
-    @Override
-    public void onDrawerOpened(View drawerView) {
-        closeKeyboard();
-        nv.requestFocus();
-    }
-
-    @Override
-    public void onDrawerClosed(View drawerView) {
-
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState) {
-        if (newState == DrawerLayout.STATE_DRAGGING && !drawerLayout.isDrawerOpen(nv)) {
-            nv.requestFocus();
-            closeKeyboard();
-        }
-    }
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        showBottom();
-        Place p = markersToPlace.get(marker);
-        name.setText(p.name);
-        category_name.setText(p.getClass().getName());
-        return true;
-    }
-
-    private void showBottom () {
+    protected void showBottom () {
         navigationButton.setVisibility(View.VISIBLE);
         locationButton.setVisibility(View.INVISIBLE);
         floatingMenu.setVisibility(View.INVISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    private void hideBottom() {
+    protected void hideBottom() {
         navigationButton.setVisibility(View.INVISIBLE);
         locationButton.setVisibility(View.VISIBLE);
         floatingMenu.setVisibility(View.VISIBLE);
