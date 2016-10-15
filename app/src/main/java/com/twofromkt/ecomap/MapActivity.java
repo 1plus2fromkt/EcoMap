@@ -1,6 +1,5 @@
 package com.twofromkt.ecomap;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,9 +14,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.view.MenuItem;
+import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,7 +25,6 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,7 +35,6 @@ import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
-import com.twofromkt.ecomap.server.Downloader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +48,30 @@ import static com.twofromkt.ecomap.db.TrashBox.Category.AND;
 import static com.twofromkt.ecomap.db.TrashBox.Category.GLASS;
 
 public class MapActivity extends FragmentActivity {
+
+    public static class MyEditText extends EditText{
+
+        public MyEditText(Context context) {
+            super(context);
+        }
+
+        public MyEditText(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public MyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+
+        @Override
+        public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                System.out.println("HUI");
+            }
+            return super.dispatchKeyEvent(event);
+        }
+    }
 
     GoogleMap mMap;
     BottomSheetBehavior bottomInfo;
@@ -151,22 +172,6 @@ public class MapActivity extends FragmentActivity {
 
     }
 
-//    private void displayTrashboxes() {
-//        ArrayList<Pair<Double, Double>> trashboxesCoords = Downloader.data;
-//        ArrayList<TrashBox> trashboxes = new ArrayList<>();
-//        for (int i = 0; i < trashboxesCoords.size(); i++) {
-//            trashboxes.add(new TrashBox("place " + i,
-//                    new LatLng(trashboxesCoords.get(i).val1, trashboxesCoords.get(i).val2),
-//                    "",
-//                    null, null, GLASS));
-//        }
-//        for (TrashBox trashBox : trashboxes) {
-//            if (chosen[2] || trashBox.information.equals("place 0")) { // kek lol
-//                addMarker(trashBox.location, trashBox.information, trashBox);
-//            }
-//        }
-//    }
-
     protected void addMarker(Place x) {
         Marker m = mMap.addMarker(new MarkerOptions().position(fromPair(x.location)).title(x.name));
         currMarkers.add(m);
@@ -189,17 +194,36 @@ public class MapActivity extends FragmentActivity {
     }
 
     protected  <T extends Place> void addMarkers(ArrayList<T> p) {
+        ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
             addMarker(place);
+            pos.add(fromPair(place.location));
         }
+        Pair<LatLng, Double> cent = center(pos);
+        moveMap(mMap, fromLatLngZoom(cent.val1, calculateZoomLevel(mMap.)));
     }
 
-    protected CameraPosition fromLatLng(double a, double b, float z) {
+    protected CameraPosition fromLatLngZoom(double a, double b, float z) {
         return CameraPosition.fromLatLngZoom(new LatLng(a, b), z);
+    }
+    protected CameraPosition fromLatLngZoom(LatLng x, float z) {
+        return fromLatLngZoom(x.latitude, x.longitude, z);
     }
 
     protected void moveMap(GoogleMap map, CameraPosition pos) {
         map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
+    }
+
+    private int calculateZoomLevel(int screenWidth, int radii) {
+        double equatorLength = 40075004; // in meters
+        double widthInPixels = screenWidth;
+        double metersPerPixel = equatorLength / 256;
+        int zoomLevel = 1;
+        while ((metersPerPixel * widthInPixels) > 2000) {
+            metersPerPixel /= 2;
+            ++zoomLevel;
+        }
+        return zoomLevel;
     }
 
     public void onSaveInstanceState(Bundle state) {
@@ -230,7 +254,7 @@ public class MapActivity extends FragmentActivity {
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             try {
-                startPos = fromLatLng(
+                startPos = fromLatLngZoom(
                         (double) savedInstanceState.get(LAT),
                         (double) savedInstanceState.get(LNG),
                         (float) savedInstanceState.get(ZOOM));
@@ -242,7 +266,7 @@ public class MapActivity extends FragmentActivity {
             }
             if (savedInstanceState.getBoolean(IS_EDIT_FOCUSED)) {
                 searchField.requestFocus();
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             } else {
                 drawerLayout.requestFocus();
                 closeKeyboard();
@@ -256,6 +280,7 @@ public class MapActivity extends FragmentActivity {
             if (isBottomOpened()) {
                 name.setText((String)savedInstanceState.get(NAME));
                 category_name.setText((String)savedInstanceState.get(CATEGORY_NAME));
+                showBottom(false);
             }
         }
     }
@@ -319,11 +344,12 @@ public class MapActivity extends FragmentActivity {
         System.out.println("back pressed");
     }
 
-    protected void showBottom () {
+    protected void showBottom (boolean showSheet) {
         navigationButton.setVisibility(View.VISIBLE);
         locationButton.setVisibility(View.INVISIBLE);
         floatingMenu.setVisibility(View.INVISIBLE);
-        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        if (showSheet)
+            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     protected void hideBottom() {

@@ -85,7 +85,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
             }
 
             if (location != null) {
-                act.moveMap(act.mMap, act.fromLatLng(location.getLatitude(), location.getLongitude(), 10));
+                act.moveMap(act.mMap, act.fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
             }
         }
         if (v == act.cafeButton) {
@@ -97,7 +97,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        act.showBottom();
+        act.showBottom(true);
         Place p = markersToPlace.get(marker);
         act.name.setText(p.name);
         act.category_name.setText(p.getClass().getName());

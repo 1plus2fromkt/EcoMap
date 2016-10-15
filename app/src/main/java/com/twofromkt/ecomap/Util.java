@@ -2,6 +2,7 @@ package com.twofromkt.ecomap;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.wallet.Cart;
 import com.twofromkt.ecomap.data_struct.Pair;
 import com.twofromkt.ecomap.db.Place;
 
@@ -15,9 +16,10 @@ import java.util.HashMap;
 
 public class Util {
     static HashMap<Marker, Place> markersToPlace = new HashMap<>();
+    public static final double R = 6371e3;
     static ArrayList<Marker> currMarkers = new ArrayList<>();
     public static double distanceLatLng(LatLng x, LatLng y) {
-        double R = 6371e3;
+
         double fi1 = x.latitude;
         double fi2 = y.latitude;
         double dfi = Math.toRadians(fi1 - fi2);
@@ -51,5 +53,50 @@ public class Util {
 
     public static Pair<Double, Double> fromLatLng(LatLng x) {
         return new Pair<>(x.latitude, x.longitude);
+    }
+
+    public static class Cartesian {
+        public double x, y, z;
+        public Cartesian(double lat, double lng) {
+            x = R * Math.cos(lat) * Math.cos(lng);
+            y = R * Math.cos(lat) * Math.sin(lng);
+            z = R * Math.sin(lat);
+        }
+        public Cartesian(double x, double y, double z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+        public Cartesian()
+        {}
+        public LatLng toLatLng() {
+            double lat = Math.asin(z / R);
+            double lng = Math.atan2(y, x);
+            return new LatLng(lat, lng);
+        }
+        public void add(Cartesian x) {
+            this.x += x.x;
+            this.y += x.y;
+            this.z += x.z;
+        }
+        public void mul(double a) {
+            this.x *= a;
+            this.y *= a;
+            this.z *= a;
+        }
+    }
+
+    public static Pair<LatLng, Double> center(ArrayList<LatLng> locations){
+        Cartesian sum = new Cartesian(), c;
+        for (LatLng l : locations) {
+            sum.add(new Cartesian(l.latitude, l.longitude));
+        }
+        sum.mul(1 / (double)(locations.size()));
+        LatLng center = sum.toLatLng();
+        double maxs = 0;
+        for (LatLng l : locations) {
+            maxs = Math.max(maxs, distanceLatLng(l, center));
+        }
+        return new Pair<>(center, maxs);
     }
 }
