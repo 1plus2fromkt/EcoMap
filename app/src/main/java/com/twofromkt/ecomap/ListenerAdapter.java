@@ -21,7 +21,7 @@ import com.twofromkt.ecomap.db.Place;
 import java.util.ArrayList;
 
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
-import static com.twofromkt.ecomap.Util.markersToPlace;
+import static com.twofromkt.ecomap.Util.*;
 
 public class ListenerAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
@@ -68,12 +68,10 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public void onClick(View v) {
-        Location location = act.locationManager.getLastKnownLocation(act.locationManager
-                .getBestProvider(act.criteria, false));
+        Location location = getLocation(act.locationManager, act.criteria);
         if (v == act.trashButton || v == act.cafeButton)
             act.closeFloatingMenu();
         if (v == act.trashButton) {
-
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
             act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
@@ -85,7 +83,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
             }
 
             if (location != null) {
-                act.moveMap(act.mMap, act.fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
+                act.moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
             }
         }
         if (v == act.cafeButton) {

@@ -23,11 +23,13 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.data_struct.Pair;
@@ -40,16 +42,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static android.R.attr.padding;
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 import static com.twofromkt.ecomap.db.GetPlaces.*;
 import static com.twofromkt.ecomap.Util.*;
-import static com.twofromkt.ecomap.db.TrashBox.Category.AND;
-import static com.twofromkt.ecomap.db.TrashBox.Category.GLASS;
+import static com.twofromkt.ecomap.db.TrashBox.Category.*;
 
 public class MapActivity extends FragmentActivity {
 
-    public static class MyEditText extends EditText{
+    public static class MyEditText extends EditText {
 
         public MyEditText(Context context) {
             super(context);
@@ -171,10 +173,11 @@ public class MapActivity extends FragmentActivity {
 
     }
 
-    protected void addMarker(Place x) {
+    protected Marker addMarker(Place x) {
         Marker m = mMap.addMarker(new MarkerOptions().position(fromPair(x.location)).title(x.name));
-        currMarkers.add(m);
+        activeMarkers.add(m);
         markersToPlace.put(m, x);
+        return m;
     }
 
     protected void addLocationSearch(GoogleMap map) {
@@ -186,43 +189,27 @@ public class MapActivity extends FragmentActivity {
     }
 
     protected void clearMarkers() {
-        for (Marker m : currMarkers)
+        for (Marker m : activeMarkers)
             m.remove();
-        currMarkers = new ArrayList<>();
+        activeMarkers = new ArrayList<>();
         markersToPlace = new HashMap<>();
     }
 
-    protected  <T extends Place> void addMarkers(ArrayList<T> p) {
+    protected <T extends Place> void addMarkers(ArrayList<T> p) {
         ArrayList<LatLng> pos = new ArrayList<>();
+        Location location = getLocation(locationManager, criteria);
+        pos.add(new LatLng(location.getLatitude(), location.getLongitude()));
         for (Place place : p) {
             addMarker(place);
             pos.add(fromPair(place.location));
         }
-        Pair<LatLng, Double> cent = center(pos);
-//        moveMap(mMap, fromLatLngZoom(cent.val1, calculateZoomLevel(mMap.)));
-    }
-
-    protected CameraPosition fromLatLngZoom(double a, double b, float z) {
-        return CameraPosition.fromLatLngZoom(new LatLng(a, b), z);
-    }
-    protected CameraPosition fromLatLngZoom(LatLng x, float z) {
-        return fromLatLngZoom(x.latitude, x.longitude, z);
+        LatLngBounds bounds = includeAll(pos);
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+        mMap.animateCamera(cu);
     }
 
     protected void moveMap(GoogleMap map, CameraPosition pos) {
         map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
-    }
-
-    private int calculateZoomLevel(int screenWidth, int radii) {
-        double equatorLength = 40075004; // in meters
-        double widthInPixels = screenWidth;
-        double metersPerPixel = equatorLength / 256;
-        int zoomLevel = 1;
-        while ((metersPerPixel * widthInPixels) > 2000) {
-            metersPerPixel /= 2;
-            ++zoomLevel;
-        }
-        return zoomLevel;
     }
 
     public void onSaveInstanceState(Bundle state) {
@@ -277,8 +264,8 @@ public class MapActivity extends FragmentActivity {
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomInfo.setState((int) savedInstanceState.get(BOTTOM_STATE));
             if (isBottomOpened()) {
-                name.setText((String)savedInstanceState.get(NAME));
-                category_name.setText((String)savedInstanceState.get(CATEGORY_NAME));
+                name.setText((String) savedInstanceState.get(NAME));
+                category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));
                 showBottom(false);
             }
         }
@@ -335,7 +322,7 @@ public class MapActivity extends FragmentActivity {
             hideBottom();
         } else if (floatingMenu.isOpened()) {
             closeFloatingMenu();
-        } else if (currMarkers.size() > 0) {
+        } else if (activeMarkers.size() > 0) {
             clearMarkers();
         } else {
             super.onBackPressed();
@@ -343,7 +330,7 @@ public class MapActivity extends FragmentActivity {
         System.out.println("back pressed");
     }
 
-    protected void showBottom (boolean showSheet) {
+    protected void showBottom(boolean showSheet) {
         navigationButton.setVisibility(View.VISIBLE);
         locationButton.setVisibility(View.INVISIBLE);
         floatingMenu.setVisibility(View.INVISIBLE);
