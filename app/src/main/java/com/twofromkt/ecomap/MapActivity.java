@@ -63,7 +63,6 @@ public class MapActivity extends FragmentActivity {
             super(context, attrs, defStyleAttr);
         }
 
-
         @Override
         public boolean onKeyPreIme(int keyCode, KeyEvent event) {
             if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
@@ -200,7 +199,7 @@ public class MapActivity extends FragmentActivity {
             pos.add(fromPair(place.location));
         }
         Pair<LatLng, Double> cent = center(pos);
-        moveMap(mMap, fromLatLngZoom(cent.val1, calculateZoomLevel(mMap.)));
+//        moveMap(mMap, fromLatLngZoom(cent.val1, calculateZoomLevel(mMap.)));
     }
 
     protected CameraPosition fromLatLngZoom(double a, double b, float z) {

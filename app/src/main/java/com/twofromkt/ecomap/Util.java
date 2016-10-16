@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class Util {
     static HashMap<Marker, Place> markersToPlace = new HashMap<>();
-    public static final double R = 6371e3;
+    public static final double RADIUS = 6371e3;
     static ArrayList<Marker> currMarkers = new ArrayList<>();
     public static double distanceLatLng(LatLng x, LatLng y) {
 
@@ -27,7 +27,7 @@ public class Util {
         double a = Math.abs(Math.pow(Math.sin(dfi / 2), 2) +
                 Math.cos(fi1) * Math.cos(fi2) * Math.sin(lambda / 2));
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return RADIUS * c;
     }
 
     public static class Period {
@@ -58,9 +58,9 @@ public class Util {
     public static class Cartesian {
         public double x, y, z;
         public Cartesian(double lat, double lng) {
-            x = R * Math.cos(lat) * Math.cos(lng);
-            y = R * Math.cos(lat) * Math.sin(lng);
-            z = R * Math.sin(lat);
+            x = RADIUS * Math.cos(lat) * Math.cos(lng);
+            y = RADIUS * Math.cos(lat) * Math.sin(lng);
+            z = RADIUS * Math.sin(lat);
         }
         public Cartesian(double x, double y, double z) {
             this.x = x;
@@ -70,7 +70,7 @@ public class Util {
         public Cartesian()
         {}
         public LatLng toLatLng() {
-            double lat = Math.asin(z / R);
+            double lat = Math.asin(z / RADIUS);
             double lng = Math.atan2(y, x);
             return new LatLng(lat, lng);
         }
