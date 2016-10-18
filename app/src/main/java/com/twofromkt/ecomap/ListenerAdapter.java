@@ -3,9 +3,12 @@ package com.twofromkt.ecomap;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +16,8 @@ import android.view.View;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
 
@@ -25,7 +28,8 @@ import static com.twofromkt.ecomap.Util.*;
 
 public class ListenerAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
-        DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener {
+        DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
+        LoaderManager.LoaderCallbacks<ArrayList<? extends Place> > {
 
     private MapActivity act;
 
@@ -75,7 +79,6 @@ public class ListenerAdapter implements OnMapReadyCallback,
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
             act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
-            act.clearMarkers();
         }
         if (v == act.locationButton) {
             if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,9 +91,35 @@ public class ListenerAdapter implements OnMapReadyCallback,
         }
         if (v == act.cafeButton) {
             act.clearMarkers();
-            ArrayList<Cafe> p = GetPlaces.getCafes(act.mMap.getCameraPosition().target, 1e12, act.getApplicationContext());
-            act.addMarkers(p);
+            searchNearCafe();
         }
+    }
+
+    private Bundle createBundle() {
+        LatLng curr = act.mMap.getCameraPosition().target;
+        Bundle bundle = new Bundle();
+        bundle.putDouble(MapActivity.LAT, curr.latitude);
+        bundle.putDouble(MapActivity.LNG, curr.longitude);
+        bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
+        bundle.putFloat(GetPlaces.RADIUS, (float)1e15);
+        return bundle;
+    }
+
+    void searchNearCafe() {
+        Bundle b = createBundle();
+        b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
+        act.nearCafeLoader = act.getSupportLoaderManager().restartLoader(
+                MapActivity.NEAR_CAFE_LOADER, b, this);
+        act.nearCafeLoader.onContentChanged();
+    }
+
+    void searchNearTrashes() {
+        Bundle bundle = createBundle();
+        bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
+        bundle.putBooleanArray(GetPlaces.CHOSEN, act.chosen);
+        act.nearTrashLoader = act.getSupportLoaderManager().restartLoader(
+                MapActivity.NEAR_TRASH_LOADER, bundle, this);
+        act.nearTrashLoader.onContentChanged();
     }
 
     @Override
@@ -117,5 +146,20 @@ public class ListenerAdapter implements OnMapReadyCallback,
         }
         act.addLocationSearch(act.mMap);
 //        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    @Override
+    public Loader<ArrayList<? extends Place>> onCreateLoader(int id, Bundle args) {
+        return new GetPlaces(act.getApplicationContext(), args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
+        act.addMarkers(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<? extends Place>> loader) {
+
     }
 }

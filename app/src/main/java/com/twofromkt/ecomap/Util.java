@@ -57,6 +57,10 @@ public class Util {
     public static LatLng fromPair(Pair<Double, Double> x) {
         return new LatLng(x.val1, x.val2);
     }
+    public static LatLng fromPair(double lat, double lng) {
+        return new LatLng(lat, lng);
+    }
+
 
     public static Pair<Double, Double> fromLatLng(LatLng x) {
         return new Pair<>(x.latitude, x.longitude);

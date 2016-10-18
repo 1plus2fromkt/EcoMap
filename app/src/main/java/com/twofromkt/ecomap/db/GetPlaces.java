@@ -1,6 +1,8 @@
 package com.twofromkt.ecomap.db;
 
+import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
+import android.os.Bundle;
 
 import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.model.LatLng;
@@ -12,17 +14,39 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import static com.twofromkt.ecomap.Util.*;
 
-public class GetPlaces {
+public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
     private static final String[] FILE_NAMES = new String[]{"cafes", "trashes"};
-    public static final int CAFE = 0, TRASH = 1;
+    public static final int CAFE = 0, TRASH = 1, NEAR = 0, ALL = 1;
+    public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
+                                LAT = "LAT", LNG = "LNG", MODE = "MODE";
+
+    private int which, mode;
+    private boolean[] chosen;
+    private double lat, lng;
+    private float radius;
+
+    public GetPlaces(Context context, Bundle args) {
+        super(context);
+        if (args != null) {
+            which = args.getInt(WHICH_PLACE);
+            mode = args.getInt(MODE);
+            if (which == TRASH) { //and maybe && NEAR
+                chosen = args.getBooleanArray(CHOSEN);
+            }
+            if (mode == NEAR) {
+                lat = args.getDouble(LAT);
+                lng = args.getDouble(LNG);
+                radius = args.getFloat(RADIUS);
+            }
+        }
+    }
+
     public static void putObject(Place p, int category, Context cont) {
         try {
             File f = new File(cont.getFilesDir(), FILE_NAMES[category]);
@@ -37,13 +61,14 @@ public class GetPlaces {
             outO.flush();
             outO.close();
             out.close();
-        } catch (IOException e) { //TODO: do something good
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private static <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr, int category, Context context) {
         ArrayList<T> ans = new ArrayList<>();
+
         try {
             File f = new File(context.getFilesDir(), FILE_NAMES[category]);
             FileInputStream in = new FileInputStream(f);
@@ -74,7 +99,7 @@ public class GetPlaces {
         }, CAFE, context);
     }
 
-    public static ArrayList<TrashBox> getTrashes(final LatLng x, final double radii,
+    public static ArrayList<TrashBox> getTrashes(final LatLng x, final double radius,
                                                  boolean[] arr, Context context) {
         Set<TrashBox.Category> s = new HashSet<>();
         for (int i = 0; i < arr.length; i++)
@@ -85,11 +110,32 @@ public class GetPlaces {
             @Override
             public boolean apply(TrashBox o) {
                 finalS.retainAll(o.category);
-                return distanceLatLng(x, fromPair(o.location)) < radii && finalS.size() > 0;
+                return distanceLatLng(x, fromPair(o.location)) < radius && finalS.size() > 0;
             }
         }, TRASH, context);
     }
 
+    @Override
+    public void onStartLoading() {
+        super.onStartLoading();
+        forceLoad();
+    }
 
 
+    @Override
+    public ArrayList<? extends Place> loadInBackground() {
+        switch (which) {
+            case TRASH:
+                switch (mode) {
+                    case NEAR:
+                        return getTrashes(fromPair(lat, lng), radius, chosen, getContext());
+                }
+            case CAFE:
+                switch (mode) {
+                    case NEAR:
+                        return getCafes(fromPair(lat, lng), radius, getContext());
+                }
+        }
+        return null;
+    }
 }

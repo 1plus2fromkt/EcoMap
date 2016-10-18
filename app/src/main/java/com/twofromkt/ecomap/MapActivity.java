@@ -13,6 +13,8 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -49,30 +51,7 @@ import static com.twofromkt.ecomap.db.GetPlaces.*;
 import static com.twofromkt.ecomap.Util.*;
 import static com.twofromkt.ecomap.db.TrashBox.Category.*;
 
-public class MapActivity extends FragmentActivity {
-
-    public static class MyEditText extends EditText {
-
-        public MyEditText(Context context) {
-            super(context);
-        }
-
-        public MyEditText(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        public MyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-        }
-
-        @Override
-        public boolean onKeyPreIme(int keyCode, KeyEvent event) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                System.out.println("HUI");
-            }
-            return super.dispatchKeyEvent(event);
-        }
-    }
+public class MapActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<ArrayList <? extends Place> >{
 
     GoogleMap mMap;
     BottomSheetBehavior bottomInfo;
@@ -88,13 +67,16 @@ public class MapActivity extends FragmentActivity {
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
+    Loader<ArrayList<? extends Place>> nearTrashLoader;
+    Loader<ArrayList<? extends Place>> nearCafeLoader;
 
     ListenerAdapter adapter;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
             NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME", BOTTOM_STATE = "BOTTOM_STATE";
-    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111;
+    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, NEAR_TRASH_LOADER = 42,
+            NEAR_CAFE_LOADER = 158;
 
     @Override
     protected void onStart() {
@@ -289,13 +271,9 @@ public class MapActivity extends FragmentActivity {
         switch (requestCode) {
             case (CHOOSE_TRASH_ACTIVITY): {
                 if (resultCode == Activity.RESULT_OK) {
-                    chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
-                    Location location = locationManager.getLastKnownLocation(locationManager
-                            .getBestProvider(criteria, false));
-                    ArrayList<TrashBox> t = getTrashes(new LatLng(location.getLatitude(),
-                            location.getLongitude()), 1e12, chosen, getApplicationContext());
                     clearMarkers();
-                    addMarkers(t);
+                    chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
+                    adapter.searchNearTrashes();
                 }
                 break;
             }
@@ -344,4 +322,20 @@ public class MapActivity extends FragmentActivity {
         floatingMenu.setVisibility(View.VISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
+
+    @Override
+    public Loader<ArrayList<? extends Place>> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<? extends Place>> loader) {
+
+    }
+
 }
