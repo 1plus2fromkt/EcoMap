@@ -107,19 +107,21 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     void searchNearCafe() {
         Bundle b = createBundle();
+        Loader<ArrayList<? extends Place> > l;
         b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
-        act.nearCafeLoader = act.getSupportLoaderManager().restartLoader(
-                MapActivity.NEAR_CAFE_LOADER, b, this);
-        act.nearCafeLoader.onContentChanged();
+        l = act.getSupportLoaderManager().restartLoader(
+                MapActivity.LOADER, b, this);
+        l.onContentChanged();
     }
 
     void searchNearTrashes() {
         Bundle bundle = createBundle();
+        Loader<ArrayList<? extends Place> > l;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, act.chosen);
-        act.nearTrashLoader = act.getSupportLoaderManager().restartLoader(
-                MapActivity.NEAR_TRASH_LOADER, bundle, this);
-        act.nearTrashLoader.onContentChanged();
+        l = act.getSupportLoaderManager().restartLoader(
+                MapActivity.LOADER, bundle, this);
+        l.onContentChanged();
     }
 
     @Override

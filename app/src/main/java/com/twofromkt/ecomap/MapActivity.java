@@ -51,7 +51,7 @@ import static com.twofromkt.ecomap.db.GetPlaces.*;
 import static com.twofromkt.ecomap.Util.*;
 import static com.twofromkt.ecomap.db.TrashBox.Category.*;
 
-public class MapActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<ArrayList <? extends Place> >{
+public class MapActivity extends FragmentActivity{
 
     GoogleMap mMap;
     BottomSheetBehavior bottomInfo;
@@ -67,17 +67,13 @@ public class MapActivity extends FragmentActivity implements LoaderManager.Loade
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
-    Loader<ArrayList<? extends Place>> nearTrashLoader;
-    Loader<ArrayList<? extends Place>> nearCafeLoader;
 
     ListenerAdapter adapter;
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
             NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME", BOTTOM_STATE = "BOTTOM_STATE";
-    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, NEAR_TRASH_LOADER = 42,
-            NEAR_CAFE_LOADER = 158;
-
+    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42;
     @Override
     protected void onStart() {
         super.onStart();
@@ -322,20 +318,4 @@ public class MapActivity extends FragmentActivity implements LoaderManager.Loade
         floatingMenu.setVisibility(View.VISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
-
-    @Override
-    public Loader<ArrayList<? extends Place>> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<ArrayList<? extends Place>> loader) {
-
-    }
-
 }
