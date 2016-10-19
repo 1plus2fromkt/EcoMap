@@ -79,6 +79,8 @@ public class ListenerAdapter implements OnMapReadyCallback,
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
             act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
+            // TODO: show not list but categories
+            act.showBottomList();
         }
         if (v == act.locationButton) {
             if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -126,7 +128,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        act.showBottom(true);
+        act.showBottomInfo(true);
         Place p = markersToPlace.get(marker);
         act.name.setText(p.name);
         act.category_name.setText(p.getClass().getName());

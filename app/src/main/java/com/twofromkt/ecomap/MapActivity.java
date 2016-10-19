@@ -13,11 +13,9 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
-import android.util.AttributeSet;
-import android.view.KeyEvent;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -34,7 +32,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.twofromkt.ecomap.data_struct.Pair;
 import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
@@ -44,18 +41,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static android.R.attr.padding;
 import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
-import static com.twofromkt.ecomap.db.GetPlaces.*;
 import static com.twofromkt.ecomap.Util.*;
 import static com.twofromkt.ecomap.db.TrashBox.Category.*;
 
 public class MapActivity extends FragmentActivity{
 
     GoogleMap mMap;
-    BottomSheetBehavior bottomInfo;
-    View bottomInfoView;
+    BottomSheetBehavior bottomInfo, bottomList;
+    View bottomInfoView, bottomListView;
     FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
     CameraPosition startPos;
     TextView name, category_name;
@@ -64,11 +59,13 @@ public class MapActivity extends FragmentActivity{
     EditText searchField;
     boolean[] chosen;
     NavigationView nv;
+    ListAdapter searchAdapter;
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
-
     ListenerAdapter adapter;
+    RecyclerView searchList;
+
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
@@ -111,7 +108,14 @@ public class MapActivity extends FragmentActivity{
         nv = (NavigationView) findViewById(R.id.nav_view);
         navigationButton = (FloatingActionButton) findViewById(R.id.nav_button);
         bottomInfoView = findViewById(R.id.bottom_sheet);
+        bottomListView = findViewById(R.id.bottom_list);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
+        bottomList = BottomSheetBehavior.from(bottomListView);
+        searchList = (RecyclerView)findViewById(R.id.search_list);
+        searchList.setLayoutManager(new LinearLayoutManager(this));
+        // TODO: decorator
+//        searchAdapter = new ListAdapter();
+        searchList.setAdapter(searchAdapter);
     }
 
     private void setListeners() {
@@ -124,7 +128,7 @@ public class MapActivity extends FragmentActivity{
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                    hideBottom();
+                    hideBottomInfo();
             }
 
             @Override
@@ -132,7 +136,8 @@ public class MapActivity extends FragmentActivity{
 
             }
         });
-        hideBottom();
+        hideBottomInfo();
+        hideBottomList();
     }
 
     void putObjects() {
@@ -230,7 +235,6 @@ public class MapActivity extends FragmentActivity{
             }
             if (savedInstanceState.getBoolean(IS_EDIT_FOCUSED)) {
                 searchField.requestFocus();
-//                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             } else {
                 drawerLayout.requestFocus();
                 closeKeyboard();
@@ -244,7 +248,7 @@ public class MapActivity extends FragmentActivity{
             if (isBottomOpened()) {
                 name.setText((String) savedInstanceState.get(NAME));
                 category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));
-                showBottom(false);
+                showBottomInfo(false);
             }
         }
     }
@@ -293,7 +297,7 @@ public class MapActivity extends FragmentActivity{
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            hideBottom();
+            hideBottomInfo();
         } else if (floatingMenu.isOpened()) {
             closeFloatingMenu();
         } else if (activeMarkers.size() > 0) {
@@ -304,7 +308,7 @@ public class MapActivity extends FragmentActivity{
         System.out.println("back pressed");
     }
 
-    protected void showBottom(boolean showSheet) {
+    protected void showBottomInfo(boolean showSheet) {
         navigationButton.setVisibility(View.VISIBLE);
         locationButton.setVisibility(View.INVISIBLE);
         floatingMenu.setVisibility(View.INVISIBLE);
@@ -312,10 +316,19 @@ public class MapActivity extends FragmentActivity{
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    protected void hideBottom() {
+    protected void showBottomList() {
+        locationButton.setVisibility(View.INVISIBLE);
+        bottomList.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    protected void hideBottomInfo() {
         navigationButton.setVisibility(View.INVISIBLE);
         locationButton.setVisibility(View.VISIBLE);
         floatingMenu.setVisibility(View.VISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+    protected void hideBottomList() {
+        locationButton.setVisibility(View.VISIBLE);
+        bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }
