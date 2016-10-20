@@ -79,7 +79,6 @@ public class ListenerAdapter implements OnMapReadyCallback,
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
             act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
-            // TODO: show not list but categories
             act.showBottomList();
         }
         if (v == act.locationButton) {
@@ -114,6 +113,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, b, this);
         l.onContentChanged();
+        act.showBottomList();
     }
 
     void searchNearTrashes() {
@@ -149,7 +149,6 @@ public class ListenerAdapter implements OnMapReadyCallback,
             return;
         }
         act.addLocationSearch(act.mMap);
-//        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Override
@@ -159,6 +158,9 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
+        searchResults.clear();
+        searchResults.addAll(data);
+        act.searchAdapter.notifyItemRangeInserted(0, data.size() - 1); //onDataSetChanged not working
         act.addMarkers(data);
     }
 

@@ -24,6 +24,7 @@ public class Util {
     static HashMap<Marker, Place> markersToPlace = new HashMap<>();
     public static final double RADIUS = 6371e3;
     static ArrayList<Marker> activeMarkers = new ArrayList<>();
+    static ArrayList<Place> searchResults = new ArrayList<>(); // We definitely shouldn't do this
 
     public static double distanceLatLng(LatLng x, LatLng y) {
 

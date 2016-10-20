@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -113,10 +115,13 @@ public class MapActivity extends FragmentActivity{
         bottomList = BottomSheetBehavior.from(bottomListView);
         searchList = (RecyclerView)findViewById(R.id.search_list);
         searchList.setLayoutManager(new LinearLayoutManager(this));
-        // TODO: decorator
-//        searchAdapter = new ListAdapter();
+        searchList.addItemDecoration(new DividerItemDecorator(this));
+        searchResults.add(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
+                null, "", "656-68-52", "", "www.vk.com"));
+        searchAdapter = new ListAdapter(getApplicationContext(), searchResults);
         searchList.setAdapter(searchAdapter);
     }
+
 
     private void setListeners() {
         trashButton.setOnClickListener(adapter);
@@ -318,7 +323,7 @@ public class MapActivity extends FragmentActivity{
 
     protected void showBottomList() {
         locationButton.setVisibility(View.INVISIBLE);
-        bottomList.setState(BottomSheetBehavior.STATE_EXPANDED);
+        bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     protected void hideBottomInfo() {

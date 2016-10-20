@@ -147,12 +147,13 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
                     android:layout_margin="10dp"
-                    android:text="show_list (should be replaced)"
+                    android:text="show_list"
                     android:textSize="12sp"/>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/search_list"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_below="@id/bottom_label"
+                    android:layout_height="wrap_content">
                 </android.support.v7.widget.RecyclerView>
 
             </RelativeLayout>
