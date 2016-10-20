@@ -158,9 +158,11 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
-        searchResults.clear();
-        searchResults.addAll(data);
-        act.searchAdapter.notifyItemRangeInserted(0, data.size() - 1); //onDataSetChanged not working
+//        searchResults.clear();
+//        searchResults.addAll(data);
+//        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
+        act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data)); // might be shit.
+        act.searchList.invalidate();
         act.addMarkers(data);
     }
 
