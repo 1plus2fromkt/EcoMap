@@ -8,10 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 
-/**
- * Created by alexey.nikitin on 27.09.16.
- */
-
 public final class DividerItemDecorator extends RecyclerView.ItemDecoration {
     private final float dividerHeight;
     private final Paint p;

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.location.Address;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,10 +19,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -48,7 +53,7 @@ import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
 import static com.twofromkt.ecomap.Util.*;
 import static com.twofromkt.ecomap.db.TrashBox.Category.*;
 
-public class MapActivity extends FragmentActivity{
+public class MapActivity extends FragmentActivity {
 
     GoogleMap mMap;
     BottomSheetBehavior bottomInfo, bottomList;
@@ -67,12 +72,18 @@ public class MapActivity extends FragmentActivity{
     DrawerLayout drawerLayout;
     ListenerAdapter adapter;
     RecyclerView searchList;
+    Button menuButton;
+
+    TextView.OnEditorActionListener exampleListener;
+
+    final MapActivity thisActivity = this;
 
 
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
             NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME", BOTTOM_STATE = "BOTTOM_STATE";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -92,6 +103,23 @@ public class MapActivity extends FragmentActivity{
             mapFragment.setRetainInstance(true);
         }
         mapFragment.getMapAsync(adapter);
+
+        exampleListener = new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Address address = findNearestAddress(searchField.getText().toString(), thisActivity);
+                    addMarker(new TrashBox(
+                            "found place",
+                            new LatLng(address.getLatitude(), address.getLongitude()),
+                            "info", null, "sosi", new HashSet<TrashBox.Category>()));
+                    closeKeyboard();
+                }
+                return true;
+            }
+        };
+        searchField.setOnEditorActionListener(exampleListener);
+
     }
 
     private void initFields() {
@@ -113,15 +141,16 @@ public class MapActivity extends FragmentActivity{
         bottomListView = findViewById(R.id.bottom_list);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
         bottomList = BottomSheetBehavior.from(bottomListView);
-        searchList = (RecyclerView)findViewById(R.id.search_list);
+        searchList = (RecyclerView) findViewById(R.id.search_list);
         searchList.setLayoutManager(new LinearLayoutManager(this));
         searchList.addItemDecoration(new DividerItemDecorator(this));
         searchResults.add(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
                 null, "", "656-68-52", "", "www.vk.com"));
         searchAdapter = new ListAdapter(getApplicationContext(), searchResults);
         searchList.setAdapter(searchAdapter);
+        menuButton = (Button) findViewById(R.id.menu_button);
+        menuButton.setOnClickListener(adapter);
     }
-
 
     private void setListeners() {
         trashButton.setOnClickListener(adapter);
@@ -332,6 +361,7 @@ public class MapActivity extends FragmentActivity{
         floatingMenu.setVisibility(View.VISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
+
     protected void hideBottomList() {
         locationButton.setVisibility(View.VISIBLE);
         bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);

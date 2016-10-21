@@ -1,6 +1,9 @@
 package com.twofromkt.ecomap;
 
+import android.app.Activity;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 
@@ -19,6 +22,7 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Util {
     static HashMap<Marker, Place> markersToPlace = new HashMap<>();
@@ -58,6 +62,7 @@ public class Util {
     public static LatLng fromPair(Pair<Double, Double> x) {
         return new LatLng(x.val1, x.val2);
     }
+
     public static LatLng fromPair(double lat, double lng) {
         return new LatLng(lat, lng);
     }
@@ -153,5 +158,28 @@ public class Util {
 
     public static Location getLocation(LocationManager manager, Criteria criteria) {
         return manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
+    }
+
+    public static Address findNearestAddress(String request, MapActivity act) {
+        Geocoder gc = new Geocoder(act);
+        List<Address> addresses;
+        try {
+            addresses = gc.getFromLocationName(request, 20);
+        } catch (Exception e) {
+            return null;
+        }
+        Address result = addresses.get(0);
+        Location myLocation = getLocation(act.locationManager, act.criteria);
+        LatLng myCoords = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        double currDist = distanceLatLng(
+                new LatLng(result.getLatitude(), result.getLongitude()),
+                myCoords);
+        for (Address a : addresses) {
+            if (distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords) < currDist) {
+                currDist = distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords);
+                result = a;
+            }
+        }
+        return result;
     }
 }

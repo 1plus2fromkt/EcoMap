@@ -73,8 +73,9 @@ public class ListenerAdapter implements OnMapReadyCallback,
     @Override
     public void onClick(View v) {
         Location location = getLocation(act.locationManager, act.criteria);
-        if (v == act.trashButton || v == act.cafeButton)
+        if (v == act.trashButton || v == act.cafeButton) {
             act.closeFloatingMenu();
+        }
         if (v == act.trashButton) {
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
@@ -93,6 +94,9 @@ public class ListenerAdapter implements OnMapReadyCallback,
         if (v == act.cafeButton) {
             act.clearMarkers();
             searchNearCafe();
+        }
+        if (v == act.menuButton) {
+            act.drawerLayout.openDrawer(act.nv);
         }
     }
 
