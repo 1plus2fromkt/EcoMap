@@ -1,57 +1,57 @@
-package com.twofromkt.ecomap;
+package com.twofromkt.ecomap.activities;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Paint;
 import android.location.Address;
 import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.twofromkt.ecomap.DividerItemDecorator;
+import com.twofromkt.ecomap.Mock;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Cafe;
-import com.twofromkt.ecomap.db.GetPlaces;
-import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
-import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
-import static com.twofromkt.ecomap.CategoriesActivity.TRASH_N;
-import static com.twofromkt.ecomap.Util.*;
-import static com.twofromkt.ecomap.db.TrashBox.Category.*;
+import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
+import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarker;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.closeFloatingMenu;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomInfo;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomList;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.isBottomOpened;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
+import static com.twofromkt.ecomap.util.LocationUtil.findNearestAddress;
+import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
+import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
+import static com.twofromkt.ecomap.util.Util.activeMarkers;
+import static com.twofromkt.ecomap.util.Util.searchResults;
 
 public class MapActivity extends FragmentActivity {
 
@@ -70,24 +70,22 @@ public class MapActivity extends FragmentActivity {
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
-    ListenerAdapter adapter;
+    MapActivityAdapter adapter;
     RecyclerView searchList;
     Button menuButton;
 
-    TextView.OnEditorActionListener exampleListener;
-
     final MapActivity thisActivity = this;
 
-
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
-            SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED", IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED",
-            NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME", BOTTOM_STATE = "BOTTOM_STATE";
+            SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED",
+            IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED", NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME",
+            BOTTOM_STATE = "BOTTOM_STATE";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42;
 
     @Override
     protected void onStart() {
         super.onStart();
-        putObjects();
+        Mock.putObjects(this);
     }
 
     @Override
@@ -103,27 +101,10 @@ public class MapActivity extends FragmentActivity {
             mapFragment.setRetainInstance(true);
         }
         mapFragment.getMapAsync(adapter);
-
-        exampleListener = new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Address address = findNearestAddress(searchField.getText().toString(), thisActivity);
-                    addMarker(new TrashBox(
-                            "found place",
-                            new LatLng(address.getLatitude(), address.getLongitude()),
-                            "info", null, "sosi", new HashSet<TrashBox.Category>()));
-                    closeKeyboard();
-                }
-                return true;
-            }
-        };
-        searchField.setOnEditorActionListener(exampleListener);
-
     }
 
     private void initFields() {
-        adapter = new ListenerAdapter(this);
+        adapter = new MapActivityAdapter(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
@@ -162,7 +143,7 @@ public class MapActivity extends FragmentActivity {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN)
-                    hideBottomInfo();
+                    hideBottomInfo(thisActivity);
             }
 
             @Override
@@ -170,65 +151,26 @@ public class MapActivity extends FragmentActivity {
 
             }
         });
-        hideBottomInfo();
-        hideBottomList();
+        searchField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Address address = findNearestAddress(searchField.getText().toString(),
+                            thisActivity, getLocation(locationManager, criteria));
+                    addMarker(mMap, new TrashBox(
+                            "found place",
+                            new LatLng(address.getLatitude(), address.getLongitude()),
+                            "info", null, "sosi", new HashSet<TrashBox.Category>()));
+                    closeKeyboard(thisActivity);
+                }
+                return true;
+            }
+        });
+        hideBottomInfo(this);
+        hideBottomList(this);
     }
 
-    void putObjects() {
-        GetPlaces.putObject(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
-                null, "", "656-68-52", "", "www.vk.com"), 0, getApplicationContext());
-        GetPlaces.putObject(new Cafe("Кафе 2", new LatLng(60.143175, 30.509615), "Мое второе кафе",
-                null, "", "656-68-53", "", "www.vk.ru"), 0, getApplicationContext());
-        HashSet<TrashBox.Category> h = new HashSet<>();
-        h.add(GLASS);
-        h.add(AND);
-        GetPlaces.putObject(new TrashBox("Урна 1", new LatLng(60.193175, 30.359615), "Моя первая урна",
-                null, "", h), 1, getApplicationContext());
-        h.remove(AND);
-        GetPlaces.putObject(new TrashBox("Урна 2", new LatLng(60.163175, 30.359615), "Моя вторая урна",
-                null, "", h), 1, getApplicationContext());
-
-    }
-
-    protected Marker addMarker(Place x) {
-        Marker m = mMap.addMarker(new MarkerOptions().position(fromPair(x.location)).title(x.name));
-        activeMarkers.add(m);
-        markersToPlace.put(m, x);
-        return m;
-    }
-
-    protected void addLocationSearch(GoogleMap map) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        map.setMyLocationEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(false);
-    }
-
-    protected void clearMarkers() {
-        for (Marker m : activeMarkers)
-            m.remove();
-        activeMarkers = new ArrayList<>();
-        markersToPlace = new HashMap<>();
-    }
-
-    protected <T extends Place> void addMarkers(ArrayList<T> p) {
-        ArrayList<LatLng> pos = new ArrayList<>();
-        Location location = getLocation(locationManager, criteria);
-        pos.add(new LatLng(location.getLatitude(), location.getLongitude()));
-        for (Place place : p) {
-            addMarker(place);
-            pos.add(fromPair(place.location));
-        }
-        LatLngBounds bounds = includeAll(pos);
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
-        mMap.animateCamera(cu);
-    }
-
-    protected void moveMap(GoogleMap map, CameraPosition pos) {
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
-    }
-
+    @Override
     public void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putBoolean(MENU_OPENED, floatingMenu.isOpened());
@@ -243,17 +185,14 @@ public class MapActivity extends FragmentActivity {
         state.putBoolean(NAV_BAR_OPENED, drawerLayout.isDrawerOpen(nv));
         state.putBoolean(IS_EDIT_FOCUSED, searchField.isFocused());
         state.putInt(BOTTOM_STATE, bottomInfo.getState());
-        if (isBottomOpened()) {
+        if (isBottomOpened(this)) {
             state.putCharSequence(NAME, name.getText());
             state.putCharSequence(CATEGORY_NAME, category_name.getText());
         }
 
     }
 
-    protected boolean isBottomOpened() {
-        return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
-    }
-
+    @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             try {
@@ -271,7 +210,7 @@ public class MapActivity extends FragmentActivity {
                 searchField.requestFocus();
             } else {
                 drawerLayout.requestFocus();
-                closeKeyboard();
+                closeKeyboard(this);
             }
             if (savedInstanceState.getBoolean(NAV_BAR_OPENED)) {
                 drawerLayout.openDrawer(nv, true);
@@ -279,24 +218,12 @@ public class MapActivity extends FragmentActivity {
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomInfo.setState((int) savedInstanceState.get(BOTTOM_STATE));
-            if (isBottomOpened()) {
+            if (isBottomOpened(this)) {
                 name.setText((String) savedInstanceState.get(NAME));
                 category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));
-                showBottomInfo(false);
+                showBottomInfo(this, false);
             }
         }
-    }
-
-    protected void closeKeyboard() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    protected void closeFloatingMenu() {
-        floatingMenu.close(true);
     }
 
     @Override
@@ -320,7 +247,7 @@ public class MapActivity extends FragmentActivity {
         switch (requestCode) {
             case GPS_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    addLocationSearch(mMap);
+                    addLocationSearch(this, mMap);
         }
     }
 
@@ -331,39 +258,14 @@ public class MapActivity extends FragmentActivity {
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            hideBottomInfo();
+            hideBottomInfo(this);
         } else if (floatingMenu.isOpened()) {
-            closeFloatingMenu();
+            closeFloatingMenu(this);
         } else if (activeMarkers.size() > 0) {
             clearMarkers();
         } else {
             super.onBackPressed();
         }
         System.out.println("back pressed");
-    }
-
-    protected void showBottomInfo(boolean showSheet) {
-        navigationButton.setVisibility(View.VISIBLE);
-        locationButton.setVisibility(View.INVISIBLE);
-        floatingMenu.setVisibility(View.INVISIBLE);
-        if (showSheet)
-            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
-
-    protected void showBottomList() {
-        locationButton.setVisibility(View.INVISIBLE);
-        bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
-
-    protected void hideBottomInfo() {
-        navigationButton.setVisibility(View.INVISIBLE);
-        locationButton.setVisibility(View.VISIBLE);
-        floatingMenu.setVisibility(View.VISIBLE);
-        bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
-    }
-
-    protected void hideBottomList() {
-        locationButton.setVisibility(View.VISIBLE);
-        bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 }

@@ -3,10 +3,9 @@ package com.twofromkt.ecomap.db;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
-import static com.twofromkt.ecomap.Util.*;
+import static com.twofromkt.ecomap.util.Util.*;
 
 public class TrashBox extends Place {
 

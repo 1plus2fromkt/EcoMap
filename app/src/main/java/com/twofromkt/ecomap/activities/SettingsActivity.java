@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap;
+package com.twofromkt.ecomap.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuItem;
+
+import com.twofromkt.ecomap.R;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap;
+package com.twofromkt.ecomap.activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,22 +18,32 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.CategoriesActivity.CHOSEN_KEY;
-import static com.twofromkt.ecomap.Util.*;
+import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarkers;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.closeFloatingMenu;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
+import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
+import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
+import static com.twofromkt.ecomap.util.Util.*;
 
-public class ListenerAdapter implements OnMapReadyCallback,
+public class MapActivityAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
         LoaderManager.LoaderCallbacks<ArrayList<? extends Place> > {
 
     private MapActivity act;
 
-    public ListenerAdapter(MapActivity activity) {
+    public MapActivityAdapter(MapActivity activity) {
         act = activity;
     }
 
@@ -53,7 +63,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public void onDrawerOpened(View drawerView) {
-        act.closeKeyboard();
+        closeKeyboard(act);
         act.nv.requestFocus();
     }
 
@@ -66,7 +76,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
     public void onDrawerStateChanged(int newState) {
         if (newState == DrawerLayout.STATE_DRAGGING && !act.drawerLayout.isDrawerOpen(act.nv)) {
             act.nv.requestFocus();
-            act.closeKeyboard();
+            closeKeyboard(act);
         }
     }
 
@@ -74,13 +84,13 @@ public class ListenerAdapter implements OnMapReadyCallback,
     public void onClick(View v) {
         Location location = getLocation(act.locationManager, act.criteria);
         if (v == act.trashButton || v == act.cafeButton) {
-            act.closeFloatingMenu();
+            closeFloatingMenu(act);
         }
         if (v == act.trashButton) {
             Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
             intent.putExtra(CHOSEN_KEY, act.chosen);
             act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
-            act.showBottomList();
+            showBottomList(act);
         }
         if (v == act.locationButton) {
             if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -88,11 +98,11 @@ public class ListenerAdapter implements OnMapReadyCallback,
             }
 
             if (location != null) {
-                act.moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
+                moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
             }
         }
         if (v == act.cafeButton) {
-            act.clearMarkers();
+            clearMarkers();
             searchNearCafe();
         }
         if (v == act.menuButton) {
@@ -117,7 +127,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, b, this);
         l.onContentChanged();
-        act.showBottomList();
+        showBottomList(act);
     }
 
     void searchNearTrashes() {
@@ -132,7 +142,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        act.showBottomInfo(true);
+        showBottomInfo(act, true);
         Place p = markersToPlace.get(marker);
         act.name.setText(p.name);
         act.category_name.setText(p.getClass().getName());
@@ -144,7 +154,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
         act.mMap = googleMap;
         act.mMap.setOnMarkerClickListener(this);
         if (act.startPos != null) {
-            act.moveMap(act.mMap, act.startPos);
+            moveMap(act.mMap, act.startPos);
         }
         if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(act,
@@ -152,7 +162,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
                     MapActivity.GPS_REQUEST);
             return;
         }
-        act.addLocationSearch(act.mMap);
+        addLocationSearch(act, act.mMap);
     }
 
     @Override
@@ -167,7 +177,7 @@ public class ListenerAdapter implements OnMapReadyCallback,
 //        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
         act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data)); // might be shit.
         act.searchList.invalidate();
-        act.addMarkers(data);
+        addMarkers(data, act.mMap);
     }
 
     @Override

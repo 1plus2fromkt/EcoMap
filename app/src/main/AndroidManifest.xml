@@ -32,7 +32,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapActivity"
+            android:name=".activities.MapActivity"
             android:label="@string/title_activity_map"
             android:windowSoftInputMode = "stateUnchanged|adjustResize">
             <intent-filter>
@@ -41,8 +41,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CategoriesActivity" />
-        <activity android:name=".SettingsActivity" />
+        <activity android:name=".activities.CategoriesActivity" />
+        <activity android:name=".activities.SettingsActivity" />
         <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
         App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
         <meta-data

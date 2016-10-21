@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.twofromkt.ecomap.Util.*;
+import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
+import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
+import static com.twofromkt.ecomap.util.Util.*;
 
 public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
     private static final String[] FILE_NAMES = new String[]{"cafes", "trashes"};
@@ -94,7 +96,7 @@ public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
         return getPlaces(new Predicate<Cafe>() {
             @Override
             public boolean apply(Cafe o) {
-                return distanceLatLng(x, fromPair(o.location)) < radii;
+                return distanceLatLng(x, getLatLng(o.location)) < radii;
             }
         }, CAFE, context);
     }
@@ -110,7 +112,7 @@ public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
             @Override
             public boolean apply(TrashBox o) {
                 finalS.retainAll(o.category);
-                return distanceLatLng(x, fromPair(o.location)) < radius && finalS.size() > 0;
+                return distanceLatLng(x, getLatLng(o.location)) < radius && finalS.size() > 0;
             }
         }, TRASH, context);
     }
@@ -128,12 +130,12 @@ public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
             case TRASH:
                 switch (mode) {
                     case NEAR:
-                        return getTrashes(fromPair(lat, lng), radius, chosen, getContext());
+                        return getTrashes(getLatLng(lat, lng), radius, chosen, getContext());
                 }
             case CAFE:
                 switch (mode) {
                     case NEAR:
-                        return getCafes(fromPair(lat, lng), radius, getContext());
+                        return getCafes(getLatLng(lat, lng), radius, getContext());
                 }
         }
         return null;
