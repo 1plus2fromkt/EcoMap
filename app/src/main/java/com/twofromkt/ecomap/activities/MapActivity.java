@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.vision.text.Line;
 import com.twofromkt.ecomap.DividerItemDecorator;
 import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
@@ -66,7 +68,9 @@ public class MapActivity extends FragmentActivity {
     TextView name, category_name;
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
+    ImageButton showChecks, hideChecks;
     EditText searchField;
+    LinearLayout searchBox;
     boolean[] chosen;
     NavigationView nv;
     ListAdapter searchAdapter;
@@ -83,7 +87,8 @@ public class MapActivity extends FragmentActivity {
     static final String MENU_OPENED = "MENU_OPENED", LAT = "LAT", LNG = "LNG", ZOOM = "ZOOM",
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED",
             IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED", NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME",
-            BOTTOM_INFO_STATE = "BOTTOM_INFO_STATE", BOTTOM_LIST_STATE = "BOTTOM_LIST_STATE";
+            BOTTOM_INFO_STATE = "BOTTOM_INFO_STATE", BOTTOM_LIST_STATE = "BOTTOM_LIST_STATE",
+            CHECKBOXES_SHOWN = "CHECKBOXES_SHOWN", SEARCHBOX_SHOWN = "SEARCHBOX_SHOWN";
     static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42;
 
     @Override
@@ -130,17 +135,23 @@ public class MapActivity extends FragmentActivity {
         searchList = (RecyclerView) findViewById(R.id.search_list);
         searchList.setLayoutManager(new LinearLayoutManager(this));
         searchList.addItemDecoration(new DividerItemDecorator(this));
+        searchBox = (LinearLayout) findViewById(R.id.search_box);
         searchResults.add(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
                 null, "", "656-68-52", "", "www.vk.com"));
         searchAdapter = new ListAdapter(getApplicationContext(), searchResults);
         searchList.setAdapter(searchAdapter);
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
+        showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
+        hideChecks = (ImageButton) findViewById(R.id.hide_checkboxes);
+        hideChecks.setY(searchBox.getY()); //TODO: the button should remain on the place
     }
 
     private void setListeners() {
         trashButton.setOnClickListener(adapter);
         cafeButton.setOnClickListener(adapter);
+        showChecks.setOnClickListener(adapter);
+        hideChecks.setOnClickListener(adapter);
         locationButton.setOnClickListener(adapter);
         nv.setNavigationItemSelectedListener(adapter);
         drawerLayout.addDrawerListener(adapter);
@@ -190,7 +201,9 @@ public class MapActivity extends FragmentActivity {
         state.putBoolean(NAV_BAR_OPENED, drawerLayout.isDrawerOpen(nv));
         state.putBoolean(IS_EDIT_FOCUSED, searchField.isFocused());
         state.putInt(BOTTOM_LIST_STATE, bottomList.getState());
+        state.putInt(SEARCHBOX_SHOWN, searchBox.getVisibility());
         state.putInt(BOTTOM_INFO_STATE, bottomInfo.getState());
+        state.putInt(CHECKBOXES_SHOWN, checkboxes.getVisibility());
         if (isBottomOpened(this)) {
             state.putCharSequence(NAME, name.getText());
             state.putCharSequence(CATEGORY_NAME, category_name.getText());
@@ -223,8 +236,10 @@ public class MapActivity extends FragmentActivity {
             }
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
-            bottomInfo.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
+            bottomList.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
             bottomInfo.setState((int) savedInstanceState.get(BOTTOM_INFO_STATE));
+            searchBox.setVisibility((int) savedInstanceState.get(SEARCHBOX_SHOWN));
+            checkboxes.setVisibility((int) savedInstanceState.get(CHECKBOXES_SHOWN));
             if (isBottomOpened(this)) {
                 name.setText((String) savedInstanceState.get(NAME));
                 category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));
@@ -266,7 +281,7 @@ public class MapActivity extends FragmentActivity {
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             hideBottomInfo(this);
-        } else if (floatingMenu.isOpened()) {
+        } else if (floatingMenu.isOpened()) { // TODO: everything should be changed
             closeFloatingMenu(this);
         } else if (activeMarkers.size() > 0) {
             clearMarkers();

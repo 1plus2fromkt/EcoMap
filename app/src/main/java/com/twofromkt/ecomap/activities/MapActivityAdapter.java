@@ -98,7 +98,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
             showBottomList(act);
         }
         if (v == act.locationButton) {
-            expand(act.checkboxes);
+//            expand(act.checkboxes);
             if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -109,11 +109,16 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         }
         if (v == act.cafeButton) {
             clearMarkers();
-            collapse(act.checkboxes);
-//            searchNearCafe();
+//            collapse(act.checkboxes);
+            searchNearCafe();
         }
         if (v == act.menuButton) {
             act.drawerLayout.openDrawer(act.nv);
+        }
+        if (v == act.hideChecks)
+            collapse(act.checkboxes, act.searchBox);
+        if (v == act.showChecks) {
+            expand(act.checkboxes, act.searchBox);
         }
     }
 

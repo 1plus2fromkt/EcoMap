@@ -118,7 +118,7 @@ public class MapActivityUtil {
         map.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
-    public static void expand(final View myView) {
+    public static void expand(final View myView, final View another) {
         myView.setVisibility(View.VISIBLE);
 
         int dx = myView.getWidth();
@@ -128,11 +128,32 @@ public class MapActivityUtil {
         Animator animator =
                 ViewAnimationUtils.createCircularReveal(myView, myView.getWidth(), 0, 0, finalRadius);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                another.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animator.setDuration(400);
         animator.start();
     }
 
-    public static void collapse(final View myView) {
+    public static void collapse(final View myView, final View another) {
 
         int dx = myView.getWidth();
         int dy = myView.getHeight();
@@ -145,7 +166,7 @@ public class MapActivityUtil {
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
+                another.setVisibility(View.VISIBLE);
             }
 
             @Override
