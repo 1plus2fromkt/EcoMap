@@ -3,17 +3,17 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.twofromkt.ecomap.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.twofromkt.ecomap.activities.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
         <!--android:icon="@drawable/ic_info_black_24dp"-->
 
     <!--<header-->
-        <!--android:fragment="com.twofromkt.ecomap.SettingsActivity$NotificationPreferenceFragment"-->
+        <!--android:fragment="com.twofromkt.ecomap.activities.SettingsActivity$NotificationPreferenceFragment"-->
         <!--android:title="@string/pref_header_notifications" />-->
         <!--&lt;!&ndash;android:icon="@drawable/ic_notifications_black_24dp"&ndash;&gt;-->
 
     <!--<header-->
-        <!--android:fragment="com.twofromkt.ecomap.SettingsActivity$DataSyncPreferenceFragment"-->
+        <!--android:fragment="com.twofromkt.ecomap.activities.SettingsActivity$DataSyncPreferenceFragment"-->
         <!--android:title="@string/pref_header_data_sync" />-->
         <!--&lt;!&ndash;android:icon="@drawable/ic_sync_black_24dp"&ndash;&gt;-->
 

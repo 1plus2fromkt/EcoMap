@@ -12,6 +12,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.GoogleMap;
@@ -30,6 +33,8 @@ import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeFloatingMenu;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
@@ -93,6 +98,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
             showBottomList(act);
         }
         if (v == act.locationButton) {
+            expand(act.checkboxes);
             if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -103,7 +109,8 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         }
         if (v == act.cafeButton) {
             clearMarkers();
-            searchNearCafe();
+            collapse(act.checkboxes);
+//            searchNearCafe();
         }
         if (v == act.menuButton) {
             act.drawerLayout.openDrawer(act.nv);
@@ -176,7 +183,6 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 //        searchResults.addAll(data);
 //        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
         showBottomList(act, data);
-        addMarkers(data, act.mMap);
     }
 
 

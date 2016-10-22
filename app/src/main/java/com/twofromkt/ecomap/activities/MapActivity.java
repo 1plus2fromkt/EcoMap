@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -35,6 +36,8 @@ import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.HashSet;
+
+import io.codetail.widget.RevealLinearLayout;
 
 import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
@@ -70,6 +73,7 @@ public class MapActivity extends FragmentActivity {
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
+    LinearLayout checkboxes;
     MapActivityAdapter adapter;
     RecyclerView searchList;
     Button menuButton;
@@ -114,6 +118,7 @@ public class MapActivity extends FragmentActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
+        checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         nv = (NavigationView) findViewById(R.id.nav_view);

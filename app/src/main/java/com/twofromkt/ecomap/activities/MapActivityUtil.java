@@ -1,11 +1,16 @@
 package com.twofromkt.ecomap.activities;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -19,6 +24,9 @@ import com.twofromkt.ecomap.db.Place;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import io.codetail.animation.ViewAnimationUtils;
+import io.codetail.widget.RevealLinearLayout;
 
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
@@ -41,7 +49,6 @@ public class MapActivityUtil {
         act.locationButton.setVisibility(View.INVISIBLE);
         act.bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
-
 
     static void showBottomList(MapActivity act, ArrayList<? extends Place> data) {
         showBottomList(act);
@@ -111,4 +118,51 @@ public class MapActivityUtil {
         map.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
+    public static void expand(final View myView) {
+        myView.setVisibility(View.VISIBLE);
+
+        int dx = myView.getWidth();
+        int dy = myView.getHeight();
+        float finalRadius = (float) Math.hypot(dx, dy);
+        myView.setVisibility(View.VISIBLE);
+        Animator animator =
+                ViewAnimationUtils.createCircularReveal(myView, myView.getWidth(), 0, 0, finalRadius);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(400);
+        animator.start();
+    }
+
+    public static void collapse(final View myView) {
+
+        int dx = myView.getWidth();
+        int dy = myView.getHeight();
+        float finalRadius = (float) Math.hypot(dx, dy);
+        myView.setVisibility(View.VISIBLE);
+        Animator animator =
+                ViewAnimationUtils.createCircularReveal(myView, myView.getRight(), 0, finalRadius, 0);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(400);
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                myView.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+    }
 }

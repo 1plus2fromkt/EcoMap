@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent">
 
     <android.support.design.widget.CoordinatorLayout
@@ -28,14 +29,17 @@
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.twofromkt.ecomap.MapActivity" />
+                tools:context="com.twofromkt.ecomap.activities.MapActivity" />
 
             <LinearLayout
+                android:id="@+id/search_box"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_margin="8dp"
                 android:background="@drawable/bordered"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp">
 
                 <Button
                     android:id="@+id/menu_button"
@@ -43,33 +47,99 @@
                     android:layout_height="25dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="5dp"
                     android:background="@mipmap/ic_menu_open" />
 
                 <EditText
                     android:id="@+id/search_edit"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="30dp"
+                    android:layout_weight="10"
                     android:layout_margin="10dp"
                     android:background="@color/cast_expanded_controller_text_color"
                     android:hint="Search query"
                     android:imeOptions="actionSearch"
                     android:inputType="text"
                     android:textSize="15sp" />
+
+                <ImageButton
+                    android:id="@+id/show_checkboxes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:src="@drawable/ic_collapse_00010"/>
+
             </LinearLayout>
-            <!--<EditText-->
-            <!--android:id="@+id/search_edit"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:hint="@string/search_query"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:layout_marginRight="40dp"-->
-            <!--android:background="@color/cast_expanded_controller_text_color"-->
-            <!--android:textSize="15sp"-->
-            <!--android:layout_marginLeft="40dp"-->
-            <!--android:layout_marginTop="20dp"-->
-            <!--android:imeOptions="actionSearch"-->
-            <!--android:inputType="text"/>-->
+
+            <io.codetail.widget.RevealLinearLayout
+                android:id="@+id/checkboxes_wrap"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+                <LinearLayout
+                    android:id="@+id/checkboxes"
+                    android:layout_width="match_parent"
+                    android:layout_margin="10dp"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    android:background="@drawable/bordered"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <ImageButton
+                            android:id="@+id/cafe_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_collapse_00010" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:text="Кафе"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <ImageButton
+                            android:id="@+id/trash_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/quantum_ic_cast_connected_white_24" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+                            android:text="Мусор"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+                        <ImageButton
+                            android:id="@+id/smth_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/quantum_ic_cast_connected_white_24" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="20sp"
+
+                            android:text="Так далее"/>
+                    </LinearLayout>
+                    <ImageButton
+                        android:id="@id/show_checkboxes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </io.codetail.widget.RevealLinearLayout>
 
             <com.github.clans.fab.FloatingActionMenu
                 android:id="@+id/menu"
@@ -124,7 +194,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginBottom="20dp"
-                android:layout_marginEnd="@dimen/fab_margin"></com.github.clans.fab.FloatingActionButton>
+                android:layout_marginEnd="@dimen/fab_margin"/>
         </RelativeLayout>
 
         <android.support.v4.widget.NestedScrollView
@@ -195,7 +265,7 @@
                     android:id="@+id/search_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/bottom_label"></android.support.v7.widget.RecyclerView>
+                    android:layout_below="@id/bottom_label"/>
 
             </RelativeLayout>
 
