@@ -88,14 +88,11 @@ public class MapActivityAdapter implements OnMapReadyCallback,
     @Override
     public void onClick(View v) {
         Location location = getLocation(act.locationManager, act.criteria);
-        if (v == act.trashButton || v == act.cafeButton) {
-            closeFloatingMenu(act);
-        }
-        if (v == act.trashButton) {
-            Intent intent = new Intent(act.getApplicationContext(), CategoriesActivity.class);
-            intent.putExtra(CHOSEN_KEY, act.chosen);
-            act.startActivityForResult(intent, MapActivity.CHOOSE_TRASH_ACTIVITY);
-            showBottomList(act);
+//        if (v == act.trashButton || v == act.cafeButton) {
+//            closeFloatingMenu(act);
+//        }
+        if (v == act.trashCheck) {
+            searchNearTrashes();
         }
         if (v == act.locationButton) {
 //            expand(act.checkboxes);
@@ -107,7 +104,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
                 moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
             }
         }
-        if (v == act.cafeButton) {
+        if (v == act.cafeCheck) {
             clearMarkers();
 //            collapse(act.checkboxes);
             searchNearCafe();
@@ -115,10 +112,12 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         if (v == act.menuButton) {
             act.drawerLayout.openDrawer(act.nv);
         }
-        if (v == act.hideChecks)
-            collapse(act.checkboxes, act.searchBox);
         if (v == act.showChecks) {
-            expand(act.checkboxes, act.searchBox);
+            v.setRotation(act.showChecks.getRotation() + 180);
+            if (act.checkboxes.getVisibility() == View.VISIBLE)
+                collapse(act.checkboxes, act.searchBox);
+            else
+                expand(act.checkboxes, act.searchBox);
         }
     }
 
@@ -184,10 +183,11 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 
     @Override
     public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
-//        searchResults.clear();
-//        searchResults.addAll(data);
-//        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
+        searchResults.clear();
+        searchResults.addAll(data);
+        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
         showBottomList(act, data);
+        addMarkers(data, act.mMap, true);
     }
 
 

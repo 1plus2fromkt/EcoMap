@@ -91,7 +91,9 @@ public class MapActivityUtil {
         return m;
     }
 
-    static <T extends Place> void addMarkers(ArrayList<T> p, GoogleMap mMap) {
+    static <T extends Place> void addMarkers(ArrayList<T> p, GoogleMap mMap, boolean rewrite) {
+        if (rewrite)
+            clearMarkers();
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
             addMarker(mMap, place);

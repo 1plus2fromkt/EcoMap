@@ -64,11 +64,12 @@ public class MapActivity extends FragmentActivity {
     BottomSheetBehavior bottomInfo, bottomList;
     View bottomInfoView, bottomListView;
     FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
+    ImageButton cafeCheck, trashCheck, otherCheck;
     CameraPosition startPos;
     TextView name, category_name;
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
-    ImageButton showChecks, hideChecks;
+    ImageButton showChecks;
     EditText searchField;
     LinearLayout searchBox;
     boolean[] chosen;
@@ -143,15 +144,15 @@ public class MapActivity extends FragmentActivity {
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
-        hideChecks = (ImageButton) findViewById(R.id.hide_checkboxes);
-        hideChecks.setY(searchBox.getY()); //TODO: the button should remain on the place
+        trashCheck = (ImageButton) findViewById(R.id.trash_checkbox);
+        cafeCheck = (ImageButton) findViewById(R.id.cafe_checkbox);
+        otherCheck = (ImageButton) findViewById(R.id.smth_checkbox);
     }
 
     private void setListeners() {
-        trashButton.setOnClickListener(adapter);
-        cafeButton.setOnClickListener(adapter);
+        trashCheck.setOnClickListener(adapter);
+        cafeCheck.setOnClickListener(adapter);
         showChecks.setOnClickListener(adapter);
-        hideChecks.setOnClickListener(adapter);
         locationButton.setOnClickListener(adapter);
         nv.setNavigationItemSelectedListener(adapter);
         drawerLayout.addDrawerListener(adapter);
