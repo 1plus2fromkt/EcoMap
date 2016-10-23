@@ -1,5 +1,7 @@
 package com.twofromkt.ecomap.util;
 
+import android.util.Pair;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -16,8 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Util {
-    public static HashMap<Marker, Place> markersToPlace = new HashMap<>();
-    public static ArrayList<Marker> activeMarkers = new ArrayList<>();
+    public static volatile ArrayList<Pair<Marker, Place>> activeMarkers = new ArrayList<>();
     public static ArrayList<Place> searchResults = new ArrayList<>(); // We definitely shouldn't do this
 
     public static class Period {

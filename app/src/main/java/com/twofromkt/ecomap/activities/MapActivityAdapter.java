@@ -10,31 +10,42 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.widget.ImageButton;
 
+import com.android.internal.util.Predicate;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
+import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.ArrayList;
 
 import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
+import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
+import static com.twofromkt.ecomap.activities.MapActivity.CAFE_NUM;
+import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
+import static com.twofromkt.ecomap.activities.MapActivity.TRASH_NUM;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeFloatingMenu;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.deleteMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.intToClass;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
@@ -91,8 +102,34 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 //        if (v == act.trashButton || v == act.cafeButton) {
 //            closeFloatingMenu(act);
 //        }
-        if (v == act.trashCheck) {
-            searchNearTrashes();
+        for (int i = 0; i < CATEGORIES_N; i++) {
+            if (v == act.checkboxButtons[i]) {
+                if (act.chosenCheck[i]) {
+                    act.chosenCheck[i] = false;
+                    act.checkboxButtons[i].setAlpha((float) 0.5);
+                    final int fi = i;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            deleteMarkers(new Predicate<Place>() {
+                                @Override
+                                public boolean apply(Place place) {
+                                    return place instanceof TrashBox && fi == TRASH_NUM ||
+                                            place instanceof Cafe && fi == CAFE_NUM;// ||
+//                                            place instanceof Place && fi == 2;
+                                }
+                            });
+                        }
+                    }).run();
+                } else {
+                    act.chosenCheck[i] = true;
+                    act.checkboxButtons[i].setAlpha((float) 1);
+                    if (i == TRASH_NUM)
+                        searchNearTrashes();
+                    else if (i == CAFE_NUM)
+                        searchNearCafe();
+                }
+            }
         }
         if (v == act.locationButton) {
 //            expand(act.checkboxes);
@@ -103,11 +140,6 @@ public class MapActivityAdapter implements OnMapReadyCallback,
             if (location != null) {
                 moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
             }
-        }
-        if (v == act.cafeCheck) {
-            clearMarkers();
-//            collapse(act.checkboxes);
-            searchNearCafe();
         }
         if (v == act.menuButton) {
             act.drawerLayout.openDrawer(act.nv);
@@ -154,7 +186,12 @@ public class MapActivityAdapter implements OnMapReadyCallback,
     @Override
     public boolean onMarkerClick(Marker marker) {
         showBottomInfo(act, true);
-        Place p = markersToPlace.get(marker);
+        Place p = null;
+        for (Pair<Marker, Place> x : activeMarkers)
+            if (x.first == marker) { // TODO: app crashes on marker tap. Something's wrong with adding to activeMarkers
+                p = x.second;
+                break;
+            }
         act.name.setText(p.name);
         act.category_name.setText(p.getClass().getName());
         return true;

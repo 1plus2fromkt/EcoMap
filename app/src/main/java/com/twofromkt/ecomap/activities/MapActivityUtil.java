@@ -7,12 +7,14 @@ import android.location.Location;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
+import android.util.Pair;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 
+import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,7 +22,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,9 +36,10 @@ import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 import static com.twofromkt.ecomap.util.Util.activeMarkers;
 import static com.twofromkt.ecomap.util.Util.includeAll;
-import static com.twofromkt.ecomap.util.Util.markersToPlace;
 
 public class MapActivityUtil {
+
+    static Class[] intToClass = new Class[]{TrashBox.class, Cafe.class, Place.class};
 
     static void showBottomInfo(MapActivity act, boolean showSheet) {
         act.navigationButton.setVisibility(View.VISIBLE);
@@ -86,12 +91,11 @@ public class MapActivityUtil {
 
     static Marker addMarker(GoogleMap mMap, Place x) {
         Marker m = mMap.addMarker(new MarkerOptions().position(getLatLng(x.location)).title(x.name));
-        activeMarkers.add(m);
-        markersToPlace.put(m, x);
+        activeMarkers.add(new Pair<>(m, x));
         return m;
     }
 
-    static <T extends Place> void addMarkers(ArrayList<T> p, GoogleMap mMap, boolean rewrite) {
+    static <T extends Place> void addMarkers(ArrayList<T> p, GoogleMap mMap, boolean rewrite) { //TODO: make it in thread because the operation is too long
         if (rewrite)
             clearMarkers();
         ArrayList<LatLng> pos = new ArrayList<>();
@@ -99,16 +103,17 @@ public class MapActivityUtil {
             addMarker(mMap, place);
             pos.add(getLatLng(place.location));
         }
-        LatLngBounds bounds = includeAll(pos);
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
-        mMap.animateCamera(cu);
+        if (pos.size() > 0) {
+            LatLngBounds bounds = includeAll(pos);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
+            mMap.animateCamera(cu);
+        }
     }
 
     static void clearMarkers() {
-        for (Marker m : activeMarkers)
-            m.remove();
+        for (Pair<Marker, Place> m : activeMarkers)
+            m.first.remove();
         activeMarkers = new ArrayList<>();
-        markersToPlace = new HashMap<>();
     }
 
     static void addLocationSearch(MapActivity act, GoogleMap map) {
@@ -187,5 +192,14 @@ public class MapActivityUtil {
             }
         });
         animator.start();
+    }
+
+    public static void deleteMarkers (Predicate<Place> p) {
+        for (int i = activeMarkers.size() - 1; i >= 0; i--) {
+            if (p.apply(activeMarkers.get(i).second)) {
+                activeMarkers.get(i).first.remove();
+                activeMarkers.remove(i);
+            }
+        }
     }
 }

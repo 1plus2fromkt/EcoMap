@@ -64,7 +64,7 @@ public class MapActivity extends FragmentActivity {
     BottomSheetBehavior bottomInfo, bottomList;
     View bottomInfoView, bottomListView;
     FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
-    ImageButton cafeCheck, trashCheck, otherCheck;
+    ImageButton[] checkboxButtons;
     CameraPosition startPos;
     TextView name, category_name;
     FloatingActionMenu floatingMenu;
@@ -73,6 +73,7 @@ public class MapActivity extends FragmentActivity {
     EditText searchField;
     LinearLayout searchBox;
     boolean[] chosen;
+    boolean[] chosenCheck;
     NavigationView nv;
     ListAdapter searchAdapter;
     Criteria criteria = new Criteria();
@@ -89,8 +90,10 @@ public class MapActivity extends FragmentActivity {
             SEARCH_TEXT = "SEARCH_TEXT", NAV_BAR_OPENED = "NAV_BAR_OPENED",
             IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED", NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME",
             BOTTOM_INFO_STATE = "BOTTOM_INFO_STATE", BOTTOM_LIST_STATE = "BOTTOM_LIST_STATE",
-            CHECKBOXES_SHOWN = "CHECKBOXES_SHOWN", SEARCHBOX_SHOWN = "SEARCHBOX_SHOWN";
-    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42;
+            CHECKBOXES_SHOWN = "CHECKBOXES_SHOWN", SEARCHBOX_SHOWN = "SEARCHBOX_SHOWN",
+            CHECKBOXES_CHOSEN = "CHECKBOXES_CHOSEN";
+    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42, CATEGORIES_N = 3,
+                    TRASH_NUM = 0, CAFE_NUM = 1, OTHER_NUM = 2;
 
     @Override
     protected void onStart() {
@@ -144,14 +147,15 @@ public class MapActivity extends FragmentActivity {
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
-        trashCheck = (ImageButton) findViewById(R.id.trash_checkbox);
-        cafeCheck = (ImageButton) findViewById(R.id.cafe_checkbox);
-        otherCheck = (ImageButton) findViewById(R.id.smth_checkbox);
+        checkboxButtons = new ImageButton[] {(ImageButton) findViewById(R.id.trash_checkbox),
+                                             (ImageButton) findViewById(R.id.cafe_checkbox),
+                                             (ImageButton) findViewById(R.id.smth_checkbox)};
+        chosenCheck = new boolean[CATEGORIES_N];
     }
 
     private void setListeners() {
-        trashCheck.setOnClickListener(adapter);
-        cafeCheck.setOnClickListener(adapter);
+        for (ImageButton i : checkboxButtons)
+            i.setOnClickListener(adapter);
         showChecks.setOnClickListener(adapter);
         locationButton.setOnClickListener(adapter);
         nv.setNavigationItemSelectedListener(adapter);
@@ -204,6 +208,13 @@ public class MapActivity extends FragmentActivity {
         state.putInt(BOTTOM_LIST_STATE, bottomList.getState());
         state.putInt(SEARCHBOX_SHOWN, searchBox.getVisibility());
         state.putInt(BOTTOM_INFO_STATE, bottomInfo.getState());
+        state.putBooleanArray(CHECKBOXES_CHOSEN, chosenCheck);
+        for (int i = 0; i < CATEGORIES_N; i++) {
+            if (chosenCheck[i])
+                checkboxButtons[i].setAlpha((float) 0.5);
+            else
+                checkboxButtons[i].setAlpha((float) 1);
+        }
         state.putInt(CHECKBOXES_SHOWN, checkboxes.getVisibility());
         if (isBottomOpened(this)) {
             state.putCharSequence(NAME, name.getText());
@@ -239,6 +250,7 @@ public class MapActivity extends FragmentActivity {
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomList.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
             bottomInfo.setState((int) savedInstanceState.get(BOTTOM_INFO_STATE));
+            chosenCheck = savedInstanceState.getBooleanArray(CHECKBOXES_CHOSEN);
             searchBox.setVisibility((int) savedInstanceState.get(SEARCHBOX_SHOWN));
             checkboxes.setVisibility((int) savedInstanceState.get(CHECKBOXES_SHOWN));
             if (isBottomOpened(this)) {

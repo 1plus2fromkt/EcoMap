@@ -85,15 +85,6 @@
                         android:orientation="horizontal">
                         <LinearLayout style="@style/CheckBoxLayout">
                             <ImageButton
-                                android:id="@+id/cafe_checkbox"
-                                style="@style/CheckBoxImage"
-                                android:src="@drawable/red" />
-                            <TextView
-                                style="@style/CheckBoxText"
-                                android:text="Кафе"/>
-                        </LinearLayout>
-                        <LinearLayout style="@style/CheckBoxLayout">
-                            <ImageButton
                                 android:id="@+id/trash_checkbox"
                                 style="@style/CheckBoxImage"
                                 android:src="@drawable/red" />
@@ -103,9 +94,18 @@
                         </LinearLayout>
                         <LinearLayout style="@style/CheckBoxLayout">
                             <ImageButton
+                                android:id="@+id/cafe_checkbox"
+                                style="@style/CheckBoxImage"
+                                android:src="@drawable/green" />
+                            <TextView
+                                style="@style/CheckBoxText"
+                                android:text="Кафе"/>
+                        </LinearLayout>
+                        <LinearLayout style="@style/CheckBoxLayout">
+                            <ImageButton
                                 android:id="@+id/smth_checkbox"
                                 style="@style/CheckBoxImage"
-                                android:src="@drawable/red" />
+                                android:src="@drawable/green" />
                             <TextView
                                 style="@style/CheckBoxText"
                                 android:text="Так далее"/>
