@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 
 import com.android.internal.util.Predicate;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,7 +46,6 @@ import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.deleteMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.intToClass;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
@@ -55,7 +55,7 @@ import static com.twofromkt.ecomap.util.Util.*;
 public class MapActivityAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
-        LoaderManager.LoaderCallbacks<ArrayList<? extends Place> > {
+        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place> > > {
 
     private MapActivity act;
 
@@ -129,6 +129,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
                     else if (i == CAFE_NUM)
                         searchNearCafe();
                 }
+                break;
             }
         }
         if (v == act.locationButton) {
@@ -165,7 +166,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 
     void searchNearCafe() {
         Bundle b = createBundle();
-        Loader<ArrayList<? extends Place> > l;
+        Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
         b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, b, this);
@@ -175,7 +176,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 
     void searchNearTrashes() {
         Bundle bundle = createBundle();
-        Loader<ArrayList<? extends Place> > l;
+        Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, act.chosen);
         l = act.getSupportLoaderManager().restartLoader(
@@ -188,7 +189,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         showBottomInfo(act, true);
         Place p = null;
         for (Pair<Marker, Place> x : activeMarkers)
-            if (x.first == marker) { // TODO: app crashes on marker tap. Something's wrong with adding to activeMarkers
+            if (x.first.equals(marker)) {
                 p = x.second;
                 break;
             }
@@ -214,22 +215,23 @@ public class MapActivityAdapter implements OnMapReadyCallback,
     }
 
     @Override
-    public Loader<ArrayList<? extends Place>> onCreateLoader(int id, Bundle args) {
+    public Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > onCreateLoader(int id, Bundle args) {
         return new GetPlaces(act.getApplicationContext(), args);
     }
 
     @Override
-    public void onLoadFinished(Loader<ArrayList<? extends Place>> loader, ArrayList<? extends Place> data) {
+    public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader,
+                               Pair<CameraUpdate, ArrayList<? extends Place> > data) {
         searchResults.clear();
-        searchResults.addAll(data);
+        searchResults.addAll(data.second);
         act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
-        showBottomList(act, data);
-        addMarkers(data, act.mMap, true);
+        showBottomList(act, data.second);
+        addMarkers(data.second, data.first, act.mMap, false);
     }
 
 
     @Override
-    public void onLoaderReset(Loader<ArrayList<? extends Place>> loader) {
+    public void onLoaderReset(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader) {
 
     }
 }

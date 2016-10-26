@@ -209,12 +209,6 @@ public class MapActivity extends FragmentActivity {
         state.putInt(SEARCHBOX_SHOWN, searchBox.getVisibility());
         state.putInt(BOTTOM_INFO_STATE, bottomInfo.getState());
         state.putBooleanArray(CHECKBOXES_CHOSEN, chosenCheck);
-        for (int i = 0; i < CATEGORIES_N; i++) {
-            if (chosenCheck[i])
-                checkboxButtons[i].setAlpha((float) 0.5);
-            else
-                checkboxButtons[i].setAlpha((float) 1);
-        }
         state.putInt(CHECKBOXES_SHOWN, checkboxes.getVisibility());
         if (isBottomOpened(this)) {
             state.putCharSequence(NAME, name.getText());
@@ -253,6 +247,12 @@ public class MapActivity extends FragmentActivity {
             chosenCheck = savedInstanceState.getBooleanArray(CHECKBOXES_CHOSEN);
             searchBox.setVisibility((int) savedInstanceState.get(SEARCHBOX_SHOWN));
             checkboxes.setVisibility((int) savedInstanceState.get(CHECKBOXES_SHOWN));
+            for (int i = 0; i < CATEGORIES_N; i++) {
+                if (!chosenCheck[i])
+                    checkboxButtons[i].setAlpha((float) 0.5);
+                else
+                    checkboxButtons[i].setAlpha((float) 1);
+            }
             if (isBottomOpened(this)) {
                 name.setText((String) savedInstanceState.get(NAME));
                 category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));

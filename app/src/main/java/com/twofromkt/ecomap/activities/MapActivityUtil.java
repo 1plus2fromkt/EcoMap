@@ -39,7 +39,7 @@ import static com.twofromkt.ecomap.util.Util.includeAll;
 
 public class MapActivityUtil {
 
-    static Class[] intToClass = new Class[]{TrashBox.class, Cafe.class, Place.class};
+//    static Class[] intToClass = new Class[]{TrashBox.class, Cafe.class, Place.class};
 
     static void showBottomInfo(MapActivity act, boolean showSheet) {
         act.navigationButton.setVisibility(View.VISIBLE);
@@ -95,7 +95,7 @@ public class MapActivityUtil {
         return m;
     }
 
-    static <T extends Place> void addMarkers(ArrayList<T> p, GoogleMap mMap, boolean rewrite) { //TODO: make it in thread because the operation is too long
+    static <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, GoogleMap mMap, boolean rewrite) {
         if (rewrite)
             clearMarkers();
         ArrayList<LatLng> pos = new ArrayList<>();
@@ -104,8 +104,6 @@ public class MapActivityUtil {
             pos.add(getLatLng(place.location));
         }
         if (pos.size() > 0) {
-            LatLngBounds bounds = includeAll(pos);
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 10);
             mMap.animateCamera(cu);
         }
     }

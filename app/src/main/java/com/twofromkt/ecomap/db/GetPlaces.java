@@ -3,9 +3,13 @@ package com.twofromkt.ecomap.db;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Pair;
 
 import com.android.internal.util.Predicate;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.io.EOFException;
 import java.io.File;
@@ -22,7 +26,7 @@ import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
+public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place> > > {
     private static final String[] FILE_NAMES = new String[]{"cafes", "trashes"};
     public static final int CAFE = 0, TRASH = 1, NEAR = 0, ALL = 1;
     public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
@@ -124,20 +128,31 @@ public class GetPlaces extends AsyncTaskLoader<ArrayList<? extends Place> > {
     }
 
 
+
+
     @Override
-    public ArrayList<? extends Place> loadInBackground() {
+    public Pair<CameraUpdate, ArrayList<? extends Place> > loadInBackground() {
+        ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
             case TRASH:
                 switch (mode) {
                     case NEAR:
-                        return getTrashes(getLatLng(lat, lng), radius, chosen, getContext());
+                        ans = getTrashes(getLatLng(lat, lng), radius, chosen, getContext());
+                        break;
                 }
+                break;
             case CAFE:
                 switch (mode) {
                     case NEAR:
-                        return getCafes(getLatLng(lat, lng), radius, getContext());
+                        ans = getCafes(getLatLng(lat, lng), radius, getContext());
+                        break;
                 }
+                break;
         }
-        return null;
+        LatLngBounds bounds = includeAll(ans);
+        CameraUpdate cu = null;
+        if (ans.size() > 0)
+            cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
+        return new Pair<CameraUpdate, ArrayList<? extends Place>>(cu, ans);
     }
 }

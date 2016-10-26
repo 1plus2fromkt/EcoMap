@@ -38,9 +38,13 @@ public class Util {
 
     }
 
-    public static LatLngBounds includeAll(ArrayList<LatLng> pos) {
+    public static LatLngBounds includeAll(ArrayList<? extends Place> data) {
+        ArrayList<LatLng> pos = new ArrayList<>();
+        for (Place x : data) {
+            pos.add(LocationUtil.getLatLng(x.location));
+        }
         if (pos.size() == 0) {
-            throw new IllegalArgumentException("Cannot get bounds of empty positions list");
+            return null;
         }
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         final double margin = .05;
