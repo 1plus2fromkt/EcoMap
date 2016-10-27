@@ -40,6 +40,8 @@ import static com.twofromkt.ecomap.util.Util.includeAll;
 public class MapActivityUtil {
 
 //    static Class[] intToClass = new Class[]{TrashBox.class, Cafe.class, Place.class};
+    static final float[] ALPHAS = new float[]{(float) 0.6, 1};
+
 
     static void showBottomInfo(MapActivity act, boolean showSheet) {
         act.navigationButton.setVisibility(View.VISIBLE);
@@ -56,7 +58,8 @@ public class MapActivityUtil {
     }
 
     static void showBottomList(MapActivity act, ArrayList<? extends Place> data) {
-        showBottomList(act);
+        if (act.bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN)
+            showBottomList(act);
         act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data));
         act.searchList.invalidate();
     }
@@ -89,18 +92,17 @@ public class MapActivityUtil {
         return act.bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
     }
 
-    static Marker addMarker(GoogleMap mMap, Place x) {
+    static Marker addMarker(GoogleMap mMap, Place x, int num) {
         Marker m = mMap.addMarker(new MarkerOptions().position(getLatLng(x.location)).title(x.name));
-        activeMarkers.add(new Pair<>(m, x));
+        activeMarkers.get(num).add(new Pair<>(m, x));
         return m;
     }
 
-    static <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, GoogleMap mMap, boolean rewrite) {
-        if (rewrite)
-            clearMarkers();
+    static <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, GoogleMap mMap, int num) {
+        clearMarkers(num);
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
-            addMarker(mMap, place);
+            addMarker(mMap, place, num);
             pos.add(getLatLng(place.location));
         }
         if (pos.size() > 0) {
@@ -108,10 +110,10 @@ public class MapActivityUtil {
         }
     }
 
-    static void clearMarkers() {
-        for (Pair<Marker, Place> m : activeMarkers)
+    static void clearMarkers(int num) {
+        for (Pair<Marker, Place> m : activeMarkers.get(num))
             m.first.remove();
-        activeMarkers = new ArrayList<>();
+        activeMarkers.get(num).clear();
     }
 
     static void addLocationSearch(MapActivity act, GoogleMap map) {
@@ -192,12 +194,12 @@ public class MapActivityUtil {
         animator.start();
     }
 
-    public static void deleteMarkers (Predicate<Place> p) {
-        for (int i = activeMarkers.size() - 1; i >= 0; i--) {
-            if (p.apply(activeMarkers.get(i).second)) {
-                activeMarkers.get(i).first.remove();
-                activeMarkers.remove(i);
-            }
-        }
-    }
+//    public static void deleteMarkers (Predicate<Place> p) {
+//        for (int i = activeMarkers.size() - 1; i >= 0; i--) {
+//            if (p.apply(activeMarkers.get(i).second)) {
+//                activeMarkers.get(i).first.remove();
+//                activeMarkers.remove(i);
+//            }
+//        }
+//    }
 }

@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.db;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.activities.MapActivity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +15,7 @@ public class TrashBox extends Place {
     public TrashBox(String name, LatLng location, String information, Period[] workTime, String img_link, Set<Category> cat) {
         super(name, location, information, workTime, img_link);
         category = new HashSet<>(cat);
+        category_number = MapActivity.TRASH_NUM;
     }
 
     public enum Category {

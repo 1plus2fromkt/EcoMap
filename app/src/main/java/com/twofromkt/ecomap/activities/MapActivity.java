@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -70,10 +71,12 @@ public class MapActivity extends FragmentActivity {
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     ImageButton showChecks;
+    RelativeLayout categoriesLayout, listLayout, settListLayout, collapsedPart;
     EditText searchField;
     LinearLayout searchBox;
     boolean[] chosen;
     boolean[] chosenCheck;
+    Button[] trashCategoryButtons;
     NavigationView nv;
     ListAdapter searchAdapter;
     Criteria criteria = new Criteria();
@@ -91,9 +94,15 @@ public class MapActivity extends FragmentActivity {
             IS_EDIT_FOCUSED = "IS_EDIT_FOCUSED", NAME = "NAME", CATEGORY_NAME = "CATEGORY_NAME",
             BOTTOM_INFO_STATE = "BOTTOM_INFO_STATE", BOTTOM_LIST_STATE = "BOTTOM_LIST_STATE",
             CHECKBOXES_SHOWN = "CHECKBOXES_SHOWN", SEARCHBOX_SHOWN = "SEARCHBOX_SHOWN",
-            CHECKBOXES_CHOSEN = "CHECKBOXES_CHOSEN";
-    static final int CHOOSE_TRASH_ACTIVITY = 0, GPS_REQUEST = 111, LOADER = 42, CATEGORIES_N = 3,
-                    TRASH_NUM = 0, CAFE_NUM = 1, OTHER_NUM = 2;
+            CHECKBOXES_CHOSEN = "CHECKBOXES_CHOSEN", COLLAPSED_ALPHA = "COLLAPSED_ALPHA",
+            LIST_ALPHA = "LIST_ALPHA", CATEGORIES_ALPHA = "CATEGORIES_ALPHA";
+    static final int CHOOSE_TRASH_ACTIVITY = 0;
+    static final int GPS_REQUEST = 111;
+    static final int LOADER = 42;
+    public static final int CATEGORIES_N = 3;
+    public static final int TRASH_NUM = 0;
+    public static final int CAFE_NUM = 1;
+    public static final int OTHER_NUM = 2;
 
     @Override
     protected void onStart() {
@@ -122,9 +131,14 @@ public class MapActivity extends FragmentActivity {
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
         chosen = new boolean[TRASH_N];
+        trashCategoryButtons = new Button[TRASH_N];
         name = (TextView) findViewById(R.id.name_text);
         category_name = (TextView) findViewById(R.id.category_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        categoriesLayout = (RelativeLayout) findViewById(R.id.categories_layout);
+        settListLayout = (RelativeLayout) findViewById(R.id.sett_list_layout);
+        collapsedPart = (RelativeLayout) findViewById(R.id.collapsed_part);
+        listLayout = (RelativeLayout) findViewById(R.id.list_layout);
         trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
         floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
         checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
@@ -151,6 +165,15 @@ public class MapActivity extends FragmentActivity {
                                              (ImageButton) findViewById(R.id.cafe_checkbox),
                                              (ImageButton) findViewById(R.id.smth_checkbox)};
         chosenCheck = new boolean[CATEGORIES_N];
+        for (int i = 0; i < TRASH_N; i++) {
+            try {
+                trashCategoryButtons[i] = (Button) findViewById(R.id.class.getField("trash" + (i + 1)).getInt(null));
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+            trashCategoryButtons[i].setOnClickListener(adapter);
+            adapter.setAlpha(i);
+        }
     }
 
     private void setListeners() {
@@ -159,7 +182,9 @@ public class MapActivity extends FragmentActivity {
         showChecks.setOnClickListener(adapter);
         locationButton.setOnClickListener(adapter);
         nv.setNavigationItemSelectedListener(adapter);
+        bottomListView.setOnTouchListener(adapter);
         drawerLayout.addDrawerListener(adapter);
+        bottomList.setBottomSheetCallback(adapter);
         bottomInfo.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -181,7 +206,7 @@ public class MapActivity extends FragmentActivity {
                     addMarker(mMap, new TrashBox(
                             "found place",
                             new LatLng(address.getLatitude(), address.getLongitude()),
-                            "info", null, "sosi", new HashSet<TrashBox.Category>()));
+                            "info", null, "sosi", new HashSet<TrashBox.Category>()), TRASH_NUM);
                     closeKeyboard(thisActivity);
                 }
                 return true;
@@ -208,6 +233,9 @@ public class MapActivity extends FragmentActivity {
         state.putInt(BOTTOM_LIST_STATE, bottomList.getState());
         state.putInt(SEARCHBOX_SHOWN, searchBox.getVisibility());
         state.putInt(BOTTOM_INFO_STATE, bottomInfo.getState());
+        state.putFloat(COLLAPSED_ALPHA, collapsedPart.getAlpha());
+        state.putFloat(CATEGORIES_ALPHA, categoriesLayout.getAlpha());
+        state.putFloat(LIST_ALPHA, listLayout.getAlpha());
         state.putBooleanArray(CHECKBOXES_CHOSEN, chosenCheck);
         state.putInt(CHECKBOXES_SHOWN, checkboxes.getVisibility());
         if (isBottomOpened(this)) {
@@ -243,6 +271,9 @@ public class MapActivity extends FragmentActivity {
             chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomList.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
+            collapsedPart.setAlpha((float) savedInstanceState.get(COLLAPSED_ALPHA));
+            listLayout.setAlpha((float) savedInstanceState.get(LIST_ALPHA));
+            categoriesLayout.setAlpha((float) savedInstanceState.get(CATEGORIES_ALPHA));
             bottomInfo.setState((int) savedInstanceState.get(BOTTOM_INFO_STATE));
             chosenCheck = savedInstanceState.getBooleanArray(CHECKBOXES_CHOSEN);
             searchBox.setVisibility((int) savedInstanceState.get(SEARCHBOX_SHOWN));
@@ -267,7 +298,7 @@ public class MapActivity extends FragmentActivity {
         switch (requestCode) {
             case (CHOOSE_TRASH_ACTIVITY): {
                 if (resultCode == Activity.RESULT_OK) {
-                    clearMarkers();
+                    clearMarkers(TRASH_N);
                     chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
                     adapter.searchNearTrashes();
                 }
@@ -297,7 +328,8 @@ public class MapActivity extends FragmentActivity {
         } else if (floatingMenu.isOpened()) { // TODO: everything should be changed
             closeFloatingMenu(this);
         } else if (activeMarkers.size() > 0) {
-            clearMarkers();
+            clearMarkers(TRASH_NUM);
+            clearMarkers(CAFE_NUM);
             hideBottomList(this);
         } else {
             super.onBackPressed();

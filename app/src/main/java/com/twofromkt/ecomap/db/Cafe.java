@@ -1,6 +1,8 @@
 package com.twofromkt.ecomap.db;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.activities.MapActivity;
+
 import static com.twofromkt.ecomap.util.Util.*;
 
 public class Cafe extends Place {
@@ -13,5 +15,6 @@ public class Cafe extends Place {
         this.phone = phone;
         this.menuLink = menuLink;
         this.website = website;
+        category_number = MapActivity.CAFE_NUM;
     }
 }

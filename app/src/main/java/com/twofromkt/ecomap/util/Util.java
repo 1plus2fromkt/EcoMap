@@ -17,8 +17,11 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
+
 public class Util {
-    public static volatile ArrayList<Pair<Marker, Place>> activeMarkers = new ArrayList<>();
+    public static volatile ArrayList<ArrayList<Pair<Marker, Place>>> activeMarkers =
+            new ArrayList<>(CATEGORIES_N);
     public static ArrayList<Place> searchResults = new ArrayList<>(); // We definitely shouldn't do this
 
     public static class Period {

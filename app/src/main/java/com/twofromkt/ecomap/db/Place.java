@@ -12,6 +12,7 @@ import java.sql.Time;
 public abstract class Place implements Serializable {
     public Pair<Double, Double> location;
     public String name;
+    public int category_number;
     Period[] workTime;
     String img_link;
     public String information;
