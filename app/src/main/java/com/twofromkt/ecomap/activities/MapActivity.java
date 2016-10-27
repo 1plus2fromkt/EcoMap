@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -31,13 +32,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.vision.text.Line;
 import com.twofromkt.ecomap.DividerItemDecorator;
 import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Cafe;
+import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import io.codetail.widget.RevealLinearLayout;
@@ -57,7 +61,6 @@ import static com.twofromkt.ecomap.util.LocationUtil.findNearestAddress;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 import static com.twofromkt.ecomap.util.Util.activeMarkers;
-import static com.twofromkt.ecomap.util.Util.searchResults;
 
 public class MapActivity extends FragmentActivity {
 
@@ -107,6 +110,7 @@ public class MapActivity extends FragmentActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         Mock.putObjects(this);
     }
 
@@ -154,9 +158,11 @@ public class MapActivity extends FragmentActivity {
         searchList.setLayoutManager(new LinearLayoutManager(this));
         searchList.addItemDecoration(new DividerItemDecorator(this));
         searchBox = (LinearLayout) findViewById(R.id.search_box);
-        searchResults.add(new Cafe("Кафе 1", new LatLng(60.043175, 30.409615), "Мое первое кафе",
-                null, "", "656-68-52", "", "www.vk.com"));
-        searchAdapter = new ListAdapter(getApplicationContext(), searchResults);
+        if (activeMarkers.size() == 0)
+            for (int i = 0; i < CATEGORIES_N; i++) { // TODO: replace this crap
+                activeMarkers.add(new ArrayList<Pair<Marker, ? extends Place>>());
+            }
+        searchAdapter = new ListAdapter(getApplicationContext(), activeMarkers.get(0));
         searchList.setAdapter(searchAdapter);
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);

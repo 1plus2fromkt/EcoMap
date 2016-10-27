@@ -200,8 +200,8 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     public boolean onMarkerClick(Marker marker) {
         showBottomInfo(act, true);
         Place p = null;
-        for (ArrayList<Pair<Marker, Place> > ac : activeMarkers) {
-            for (Pair<Marker, Place> x : ac)
+        for (ArrayList<Pair<Marker, ? extends Place> > ac : activeMarkers) {
+            for (Pair<Marker, ? extends Place> x : ac)
                 if (x.first.equals(marker)) {
                     p = x.second;
                     break;
@@ -236,8 +236,6 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     @Override
     public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader,
                                Pair<CameraUpdate, ArrayList<? extends Place> > data) {
-        searchResults.clear();
-        searchResults.addAll(data.second);
         act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
         showBottomList(act, data.second);
         int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;

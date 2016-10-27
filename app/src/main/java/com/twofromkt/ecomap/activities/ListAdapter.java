@@ -2,23 +2,34 @@ package com.twofromkt.ecomap.activities;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Place;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private List<? extends Place> data;
+    private ArrayList<Place> data;
     private final LayoutInflater li;
 
-    public ListAdapter(Context context, List<? extends Place> data) {
-        this.data = data;
+    public ListAdapter(Context context, ArrayList<Pair<Marker, ? extends Place>> data) {
+        this.data = new ArrayList<>();
+        for (Pair<Marker, ? extends Place> d : data)
+            this.data.add(d.second);
+        this.li = LayoutInflater.from(context);
+        setHasStableIds(true);
+    }
+
+    public ListAdapter(Context context, ArrayList<? extends Place> data, int a) {
+        this.data = (ArrayList<Place>) data;
         this.li = LayoutInflater.from(context);
         setHasStableIds(true);
     }

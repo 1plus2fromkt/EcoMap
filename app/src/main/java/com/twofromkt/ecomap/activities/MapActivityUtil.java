@@ -60,7 +60,7 @@ public class MapActivityUtil {
     static void showBottomList(MapActivity act, ArrayList<? extends Place> data) {
         if (act.bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN)
             showBottomList(act);
-        act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data));
+        act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data, 2));
         act.searchList.invalidate();
     }
 
@@ -111,7 +111,9 @@ public class MapActivityUtil {
     }
 
     static void clearMarkers(int num) {
-        for (Pair<Marker, Place> m : activeMarkers.get(num))
+        if (num == -1)
+            return;
+        for (Pair<Marker, ? extends Place> m : activeMarkers.get(num))
             m.first.remove();
         activeMarkers.get(num).clear();
     }
