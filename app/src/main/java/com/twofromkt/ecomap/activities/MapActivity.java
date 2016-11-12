@@ -11,10 +11,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,18 +33,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.vision.text.Line;
-import com.twofromkt.ecomap.DividerItemDecorator;
 import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import io.codetail.widget.RevealLinearLayout;
+import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
 import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
 import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
@@ -65,7 +62,8 @@ import static com.twofromkt.ecomap.util.Util.activeMarkers;
 public class MapActivity extends FragmentActivity {
 
     GoogleMap mMap;
-    BottomSheetBehavior bottomInfo, bottomList;
+    BottomSheetBehavior bottomInfo;
+    ViewPagerBottomSheetBehavior bottomList;
     View bottomInfoView, bottomListView;
     FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
     ImageButton[] checkboxButtons;
@@ -74,21 +72,27 @@ public class MapActivity extends FragmentActivity {
     FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     ImageButton showChecks;
-    RelativeLayout categoriesLayout, listLayout, settListLayout, collapsedPart;
+    OneList[] lists;
+    RelativeLayout categoriesLayout;
+    RelativeLayout listLayout;
+    RelativeLayout settListLayout;
+    RelativeLayout collapsedPart;
     EditText searchField;
     LinearLayout searchBox;
+    ListViewPagerAdapter listPagerAdapter;
+    SettViewPagerAdapter settPagerAdapter;
     boolean[] chosen;
     boolean[] chosenCheck;
     Button[] trashCategoryButtons;
     NavigationView nv;
-    ListAdapter searchAdapter;
     Criteria criteria = new Criteria();
     LocationManager locationManager;
     DrawerLayout drawerLayout;
     LinearLayout checkboxes;
     MapActivityAdapter adapter;
-    RecyclerView searchList;
     Button menuButton;
+    ViewPager listViewPager, settViewPager;
+    TabLayout listTabLayout, settTabLayout;
 
     final MapActivity thisActivity = this;
 
@@ -153,17 +157,12 @@ public class MapActivity extends FragmentActivity {
         bottomInfoView = findViewById(R.id.bottom_sheet);
         bottomListView = findViewById(R.id.bottom_list);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
-        bottomList = BottomSheetBehavior.from(bottomListView);
-        searchList = (RecyclerView) findViewById(R.id.search_list);
-        searchList.setLayoutManager(new LinearLayoutManager(this));
-        searchList.addItemDecoration(new DividerItemDecorator(this));
+        bottomList = ViewPagerBottomSheetBehavior.from(bottomListView);
         searchBox = (LinearLayout) findViewById(R.id.search_box);
         if (activeMarkers.size() == 0)
             for (int i = 0; i < CATEGORIES_N; i++) { // TODO: replace this crap
                 activeMarkers.add(new ArrayList<Pair<Marker, ? extends Place>>());
             }
-        searchAdapter = new ListAdapter(getApplicationContext(), activeMarkers.get(0));
-        searchList.setAdapter(searchAdapter);
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
@@ -171,15 +170,28 @@ public class MapActivity extends FragmentActivity {
                                              (ImageButton) findViewById(R.id.cafe_checkbox),
                                              (ImageButton) findViewById(R.id.smth_checkbox)};
         chosenCheck = new boolean[CATEGORIES_N];
-        for (int i = 0; i < TRASH_N; i++) {
-            try {
-                trashCategoryButtons[i] = (Button) findViewById(R.id.class.getField("trash" + (i + 1)).getInt(null));
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            trashCategoryButtons[i].setOnClickListener(adapter);
-            adapter.setAlpha(i);
-        }
+
+        listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
+        settViewPager = (ViewPager) findViewById(R.id.sett_viewpager);
+        listPagerAdapter =
+                new ListViewPagerAdapter(getSupportFragmentManager(), activeMarkers, MapActivity.this);
+        settPagerAdapter = new SettViewPagerAdapter(getSupportFragmentManager());
+        listViewPager.setAdapter(listPagerAdapter);
+        settViewPager.setAdapter(settPagerAdapter);
+        listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
+        listTabLayout.setupWithViewPager(listViewPager);
+        settTabLayout = (TabLayout) findViewById(R.id.sett_tabs);
+        settTabLayout.setupWithViewPager(settViewPager);
+
+//        for (int i = 0; i < TRASH_N; i++) {
+//            try {
+//                trashCategoryButtons[i] = (Button) findViewById(R.id.class.getField("trash" + (i + 1)).getInt(null));
+//            } catch (IllegalAccessException | NoSuchFieldException e) {
+//                e.printStackTrace();
+//            }
+//            trashCategoryButtons[i].setOnClickListener(adapter);
+//            adapter.setAlpha(i);
+//        }
     }
 
     private void setListeners() {
@@ -190,7 +202,36 @@ public class MapActivity extends FragmentActivity {
         nv.setNavigationItemSelectedListener(adapter);
         bottomListView.setOnTouchListener(adapter);
         drawerLayout.addDrawerListener(adapter);
-        bottomList.setBottomSheetCallback(adapter);
+        bottomList.setBottomSheetCallback(new ViewPagerBottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int newState) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    listLayout.setVisibility(View.INVISIBLE);
+                    categoriesLayout.setVisibility(View.INVISIBLE);
+                }
+                if (newState == BottomSheetBehavior.STATE_EXPANDED)
+                    listViewPager.requestFocus();
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float slideOffset) {
+                if (slideOffset < 1) {
+//                    Log.d("Log", "onSlideBottom");
+                    collapsedPart.setVisibility(View.VISIBLE);
+                    collapsedPart.setAlpha(1 - slideOffset);
+                    if (adapter.isCategory) {
+                        categoriesLayout.setAlpha(slideOffset);
+                        listLayout.setVisibility(View.INVISIBLE);
+                    } else {
+                        listLayout.setAlpha(slideOffset);
+                        categoriesLayout.setVisibility(View.INVISIBLE);
+                    }
+                }
+                if (slideOffset == 1) {
+                    collapsedPart.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
         bottomInfo.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -220,6 +261,7 @@ public class MapActivity extends FragmentActivity {
         });
         hideBottomInfo(this);
         hideBottomList(this);
+
     }
 
     @Override
@@ -342,4 +384,10 @@ public class MapActivity extends FragmentActivity {
         }
         System.out.println("back pressed");
     }
+
+
+
+
+
+
 }

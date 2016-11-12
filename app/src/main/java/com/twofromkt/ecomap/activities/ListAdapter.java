@@ -17,26 +17,30 @@ import java.util.List;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private ArrayList<Place> data;
-    private final LayoutInflater li;
+    ArrayList<Place> data; // TODO:private
 
-    public ListAdapter(Context context, ArrayList<Pair<Marker, ? extends Place>> data) {
+    public ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data) {
         this.data = new ArrayList<>();
         for (Pair<Marker, ? extends Place> d : data)
             this.data.add(d.second);
-        this.li = LayoutInflater.from(context);
         setHasStableIds(true);
     }
 
-    public ListAdapter(Context context, ArrayList<? extends Place> data, int a) {
+    public ListAdapter(ArrayList<? extends Place> data, int a) { // bad thing
         this.data = (ArrayList<Place>) data;
-        this.li = LayoutInflater.from(context);
         setHasStableIds(true);
+    }
+
+    public ListAdapter(ListAdapter a) {
+        this.data = new ArrayList<>(a.data);
     }
 
     @Override
     public ListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(li.inflate(R.layout.search_list_item, parent, false));
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.search_list_item, parent, false);
+        ViewHolder vh = new ViewHolder(v);
+        return vh;
     }
 
     @Override
@@ -60,6 +64,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public int getItemCount() {
         return data.size();
     }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, cat;
         public ViewHolder(View itemView) {

@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.android.internal.util.Predicate;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,10 +23,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
-import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.ArrayList;
 
@@ -51,10 +48,10 @@ import static com.twofromkt.ecomap.util.Util.*;
 public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
-        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place> > >, View.OnTouchListener {
+        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place> > >, View.OnTouchListener{
 
     private MapActivity act;
-    private boolean isCategory = false;
+    boolean isCategory = false;
 
     public MapActivityAdapter(MapActivity activity) {
         act = activity;
@@ -104,21 +101,9 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
                 if (act.chosenCheck[i]) {
                     act.chosenCheck[i] = false;
                     act.checkboxButtons[i].setAlpha((float) 0.5);
-                    final int fi = i;
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            deleteMarkers(new Predicate<Place>() {
-//                                @Override
-//                                public boolean apply(Place place) {
-//                                    return place instanceof TrashBox && fi == TRASH_NUM ||
-//                                            place instanceof Cafe && fi == CAFE_NUM;// ||
-////                                            place instanceof Place && fi == 2;
-//                                }
-//                            });
-//                        }
-//                    }).run();
                     clearMarkers(i);
+
+
                 } else {
                     act.chosenCheck[i] = true;
                     act.checkboxButtons[i].setAlpha((float) 1);
@@ -126,6 +111,9 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
                         searchNearTrashes();
                     else if (i == CAFE_NUM)
                         searchNearCafe();
+                    act.listViewPager.setCurrentItem(i, true);
+//                    act.listPagerAdapter.r++;
+//                    act.listPagerAdapter.notifyDataSetChanged();
                 }
                 return;
             }
@@ -236,10 +224,9 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     @Override
     public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader,
                                Pair<CameraUpdate, ArrayList<? extends Place> > data) {
-        act.searchAdapter.notifyItemRangeInserted(0, act.searchAdapter.getItemCount() - 1); //onDataSetChanged not working
-        showBottomList(act, data.second);
         int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;
         addMarkers(data.second, data.first, act.mMap, t);
+        showBottomList(act, data.second, t);
     }
 
 
@@ -251,7 +238,10 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (v == act.bottomListView &&
-                act.bottomList.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                act.bottomList.getState() == BottomSheetBehavior.STATE_COLLAPSED &&
+                act.listLayout.getVisibility() == View.INVISIBLE &&
+                act.categoriesLayout.getVisibility() == View.INVISIBLE) {
+//            Log.d("Log", "onTouchBottom");
             isCategory = (event.getAxisValue(MotionEvent.AXIS_X) > v.getWidth() / 2);
             act.categoriesLayout.setAlpha(0);
             act.listLayout.setAlpha(0);
@@ -264,22 +254,33 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
 
     @Override
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
-        if (bottomSheet == act.bottomListView) {
-            if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                act.listLayout.setVisibility(View.INVISIBLE);
-                act.categoriesLayout.setVisibility(View.INVISIBLE);
-            }
-        }
+//        Log.d("Log", "onStateChangedBottom");
+//        if (bottomSheet == act.bottomListView) {
+//            if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+//                act.listLayout.setVisibility(View.INVISIBLE);
+//                act.categoriesLayout.setVisibility(View.INVISIBLE);
+//            }
+//            if (newState == BottomSheetBehavior.STATE_EXPANDED)
+//                act.listViewPager.requestFocus();
+//        }
     }
 
     @Override
     public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-        act.collapsedPart.setAlpha(1 - slideOffset);
-        if (isCategory) {
-            act.categoriesLayout.setAlpha(slideOffset);
-        } else {
-            act.listLayout.setAlpha(slideOffset);
-        }
+//        if (slideOffset < 1) {
+//            Log.d("Log", "onSlideBottom");
+//            act.collapsedPart.setVisibility(View.VISIBLE);
+//            act.collapsedPart.setAlpha(1 - slideOffset);
+//            if (isCategory) {
+//                act.categoriesLayout.setAlpha(slideOffset);
+//                act.listLayout.setVisibility(View.INVISIBLE);
+//            } else {
+//                act.listLayout.setAlpha(slideOffset);
+//                act.categoriesLayout.setVisibility(View.INVISIBLE);
+//            }
+//        }
+//        if (slideOffset == 1) {
+//            act.collapsedPart.setVisibility(View.INVISIBLE);
+//        }
     }
 }

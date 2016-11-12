@@ -3,39 +3,33 @@ package com.twofromkt.ecomap.activities;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
-import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.twofromkt.ecomap.db.Cafe;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Place;
-import com.twofromkt.ecomap.db.TrashBox;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 import io.codetail.animation.ViewAnimationUtils;
-import io.codetail.widget.RevealLinearLayout;
 
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
-import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 import static com.twofromkt.ecomap.util.Util.activeMarkers;
-import static com.twofromkt.ecomap.util.Util.includeAll;
 
 public class MapActivityUtil {
 
@@ -57,11 +51,9 @@ public class MapActivityUtil {
         act.bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
-    static void showBottomList(MapActivity act, ArrayList<? extends Place> data) {
+    static void showBottomList(MapActivity act, ArrayList<? extends Place> data, int num) {
         if (act.bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN)
             showBottomList(act);
-        act.searchList.setAdapter(new ListAdapter(act.getApplicationContext(), data, 2));
-        act.searchList.invalidate();
     }
 
     static void hideBottomInfo(MapActivity act) {
@@ -196,12 +188,5 @@ public class MapActivityUtil {
         animator.start();
     }
 
-//    public static void deleteMarkers (Predicate<Place> p) {
-//        for (int i = activeMarkers.size() - 1; i >= 0; i--) {
-//            if (p.apply(activeMarkers.get(i).second)) {
-//                activeMarkers.get(i).first.remove();
-//                activeMarkers.remove(i);
-//            }
-//        }
-//    }
+
 }
