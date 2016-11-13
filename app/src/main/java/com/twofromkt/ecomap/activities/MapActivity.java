@@ -54,6 +54,7 @@ import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomList;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.isBottomOpened;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
+import static com.twofromkt.ecomap.activities.SettViewPagerAdapter.chosen;
 import static com.twofromkt.ecomap.util.LocationUtil.findNearestAddress;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
@@ -81,7 +82,7 @@ public class MapActivity extends FragmentActivity {
     LinearLayout searchBox;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
-    boolean[] chosen;
+//    boolean[] chosen;
     boolean[] chosenCheck;
     Button[] trashCategoryButtons;
     NavigationView nv;
@@ -138,7 +139,7 @@ public class MapActivity extends FragmentActivity {
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
-        chosen = new boolean[TRASH_N];
+//        chosen = new boolean[TRASH_N];
         trashCategoryButtons = new Button[TRASH_N];
         name = (TextView) findViewById(R.id.name_text);
         category_name = (TextView) findViewById(R.id.category_text);
@@ -316,7 +317,7 @@ public class MapActivity extends FragmentActivity {
             if (savedInstanceState.getBoolean(NAV_BAR_OPENED)) {
                 drawerLayout.openDrawer(nv, true);
             }
-            chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
+            SettViewPagerAdapter.setChosen(savedInstanceState.getBooleanArray(CHOSEN_KEY));
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomList.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
             collapsedPart.setAlpha((float) savedInstanceState.get(COLLAPSED_ALPHA));
@@ -336,21 +337,6 @@ public class MapActivity extends FragmentActivity {
                 name.setText((String) savedInstanceState.get(NAME));
                 category_name.setText((String) savedInstanceState.get(CATEGORY_NAME));
                 showBottomInfo(this, false);
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case (CHOOSE_TRASH_ACTIVITY): {
-                if (resultCode == Activity.RESULT_OK) {
-                    clearMarkers(TRASH_N);
-                    chosen = data.getBooleanArrayExtra("CHOSEN_KEY");
-                    adapter.searchNearTrashes();
-                }
-                break;
             }
         }
     }

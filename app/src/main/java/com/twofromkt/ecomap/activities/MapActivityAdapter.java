@@ -41,6 +41,7 @@ import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
+import static com.twofromkt.ecomap.activities.SettViewPagerAdapter.chosen;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 import static com.twofromkt.ecomap.util.Util.*;
@@ -142,7 +143,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
         }
         for (int i = 0; i < TRASH_N; i++) {
             if (v == act.trashCategoryButtons[i]) {
-                act.chosen[i] = !act.chosen[i];
+                chosen[i] = !chosen[i];
                 setAlpha(i);
                 searchNearTrashes();
                 return;
@@ -151,7 +152,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     }
 
     void setAlpha(int i) {
-        act.trashCategoryButtons[i].setAlpha(ALPHAS[act.chosen[i] ? 1 : 0]);
+        act.trashCategoryButtons[i].setAlpha(ALPHAS[chosen[i] ? 1 : 0]);
     }
 
     private Bundle createBundle() {
@@ -178,7 +179,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
         Bundle bundle = createBundle();
         Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
-        bundle.putBooleanArray(GetPlaces.CHOSEN, act.chosen);
+        bundle.putBooleanArray(GetPlaces.CHOSEN, chosen);
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, bundle, this);
         l.onContentChanged();
