@@ -28,25 +28,24 @@ import com.twofromkt.ecomap.db.Place;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
 import static com.twofromkt.ecomap.activities.MapActivity.CAFE_NUM;
 import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
+import static com.twofromkt.ecomap.activities.MapActivity.MAPZOOM;
 import static com.twofromkt.ecomap.activities.MapActivity.TRASH_NUM;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.ALPHAS;
+import static com.twofromkt.ecomap.activities.MapActivity.ZOOM;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarkers;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
+import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomList;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
-import static com.twofromkt.ecomap.activities.SettViewPagerAdapter.chosen;
+import static com.twofromkt.ecomap.settings.TrashSett.TRASH_N;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback implements OnMapReadyCallback,
+public class MapActivityAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
         LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place> > >, View.OnTouchListener{
@@ -94,15 +93,12 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     @Override
     public void onClick(View v) {
         Location location = getLocation(act.locationManager, act.criteria);
-//        if (v == act.trashButton || v == act.cafeButton) {
-//            closeFloatingMenu(act);
-//        }
         for (int i = 0; i < CATEGORIES_N; i++) {
             if (v == act.checkboxButtons[i]) {
                 if (act.chosenCheck[i]) {
                     act.chosenCheck[i] = false;
                     act.checkboxButtons[i].setAlpha((float) 0.5);
-                    clearMarkers(i);
+                    act.util.clearMarkers(i);
 
 
                 } else {
@@ -113,8 +109,6 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
                     else if (i == CAFE_NUM)
                         searchNearCafe();
                     act.listViewPager.setCurrentItem(i, true);
-//                    act.listPagerAdapter.r++;
-//                    act.listPagerAdapter.notifyDataSetChanged();
                 }
                 return;
             }
@@ -125,7 +119,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
             }
 
             if (location != null) {
-                moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), 10));
+                moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), MAPZOOM));
             }
             return;
         }
@@ -141,18 +135,6 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
                 expand(act.checkboxes, act.searchBox);
             return;
         }
-        for (int i = 0; i < TRASH_N; i++) {
-            if (v == act.trashCategoryButtons[i]) {
-                chosen[i] = !chosen[i];
-                setAlpha(i);
-                searchNearTrashes();
-                return;
-            }
-        }
-    }
-
-    void setAlpha(int i) {
-        act.trashCategoryButtons[i].setAlpha(ALPHAS[chosen[i] ? 1 : 0]);
     }
 
     private Bundle createBundle() {
@@ -179,7 +161,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
         Bundle bundle = createBundle();
         Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
-        bundle.putBooleanArray(GetPlaces.CHOSEN, chosen);
+        bundle.putBooleanArray(GetPlaces.CHOSEN, act.settPagerAdapter.trashSett.chosen);
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, bundle, this);
         l.onContentChanged();
@@ -187,6 +169,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        hideBottomList(act);
         showBottomInfo(act, true);
         Place p = null;
         for (ArrayList<Pair<Marker, ? extends Place> > ac : activeMarkers) {
@@ -199,6 +182,14 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
         act.name.setText(p.name);
         act.category_name.setText(p.getClass().getName());
         return true;
+    }
+
+    public void focusOnMarker(Pair<Marker, ? extends Place> a) {
+        hideBottomList(act);
+        showBottomInfo(act, true);
+        act.name.setText(a.second.name);
+        act.category_name.setText(a.second.getClass().getName());
+        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }
 
     @Override
@@ -226,7 +217,7 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
     public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader,
                                Pair<CameraUpdate, ArrayList<? extends Place> > data) {
         int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;
-        addMarkers(data.second, data.first, act.mMap, t);
+        act.util.addMarkers(data.second, data.first, act.mMap, t);
         showBottomList(act, data.second, t);
     }
 
@@ -242,7 +233,6 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
                 act.bottomList.getState() == BottomSheetBehavior.STATE_COLLAPSED &&
                 act.listLayout.getVisibility() == View.INVISIBLE &&
                 act.categoriesLayout.getVisibility() == View.INVISIBLE) {
-//            Log.d("Log", "onTouchBottom");
             isCategory = (event.getAxisValue(MotionEvent.AXIS_X) > v.getWidth() / 2);
             act.categoriesLayout.setAlpha(0);
             act.listLayout.setAlpha(0);
@@ -253,35 +243,5 @@ public class MapActivityAdapter extends BottomSheetBehavior.BottomSheetCallback 
         return false;
     }
 
-    @Override
-    public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//        Log.d("Log", "onStateChangedBottom");
-//        if (bottomSheet == act.bottomListView) {
-//            if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-//                act.listLayout.setVisibility(View.INVISIBLE);
-//                act.categoriesLayout.setVisibility(View.INVISIBLE);
-//            }
-//            if (newState == BottomSheetBehavior.STATE_EXPANDED)
-//                act.listViewPager.requestFocus();
-//        }
-    }
 
-    @Override
-    public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//        if (slideOffset < 1) {
-//            Log.d("Log", "onSlideBottom");
-//            act.collapsedPart.setVisibility(View.VISIBLE);
-//            act.collapsedPart.setAlpha(1 - slideOffset);
-//            if (isCategory) {
-//                act.categoriesLayout.setAlpha(slideOffset);
-//                act.listLayout.setVisibility(View.INVISIBLE);
-//            } else {
-//                act.listLayout.setAlpha(slideOffset);
-//                act.categoriesLayout.setVisibility(View.INVISIBLE);
-//            }
-//        }
-//        if (slideOffset == 1) {
-//            act.collapsedPart.setVisibility(View.INVISIBLE);
-//        }
-    }
 }

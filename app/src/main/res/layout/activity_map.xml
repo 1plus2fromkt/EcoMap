@@ -129,52 +129,6 @@
                     android:layout_alignBottom="@+id/search_box" />
             </RelativeLayout>
 
-            <com.github.clans.fab.FloatingActionMenu
-                android:id="@+id/menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/location_button"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="@dimen/fab_margin"
-                fab:menu_backgroundColor="@android:color/transparent"
-                fab:menu_fab_label="@string/menuName"
-                fab:menu_fab_size="normal"
-                fab:menu_icon="@drawable/fab_add"
-                fab:menu_labels_colorNormal="#333333"
-                fab:menu_labels_colorPressed="#444444"
-                fab:menu_labels_colorRipple="#66FFFFFF"
-                fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
-                fab:menu_labels_position="left"
-                fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
-                fab:menu_labels_showShadow="true"
-                fab:menu_labels_textSize="14sp"
-                fab:menu_openDirection="up">
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/cafe_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_star"
-                    fab:fab_label="@string/menuItem1"
-                    fab:fab_size="mini" />
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/trash_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_star"
-                    fab:fab_label="@string/menuItem2"
-                    fab:fab_size="mini" />
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/etc_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_star"
-                    fab:fab_label="@string/menuItem3"
-                    fab:fab_size="mini" />
-            </com.github.clans.fab.FloatingActionMenu>
-
             <com.github.clans.fab.FloatingActionButton
                 android:id="@+id/location_button"
                 android:layout_width="wrap_content"

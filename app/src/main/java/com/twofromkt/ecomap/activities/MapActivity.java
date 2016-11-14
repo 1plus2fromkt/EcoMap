@@ -43,18 +43,13 @@ import java.util.HashSet;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
-import static com.twofromkt.ecomap.activities.CategoriesActivity.CHOSEN_KEY;
-import static com.twofromkt.ecomap.activities.CategoriesActivity.TRASH_N;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.addMarker;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.clearMarkers;
-import static com.twofromkt.ecomap.activities.MapActivityUtil.closeFloatingMenu;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomList;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.isBottomOpened;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
-import static com.twofromkt.ecomap.activities.SettViewPagerAdapter.chosen;
+import static com.twofromkt.ecomap.settings.TrashSett.TRASH_N;
 import static com.twofromkt.ecomap.util.LocationUtil.findNearestAddress;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
@@ -66,11 +61,10 @@ public class MapActivity extends FragmentActivity {
     BottomSheetBehavior bottomInfo;
     ViewPagerBottomSheetBehavior bottomList;
     View bottomInfoView, bottomListView;
-    FloatingActionButton cafeButton, trashButton, locationButton, navigationButton;
+    FloatingActionButton locationButton, navigationButton;
     ImageButton[] checkboxButtons;
     CameraPosition startPos;
     TextView name, category_name;
-    FloatingActionMenu floatingMenu;
     SupportMapFragment mapFragment;
     ImageButton showChecks;
     OneList[] lists;
@@ -82,8 +76,7 @@ public class MapActivity extends FragmentActivity {
     LinearLayout searchBox;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
-//    boolean[] chosen;
-    boolean[] chosenCheck;
+    public boolean[] chosenCheck;
     Button[] trashCategoryButtons;
     NavigationView nv;
     Criteria criteria = new Criteria();
@@ -94,6 +87,7 @@ public class MapActivity extends FragmentActivity {
     Button menuButton;
     ViewPager listViewPager, settViewPager;
     TabLayout listTabLayout, settTabLayout;
+    MapActivityUtil util;
 
     final MapActivity thisActivity = this;
 
@@ -103,14 +97,11 @@ public class MapActivity extends FragmentActivity {
             BOTTOM_INFO_STATE = "BOTTOM_INFO_STATE", BOTTOM_LIST_STATE = "BOTTOM_LIST_STATE",
             CHECKBOXES_SHOWN = "CHECKBOXES_SHOWN", SEARCHBOX_SHOWN = "SEARCHBOX_SHOWN",
             CHECKBOXES_CHOSEN = "CHECKBOXES_CHOSEN", COLLAPSED_ALPHA = "COLLAPSED_ALPHA",
-            LIST_ALPHA = "LIST_ALPHA", CATEGORIES_ALPHA = "CATEGORIES_ALPHA";
-    static final int CHOOSE_TRASH_ACTIVITY = 0;
-    static final int GPS_REQUEST = 111;
-    static final int LOADER = 42;
-    public static final int CATEGORIES_N = 3;
-    public static final int TRASH_NUM = 0;
-    public static final int CAFE_NUM = 1;
-    public static final int OTHER_NUM = 2;
+            LIST_ALPHA = "LIST_ALPHA", CATEGORIES_ALPHA = "CATEGORIES_ALPHA",
+            CHOSEN_KEY = "CHOSEN_KEY";
+    static final int GPS_REQUEST = 111, LOADER = 42;
+    public static final int CATEGORIES_N = 3, TRASH_NUM = 0, CAFE_NUM = 1, OTHER_NUM = 2;
+    public static final float MAPZOOM = 14  ;
 
     @Override
     protected void onStart() {
@@ -137,9 +128,7 @@ public class MapActivity extends FragmentActivity {
     private void initFields() {
         adapter = new MapActivityAdapter(this);
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        cafeButton = (FloatingActionButton) findViewById(R.id.cafe_button);
         searchField = (EditText) findViewById(R.id.search_edit);
-//        chosen = new boolean[TRASH_N];
         trashCategoryButtons = new Button[TRASH_N];
         name = (TextView) findViewById(R.id.name_text);
         category_name = (TextView) findViewById(R.id.category_text);
@@ -148,8 +137,6 @@ public class MapActivity extends FragmentActivity {
         settListLayout = (RelativeLayout) findViewById(R.id.sett_list_layout);
         collapsedPart = (RelativeLayout) findViewById(R.id.collapsed_part);
         listLayout = (RelativeLayout) findViewById(R.id.list_layout);
-        trashButton = (FloatingActionButton) findViewById(R.id.trash_button);
-        floatingMenu = (FloatingActionMenu) findViewById(R.id.menu);
         checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
         locationButton = (FloatingActionButton) findViewById(R.id.location_button);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -167,32 +154,23 @@ public class MapActivity extends FragmentActivity {
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
-        checkboxButtons = new ImageButton[] {(ImageButton) findViewById(R.id.trash_checkbox),
-                                             (ImageButton) findViewById(R.id.cafe_checkbox),
-                                             (ImageButton) findViewById(R.id.smth_checkbox)};
+        checkboxButtons = new ImageButton[]{(ImageButton) findViewById(R.id.trash_checkbox),
+                (ImageButton) findViewById(R.id.cafe_checkbox),
+                (ImageButton) findViewById(R.id.smth_checkbox)};
         chosenCheck = new boolean[CATEGORIES_N];
 
         listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
         settViewPager = (ViewPager) findViewById(R.id.sett_viewpager);
         listPagerAdapter =
-                new ListViewPagerAdapter(getSupportFragmentManager(), activeMarkers, MapActivity.this);
-        settPagerAdapter = new SettViewPagerAdapter(getSupportFragmentManager());
+                new ListViewPagerAdapter(getSupportFragmentManager(), activeMarkers, this);
+        settPagerAdapter = new SettViewPagerAdapter(getSupportFragmentManager(), this);
         listViewPager.setAdapter(listPagerAdapter);
         settViewPager.setAdapter(settPagerAdapter);
         listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
         listTabLayout.setupWithViewPager(listViewPager);
         settTabLayout = (TabLayout) findViewById(R.id.sett_tabs);
         settTabLayout.setupWithViewPager(settViewPager);
-
-//        for (int i = 0; i < TRASH_N; i++) {
-//            try {
-//                trashCategoryButtons[i] = (Button) findViewById(R.id.class.getField("trash" + (i + 1)).getInt(null));
-//            } catch (IllegalAccessException | NoSuchFieldException e) {
-//                e.printStackTrace();
-//            }
-//            trashCategoryButtons[i].setOnClickListener(adapter);
-//            adapter.setAlpha(i);
-//        }
+        util = new MapActivityUtil(this);
     }
 
     private void setListeners() {
@@ -251,7 +229,7 @@ public class MapActivity extends FragmentActivity {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Address address = findNearestAddress(searchField.getText().toString(),
                             thisActivity, getLocation(locationManager, criteria));
-                    addMarker(mMap, new TrashBox(
+                    util.addMarker(mMap, new TrashBox(
                             "found place",
                             new LatLng(address.getLatitude(), address.getLongitude()),
                             "info", null, "sosi", new HashSet<TrashBox.Category>()), TRASH_NUM);
@@ -268,8 +246,7 @@ public class MapActivity extends FragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
-        state.putBoolean(MENU_OPENED, floatingMenu.isOpened());
-        state.putBooleanArray(CHOSEN_KEY, chosen);
+        state.putBooleanArray(CHOSEN_KEY, settPagerAdapter.trashSett.chosen);
         if (mMap != null) { // mMap can be null if we turn phone just after onCreate
             LatLng ll = mMap.getCameraPosition().target;
             state.putDouble(LAT, ll.latitude);
@@ -305,9 +282,6 @@ public class MapActivity extends FragmentActivity {
             } catch (Exception ignored) {
 
             }
-            if (savedInstanceState.getBoolean(MENU_OPENED)) {
-                floatingMenu.open(false);
-            }
             if (savedInstanceState.getBoolean(IS_EDIT_FOCUSED)) {
                 searchField.requestFocus();
             } else {
@@ -317,7 +291,7 @@ public class MapActivity extends FragmentActivity {
             if (savedInstanceState.getBoolean(NAV_BAR_OPENED)) {
                 drawerLayout.openDrawer(nv, true);
             }
-            SettViewPagerAdapter.setChosen(savedInstanceState.getBooleanArray(CHOSEN_KEY));
+            settPagerAdapter.trashSett.chosen = savedInstanceState.getBooleanArray(CHOSEN_KEY);
             searchField.setText(savedInstanceState.getCharSequence(SEARCH_TEXT));
             bottomList.setState((int) savedInstanceState.get(BOTTOM_LIST_STATE));
             collapsedPart.setAlpha((float) savedInstanceState.get(COLLAPSED_ALPHA));
@@ -351,6 +325,13 @@ public class MapActivity extends FragmentActivity {
         }
     }
 
+    private boolean checkMarkers() {
+        for (int i = 0; i < CATEGORIES_N; i++)
+            if (activeMarkers.get(i).size() > 0)
+                return true;
+        return false;
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(nv)) {
@@ -359,11 +340,9 @@ public class MapActivity extends FragmentActivity {
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
             hideBottomInfo(this);
-        } else if (floatingMenu.isOpened()) { // TODO: everything should be changed
-            closeFloatingMenu(this);
-        } else if (activeMarkers.size() > 0) {
-            clearMarkers(TRASH_NUM);
-            clearMarkers(CAFE_NUM);
+        } else if (checkMarkers()) {
+            util.clearMarkers(TRASH_NUM);
+            util.clearMarkers(CAFE_NUM);
             hideBottomList(this);
         } else {
             super.onBackPressed();
@@ -371,9 +350,13 @@ public class MapActivity extends FragmentActivity {
         System.out.println("back pressed");
     }
 
+    public void searchTrashes() {
+        adapter.searchNearTrashes();
+    }
 
-
-
+    public void searchCafe() {
+        adapter.searchNearCafe();
+    }
 
 
 }

@@ -33,14 +33,16 @@ import static com.twofromkt.ecomap.util.Util.activeMarkers;
 
 public class MapActivityUtil {
 
-//    static Class[] intToClass = new Class[]{TrashBox.class, Cafe.class, Place.class};
-    static final float[] ALPHAS = new float[]{(float) 0.6, 1};
+    private static boolean isAnimating = false;
+    private final MapActivity act;
 
+    MapActivityUtil(MapActivity map) {
+        act = map;
+    }
 
     static void showBottomInfo(MapActivity act, boolean showSheet) {
         act.navigationButton.setVisibility(View.VISIBLE);
         act.locationButton.setVisibility(View.INVISIBLE);
-        act.floatingMenu.setVisibility(View.INVISIBLE);
         if (showSheet) {
             act.bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
@@ -59,7 +61,6 @@ public class MapActivityUtil {
     static void hideBottomInfo(MapActivity act) {
         act.navigationButton.setVisibility(View.INVISIBLE);
         act.locationButton.setVisibility(View.VISIBLE);
-        act.floatingMenu.setVisibility(View.VISIBLE);
         act.bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
@@ -76,21 +77,17 @@ public class MapActivityUtil {
         }
     }
 
-    static void closeFloatingMenu(MapActivity act) {
-        act.floatingMenu.close(true);
-    }
-
     static boolean isBottomOpened(MapActivity act) {
         return act.bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
     }
 
-    static Marker addMarker(GoogleMap mMap, Place x, int num) {
+    Marker addMarker(GoogleMap mMap, Place x, int num) {
         Marker m = mMap.addMarker(new MarkerOptions().position(getLatLng(x.location)).title(x.name));
         activeMarkers.get(num).add(new Pair<>(m, x));
         return m;
     }
 
-    static <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, GoogleMap mMap, int num) {
+    <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, GoogleMap mMap, int num) {
         clearMarkers(num);
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
@@ -100,14 +97,17 @@ public class MapActivityUtil {
         if (pos.size() > 0) {
             mMap.animateCamera(cu);
         }
+        act.listPagerAdapter.notifyUpdate();
+
     }
 
-    static void clearMarkers(int num) {
+    void clearMarkers(int num) {
         if (num == -1)
             return;
         for (Pair<Marker, ? extends Place> m : activeMarkers.get(num))
             m.first.remove();
         activeMarkers.get(num).clear();
+        act.listPagerAdapter.notifyUpdate();
     }
 
     static void addLocationSearch(MapActivity act, GoogleMap map) {
@@ -120,8 +120,10 @@ public class MapActivityUtil {
     }
 
     public static void expand(final View myView, final View another) {
+        if (isAnimating)
+            return;
         myView.setVisibility(View.VISIBLE);
-
+        isAnimating = true;
         int dx = myView.getWidth();
         int dy = myView.getHeight();
         float finalRadius = (float) Math.hypot(dx, dy);
@@ -132,17 +134,17 @@ public class MapActivityUtil {
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 another.setVisibility(View.INVISIBLE);
+                isAnimating = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                isAnimating = false;
             }
 
             @Override
@@ -155,7 +157,9 @@ public class MapActivityUtil {
     }
 
     public static void collapse(final View myView, final View another) {
-
+        if (isAnimating)
+            return;
+        isAnimating = true;
         int dx = myView.getWidth();
         int dy = myView.getHeight();
         float finalRadius = (float) Math.hypot(dx, dy);
@@ -173,11 +177,12 @@ public class MapActivityUtil {
             @Override
             public void onAnimationEnd(Animator animation) {
                 myView.setVisibility(View.INVISIBLE);
+                isAnimating = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-
+                isAnimating = false;
             }
 
             @Override

@@ -17,22 +17,13 @@ import java.util.List;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    ArrayList<Place> data; // TODO:private
+    private ArrayList<Pair<Marker, ? extends Place>> data;
+    final MapActivity act;
 
-    public ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data) {
-        this.data = new ArrayList<>();
-        for (Pair<Marker, ? extends Place> d : data)
-            this.data.add(d.second);
+    public ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data, MapActivity act) {
+        this.data = data;
+        this.act = act;
         setHasStableIds(true);
-    }
-
-    public ListAdapter(ArrayList<? extends Place> data, int a) { // bad thing
-        this.data = (ArrayList<Place>) data;
-        setHasStableIds(true);
-    }
-
-    public ListAdapter(ListAdapter a) {
-        this.data = new ArrayList<>(a.data);
     }
 
     @Override
@@ -44,16 +35,18 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Place p = data.get(position);
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
+        Place p = data.get(position).second;
         holder.name.setText(p.name);
         holder.cat.setText(p.information);
-    }
 
-//    public void updateData(List<? extends Place> data) {
-//        this.data = data; // might be too long (GC and everything)
-//        notifyDataSetChanged();
-//    }
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                act.adapter.focusOnMarker(data.get(position));
+            }
+        });
+    }
 
     @Override
     public long getItemId(int i) {
@@ -67,8 +60,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, cat;
+        final View container;
         public ViewHolder(View itemView) {
             super(itemView);
+            container = itemView;
             this.name = (TextView)itemView.findViewById(R.id.list_name_text);
             this.cat = (TextView)itemView.findViewById(R.id.list_category_text);
         }
