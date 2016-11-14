@@ -9,10 +9,14 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.activities.MapActivity;
 
 public class CafeSett extends android.support.v4.app.Fragment {
-    final MapActivity mapActivity;
 
-    public CafeSett(MapActivity mapActivity) {
-        this.mapActivity = mapActivity;
+    MapActivity mapActivity;
+
+    public CafeSett() {
+    }
+
+    public void setMapActivity(MapActivity act) {
+        this.mapActivity = act;
     }
 
     @Override

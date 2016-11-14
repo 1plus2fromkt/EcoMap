@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.activities;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,7 +11,7 @@ import com.twofromkt.ecomap.settings.OtherSett;
 import com.twofromkt.ecomap.settings.TrashSett;
 
 
-public class SettViewPagerAdapter extends FragmentPagerAdapter{
+public class SettViewPagerAdapter extends FragmentPagerAdapter {
 
     TrashSett trashSett;
     CafeSett cafeSett;
@@ -18,9 +19,12 @@ public class SettViewPagerAdapter extends FragmentPagerAdapter{
 
     SettViewPagerAdapter(FragmentManager fm, MapActivity a) {
         super(fm);
-        trashSett = new TrashSett(a);
-        cafeSett = new CafeSett(a);
-        otherSett = new OtherSett(a);
+        trashSett = new TrashSett();
+        trashSett.setMapActivity(a);
+        cafeSett = new CafeSett();
+        cafeSett.setMapActivity(a);
+        otherSett = new OtherSett();
+        otherSett.setMapActivity(a);
     }
 
     @Override

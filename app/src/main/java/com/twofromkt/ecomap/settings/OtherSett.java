@@ -10,11 +10,15 @@ import com.twofromkt.ecomap.activities.MapActivity;
 
 public class OtherSett extends android.support.v4.app.Fragment {
 
-    final MapActivity mapActivity;
+    MapActivity mapActivity;
 
-    public OtherSett(MapActivity mapActivity) {
-        this.mapActivity = mapActivity;
+    public OtherSett() {
     }
+
+    public void setMapActivity(MapActivity act) {
+        this.mapActivity = act;
+    }
+
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle savedInstance) {
         return li.inflate(R.layout.other_sett_fragment, null);

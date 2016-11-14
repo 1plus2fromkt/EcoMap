@@ -33,7 +33,7 @@ import static com.twofromkt.ecomap.util.Util.activeMarkers;
 
 public class MapActivityUtil {
 
-    private static boolean isAnimating = false;
+    protected static boolean isAnimating = false;
     private final MapActivity act;
 
     MapActivityUtil(MapActivity map) {

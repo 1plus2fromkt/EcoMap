@@ -1,6 +1,5 @@
 package com.twofromkt.ecomap.activities;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Place;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
@@ -61,11 +59,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView name, cat;
         final View container;
+
         public ViewHolder(View itemView) {
             super(itemView);
             container = itemView;
-            this.name = (TextView)itemView.findViewById(R.id.list_name_text);
-            this.cat = (TextView)itemView.findViewById(R.id.list_category_text);
+            this.name = (TextView) itemView.findViewById(R.id.list_name_text);
+            this.cat = (TextView) itemView.findViewById(R.id.list_category_text);
         }
     }
 }

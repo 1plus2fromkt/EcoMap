@@ -1,5 +1,6 @@
 package com.twofromkt.ecomap.util;
 
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +41,7 @@ public class Util {
 
     }
 
+    @Nullable
     public static LatLngBounds includeAll(ArrayList<? extends Place> data) {
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place x : data) {

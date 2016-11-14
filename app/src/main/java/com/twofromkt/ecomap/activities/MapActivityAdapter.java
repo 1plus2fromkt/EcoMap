@@ -32,7 +32,6 @@ import static com.twofromkt.ecomap.activities.MapActivity.CAFE_NUM;
 import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
 import static com.twofromkt.ecomap.activities.MapActivity.MAPZOOM;
 import static com.twofromkt.ecomap.activities.MapActivity.TRASH_NUM;
-import static com.twofromkt.ecomap.activities.MapActivity.ZOOM;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.addLocationSearch;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.closeKeyboard;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.collapse;
@@ -40,15 +39,15 @@ import static com.twofromkt.ecomap.activities.MapActivityUtil.expand;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.hideBottomList;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomInfo;
 import static com.twofromkt.ecomap.activities.MapActivityUtil.showBottomList;
-import static com.twofromkt.ecomap.settings.TrashSett.TRASH_N;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
-import static com.twofromkt.ecomap.util.Util.*;
+import static com.twofromkt.ecomap.util.Util.activeMarkers;
+import static com.twofromkt.ecomap.util.Util.moveMap;
 
 public class MapActivityAdapter implements OnMapReadyCallback,
         FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener, GoogleMap.OnMarkerClickListener,
-        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place> > >, View.OnTouchListener{
+        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place>>>, View.OnTouchListener {
 
     private MapActivity act;
     boolean isCategory = false;
@@ -128,11 +127,16 @@ public class MapActivityAdapter implements OnMapReadyCallback,
             return;
         }
         if (v == act.showChecks) {
-            v.setRotation(act.showChecks.getRotation() + 180);
-            if (act.checkboxes.getVisibility() == View.VISIBLE)
+            if (!MapActivityUtil.isAnimating) {
+                v.setRotation(act.showChecks.getRotation() + 180);
+            }
+//            v.animate().rotation(act.showChecks.getRotation() + 180);
+
+            if (act.checkboxes.getVisibility() == View.VISIBLE) {
                 collapse(act.checkboxes, act.searchBox);
-            else
+            } else {
                 expand(act.checkboxes, act.searchBox);
+            }
             return;
         }
     }
@@ -143,13 +147,13 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         bundle.putDouble(MapActivity.LAT, curr.latitude);
         bundle.putDouble(MapActivity.LNG, curr.longitude);
         bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
-        bundle.putFloat(GetPlaces.RADIUS, (float)1e15);
+        bundle.putFloat(GetPlaces.RADIUS, (float) 1e15);
         return bundle;
     }
 
     void searchNearCafe() {
         Bundle b = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
+        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> l;
         b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
         l = act.getSupportLoaderManager().restartLoader(
                 MapActivity.LOADER, b, this);
@@ -159,7 +163,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
 
     void searchNearTrashes() {
         Bundle bundle = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > l;
+        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> l;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, act.settPagerAdapter.trashSett.chosen);
         l = act.getSupportLoaderManager().restartLoader(
@@ -172,7 +176,7 @@ public class MapActivityAdapter implements OnMapReadyCallback,
         hideBottomList(act);
         showBottomInfo(act, true);
         Place p = null;
-        for (ArrayList<Pair<Marker, ? extends Place> > ac : activeMarkers) {
+        for (ArrayList<Pair<Marker, ? extends Place>> ac : activeMarkers) {
             for (Pair<Marker, ? extends Place> x : ac)
                 if (x.first.equals(marker)) {
                     p = x.second;
@@ -209,21 +213,20 @@ public class MapActivityAdapter implements OnMapReadyCallback,
     }
 
     @Override
-    public Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > onCreateLoader(int id, Bundle args) {
+    public Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> onCreateLoader(int id, Bundle args) {
         return new GetPlaces(act.getApplicationContext(), args);
     }
 
     @Override
-    public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader,
-                               Pair<CameraUpdate, ArrayList<? extends Place> > data) {
+    public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader,
+                               Pair<CameraUpdate, ArrayList<? extends Place>> data) {
         int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;
         act.util.addMarkers(data.second, data.first, act.mMap, t);
         showBottomList(act, data.second, t);
     }
 
-
     @Override
-    public void onLoaderReset(Loader<Pair<CameraUpdate, ArrayList<? extends Place> > > loader) {
+    public void onLoaderReset(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader) {
 
     }
 

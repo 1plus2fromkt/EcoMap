@@ -13,6 +13,7 @@ import com.twofromkt.ecomap.R;
 public class OneList extends Fragment {
     public ListAdapter a;
     public RecyclerView rv;
+
     public OneList() {
     }
 

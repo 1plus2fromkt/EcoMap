@@ -1,8 +1,6 @@
 package com.twofromkt.ecomap.activities;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -27,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -101,7 +98,7 @@ public class MapActivity extends FragmentActivity {
             CHOSEN_KEY = "CHOSEN_KEY";
     static final int GPS_REQUEST = 111, LOADER = 42;
     public static final int CATEGORIES_N = 3, TRASH_NUM = 0, CAFE_NUM = 1, OTHER_NUM = 2;
-    public static final float MAPZOOM = 14  ;
+    public static final float MAPZOOM = 14;
 
     @Override
     protected void onStart() {
@@ -154,7 +151,8 @@ public class MapActivity extends FragmentActivity {
         menuButton = (Button) findViewById(R.id.menu_button);
         menuButton.setOnClickListener(adapter);
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
-        checkboxButtons = new ImageButton[]{(ImageButton) findViewById(R.id.trash_checkbox),
+        checkboxButtons = new ImageButton[]{
+                (ImageButton) findViewById(R.id.trash_checkbox),
                 (ImageButton) findViewById(R.id.cafe_checkbox),
                 (ImageButton) findViewById(R.id.smth_checkbox)};
         chosenCheck = new boolean[CATEGORIES_N];
@@ -174,8 +172,9 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void setListeners() {
-        for (ImageButton i : checkboxButtons)
+        for (ImageButton i : checkboxButtons) {
             i.setOnClickListener(adapter);
+        }
         showChecks.setOnClickListener(adapter);
         locationButton.setOnClickListener(adapter);
         nv.setNavigationItemSelectedListener(adapter);
@@ -302,10 +301,11 @@ public class MapActivity extends FragmentActivity {
             searchBox.setVisibility((int) savedInstanceState.get(SEARCHBOX_SHOWN));
             checkboxes.setVisibility((int) savedInstanceState.get(CHECKBOXES_SHOWN));
             for (int i = 0; i < CATEGORIES_N; i++) {
-                if (!chosenCheck[i])
+                if (!chosenCheck[i]) {
                     checkboxButtons[i].setAlpha((float) 0.5);
-                else
+                } else {
                     checkboxButtons[i].setAlpha((float) 1);
+                }
             }
             if (isBottomOpened(this)) {
                 name.setText((String) savedInstanceState.get(NAME));
@@ -357,6 +357,5 @@ public class MapActivity extends FragmentActivity {
     public void searchCafe() {
         adapter.searchNearCafe();
     }
-
 
 }

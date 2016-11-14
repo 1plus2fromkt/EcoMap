@@ -13,12 +13,15 @@ import static com.twofromkt.ecomap.activities.MapActivity.TRASH_NUM;
 
 public class TrashSett extends android.support.v4.app.Fragment {
 
-    final MapActivity mapActivity;
+    MapActivity mapActivity;
 
-    public TrashSett(MapActivity mapActivity) {
-        this.mapActivity = mapActivity;
+    public TrashSett() {
         trashCategoryButtons = new Button[TRASH_N];
         chosen = new boolean[TRASH_N];
+    }
+
+    public void setMapActivity(MapActivity act) {
+        this.mapActivity = act;
     }
 
     public boolean[] chosen;
