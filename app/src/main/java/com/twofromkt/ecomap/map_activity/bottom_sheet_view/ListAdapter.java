@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.activities;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 

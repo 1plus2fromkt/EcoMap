@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.twofromkt.ecomap.R;
+import com.twofromkt.ecomap.map_activity.bottom_sheet_view.ListAdapter;
 
 public class OneList extends Fragment {
     public ListAdapter a;

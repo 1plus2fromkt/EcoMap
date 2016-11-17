@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.activities;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -6,11 +6,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.Marker;
+import com.twofromkt.ecomap.activities.OneList;
 import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
+import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
 
 class ListViewPagerAdapter extends FragmentPagerAdapter {
     OneList[] tabs;

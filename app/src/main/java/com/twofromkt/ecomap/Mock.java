@@ -1,7 +1,7 @@
 package com.twofromkt.ecomap;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.activities.MapActivity;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.db.Cafe;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.TrashBox;

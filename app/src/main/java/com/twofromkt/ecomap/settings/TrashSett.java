@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.activities.MapActivity;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 
-import static com.twofromkt.ecomap.activities.MapActivity.TRASH_NUM;
+import static com.twofromkt.ecomap.map_activity.MapActivity.TRASH_NUM;
 
 public class TrashSett extends android.support.v4.app.Fragment {
 
@@ -45,9 +45,9 @@ public class TrashSett extends android.support.v4.app.Fragment {
                 public void onClick(View v) {
                     chosen[fi] = !chosen[fi];
                     trashCategoryButtons[fi].setAlpha(ALPHAS[chosen[fi] ? 1 : 0]);
-                    if (mapActivity.chosenCheck[TRASH_NUM]) {
-                        mapActivity.searchTrashes();
-                    }
+//                    if (mapActivity.chosenCheck[TRASH_NUM]) {
+//                        mapActivity.searchTrashes();
+//                    }
                 }
             });
         }

@@ -32,7 +32,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".activities.MapActivity"
+            android:name=".map_activity.MapActivity"
             android:label="@string/title_activity_map"
             android:windowSoftInputMode = "stateUnchanged|adjustResize">
             <intent-filter>

@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.activities.MapActivity;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 
 public class OtherSett extends android.support.v4.app.Fragment {
 

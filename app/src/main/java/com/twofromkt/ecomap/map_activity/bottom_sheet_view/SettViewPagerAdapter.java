@@ -1,11 +1,11 @@
-package com.twofromkt.ecomap.activities;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
 
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.map_activity.bottom_sheet_view.ListViewPagerAdapter;
 import com.twofromkt.ecomap.settings.CafeSett;
 import com.twofromkt.ecomap.settings.OtherSett;
 import com.twofromkt.ecomap.settings.TrashSett;

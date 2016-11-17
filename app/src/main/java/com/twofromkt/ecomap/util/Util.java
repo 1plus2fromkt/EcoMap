@@ -16,9 +16,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import static com.twofromkt.ecomap.activities.MapActivity.CATEGORIES_N;
 
 public class Util {
     public static volatile ArrayList<ArrayList<Pair<Marker, ? extends Place>>> activeMarkers =

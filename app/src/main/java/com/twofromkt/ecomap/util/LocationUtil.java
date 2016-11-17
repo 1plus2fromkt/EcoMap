@@ -8,7 +8,7 @@ import android.location.LocationManager;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.activities.MapActivity;
+import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.data_struct.Pair;
 
 import java.util.List;
