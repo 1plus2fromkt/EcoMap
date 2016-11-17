@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.settings;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view.a;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,26 +7,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.map_activity.MapActivity;
 
-import static com.twofromkt.ecomap.map_activity.MapActivity.TRASH_NUM;
-
-public class TrashSett extends android.support.v4.app.Fragment {
-
-    MapActivity mapActivity;
+public class TrashSett extends AbstractSett {
 
     public TrashSett() {
         trashCategoryButtons = new Button[TRASH_N];
         chosen = new boolean[TRASH_N];
     }
 
-    public void setMapActivity(MapActivity act) {
-        this.mapActivity = act;
-    }
-
-    public boolean[] chosen;
-    public Button[] trashCategoryButtons;
-    public static final int TRASH_N = 3;
+    boolean[] chosen;
+    Button[] trashCategoryButtons;
+    static final int TRASH_N = 3;
     final static float[] ALPHAS = new float[]{(float) 0.6, 1};
 
     @Override
