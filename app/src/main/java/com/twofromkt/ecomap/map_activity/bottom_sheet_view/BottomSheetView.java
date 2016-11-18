@@ -123,4 +123,13 @@ public class BottomSheetView extends RelativeLayout implements View.OnTouchListe
         }
         return false;
     }
+
+    public void focusOnTab(int i) {
+        listViewPager.setCurrentItem(i);
+        settViewPager.setCurrentItem(i);
+    }
+
+    public boolean[] getTrashCategories() {
+        return settPagerAdapter.trashSett.chosen;
+    }
 }

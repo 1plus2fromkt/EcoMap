@@ -17,6 +17,7 @@ public class SearchBarView extends LinearLayout {
 
     Button openMenuButton;
     EditText searchBar;
+    LinearLayout checkboxes, searchBox;
     MapActivity parentActivity;
     ImageButton[] checkboxButtons;
     ImageButton showChecks;
@@ -36,6 +37,8 @@ public class SearchBarView extends LinearLayout {
         searchBar = (EditText) findViewById(R.id.search_edit);
         searchBar.setCursorVisible(false);
         searchBar.setHint("Search query");
+        checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
+        searchBox = (LinearLayout) findViewById(R.id.search_box);
 
         checkboxButtons = new ImageButton[]{
                 (ImageButton) findViewById(R.id.trash_checkbox),

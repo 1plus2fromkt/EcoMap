@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Marker;
+import com.twofromkt.ecomap.Consts;
 import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.Place;
@@ -23,7 +24,6 @@ import com.twofromkt.ecomap.map_activity.search_bar_view.SearchBarView;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.settings.TrashSett.TRASH_N;
 import static com.twofromkt.ecomap.util.Util.activeMarkers;
 
 public class MapActivity extends FragmentActivity {
@@ -73,6 +73,10 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void initFields() {
+        if (activeMarkers.size() == 0)
+            for (int i = 0; i < CATEGORIES_N; i++) { // TODO: replace this crap
+                activeMarkers.add(new ArrayList<Pair<Marker, ? extends Place>>());
+            }
         map = (MapView) findViewById(R.id.map_view);
         map.attach(this, getSupportFragmentManager(), true);
         searchBar = (SearchBarView) findViewById(R.id.search_bar);
@@ -85,7 +89,7 @@ public class MapActivity extends FragmentActivity {
         adapter = new MapActivityAdapter(this);
         util = new MapActivityUtil(this);
 
-        trashCategoryButtons = new Button[TRASH_N];
+        trashCategoryButtons = new Button[Consts.TRASH_N];
         name = (TextView) findViewById(R.id.name_text);
         category_name = (TextView) findViewById(R.id.category_text);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -94,10 +98,7 @@ public class MapActivity extends FragmentActivity {
 //        nv = (NavigationView) findViewById(R.id.nav_view);
 //        navigationButton = (FloatingActionButton) findViewById(R.id.nav_button);
 
-        if (activeMarkers.size() == 0)
-            for (int i = 0; i < CATEGORIES_N; i++) { // TODO: replace this crap
-                activeMarkers.add(new ArrayList<Pair<Marker, ? extends Place>>());
-            }
+
 
     }
 

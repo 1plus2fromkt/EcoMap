@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.map_activity.bottom_sheet_view.a;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 
 import com.twofromkt.ecomap.R;
 
-public class CafeSett extends AbstractSett{
-
-    public CafeSett() {
+public class OtherSett extends AbstractSett {
+    public OtherSett() {
     }
 
     @Override
     public View onCreateView(LayoutInflater li, ViewGroup container, Bundle savedInstance) {
-        return li.inflate(R.layout.cafe_sett_fragment, null);
+        return li.inflate(R.layout.other_sett_fragment, null);
     }
 }

@@ -69,7 +69,7 @@ public class MapView extends RelativeLayout {
         Bundle bundle = createBundle();
         Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
         bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
-        bundle.putBooleanArray(GetPlaces.CHOSEN, parentActivity.settPagerAdapter.trashSett.chosen);
+        bundle.putBooleanArray(GetPlaces.CHOSEN, parentActivity.bottomSheet.getTrashCategories());
         loader = parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, parentActivity.adapter);
         loader.onContentChanged();
@@ -78,8 +78,7 @@ public class MapView extends RelativeLayout {
     public void focusOnMarker(Pair<Marker, ? extends Place> a) {
         MapActivityUtil.hideBottomList(parentActivity);
         MapActivityUtil.showBottomInfo(parentActivity, true);
-        parentActivity.name.setText(a.second.name);
-        parentActivity.category_name.setText(a.second.getClass().getName());
+        parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());
 //        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }
 

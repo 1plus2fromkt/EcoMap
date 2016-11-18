@@ -60,7 +60,7 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
                     } else if (i == CAFE_NUM) {
                         bar.parentActivity.map.searchNearCafe();
                     }
-                    bar.parentActivity.listViewPager.setCurrentItem(i, true);
+                    bar.parentActivity.bottomSheet.focusOnTab(i);
                 }
                 return;
             }

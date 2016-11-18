@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.map_activity.bottom_sheet_view.a;
+package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
 
 import com.twofromkt.ecomap.map_activity.MapActivity;
 

@@ -42,7 +42,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         holder.container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                act.adapter.focusOnMarker(data.get(position));
+                act.map.focusOnMarker(data.get(position));
             }
         });
     }

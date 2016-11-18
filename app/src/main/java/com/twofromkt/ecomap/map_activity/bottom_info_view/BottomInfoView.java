@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
@@ -15,6 +16,7 @@ import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 public class BottomInfoView extends LinearLayout {
 
     BottomSheetBehavior bottomInfo;
+    TextView name, category_name;
     View bottomInfoView;
     MapActivity parentActivity;
 
@@ -46,6 +48,11 @@ public class BottomInfoView extends LinearLayout {
 
             }
         });
+    }
+
+    public void addInfo(String name, String category_name) {
+        this.name.setText(name);
+        this.category_name.setText(category_name);
     }
 
 }
