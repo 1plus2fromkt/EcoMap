@@ -6,33 +6,33 @@
     android:animateLayoutChanges="true">
 
 
-    <com.twofromkt.ecomap.map_activity.map_view.MapView
+    <com.twofromkt.ecomap.map_activity.map.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.twofromkt.ecomap.map_activity.map_view.MapView>
+    </com.twofromkt.ecomap.map_activity.map.MapView>
 
-    <com.twofromkt.ecomap.map_activity.search_bar_view.SearchBarView
+    <com.twofromkt.ecomap.map_activity.search_bar.SearchBarView
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    </com.twofromkt.ecomap.map_activity.search_bar_view.SearchBarView>
+    </com.twofromkt.ecomap.map_activity.search_bar.SearchBarView>
 
-    <com.twofromkt.ecomap.map_activity.bottom_info_view.BottomInfoView
+    <com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView
         android:id="@+id/binfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.twofromkt.ecomap.map_activity.bottom_info_view.BottomInfoView>
+    </com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView>
 
-    <com.twofromkt.ecomap.map_activity.bottom_sheet_view.BottomSheetView
+    <com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView
         android:id="@+id/bsheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.twofromkt.ecomap.map_activity.bottom_sheet_view.BottomSheetView>
+    </com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView>
 
     <!--<android.support.design.widget.CoordinatorLayout-->
     <!--android:layout_width="match_parent"-->

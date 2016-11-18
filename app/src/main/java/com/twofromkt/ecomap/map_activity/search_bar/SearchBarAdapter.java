@@ -1,7 +1,6 @@
-package com.twofromkt.ecomap.map_activity.search_bar_view;
+package com.twofromkt.ecomap.map_activity.search_bar;
 
 import android.location.Address;
-import android.location.Location;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -31,14 +30,14 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            Address address = findNearestAddress(
-                    bar.searchBar.getText().toString(),
-                    bar.parentActivity,
-                    getLocation(bar.parentActivity.locationManager, bar.parentActivity.criteria));
-            bar.parentActivity.util.addMarker(bar.parentActivity.map.getMap(), new TrashBox(
-                    "found place",
-                    new LatLng(address.getLatitude(), address.getLongitude()),
-                    "info", null, "sosi", new HashSet<TrashBox.Category>()), TRASH_NUM);
+//            Address address = findNearestAddress(
+//                    bar.searchBar.getText().toString(),
+//                    bar.parentActivity,
+//                    getLocation(bar.parentActivity.map.locationManager, bar.parentActivity.map.criteria));
+//            bar.parentActivity.map.addMarker(new TrashBox(
+//                    "found place",
+//                    new LatLng(address.getLatitude(), address.getLongitude()),
+//                    "info", null, "sosi", new HashSet<TrashBox.Category>()), TRASH_NUM);
             MapActivityUtil.closeKeyboard(bar.parentActivity);
         }
         return true;
@@ -48,20 +47,7 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
     public void onClick(View v) {
         for (int i = 0; i < CATEGORIES_N; i++) {
             if (v == bar.checkboxButtons[i]) {
-                if (bar.chosenCheck[i]) {
-                    bar.chosenCheck[i] = false;
-                    bar.checkboxButtons[i].setAlpha((float) 0.5);
-                    bar.parentActivity.util.clearMarkers(i);
-                } else {
-                    bar.chosenCheck[i] = true;
-                    bar.checkboxButtons[i].setAlpha((float) 1);
-                    if (i == TRASH_NUM) {
-                        bar.parentActivity.map.searchNearTrashes();
-                    } else if (i == CAFE_NUM) {
-                        bar.parentActivity.map.searchNearCafe();
-                    }
-                    bar.parentActivity.bottomSheet.focusOnTab(i);
-                }
+                bar.util.setChosen(i, !bar.chosenCheck[i], true);
                 return;
             }
         }
@@ -70,16 +56,16 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
             return;
         }
         if (v == bar.showChecks) {
-            if (!MapActivityUtil.isAnimating) {
+            if (!bar.util.animating) {
                 v.setRotation(bar.showChecks.getRotation() + 180);
             }
 
             if (bar.checkboxes.getVisibility() == View.VISIBLE) {
-                MapActivityUtil.collapse(bar.checkboxes, bar.searchBox);
+                bar.util.collapse();
             } else {
-                MapActivityUtil.expand(bar.checkboxes, bar.searchBox);
+                bar.util.expand();
             }
-            return;
+//            return;
         }
     }
 }

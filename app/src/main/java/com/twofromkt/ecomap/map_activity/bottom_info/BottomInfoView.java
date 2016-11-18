@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.map_activity.bottom_info_view;
+package com.twofromkt.ecomap.map_activity.bottom_info;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -16,9 +16,11 @@ import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 public class BottomInfoView extends LinearLayout {
 
     BottomSheetBehavior bottomInfo;
-    TextView name, category_name;
+    TextView name, categoryName;
     View bottomInfoView;
     MapActivity parentActivity;
+
+    private BottomInfoAdapter adapter;
 
     public BottomInfoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -30,29 +32,36 @@ public class BottomInfoView extends LinearLayout {
         this.parentActivity = parentActivity;
         bottomInfoView = findViewById(R.id.bottom_sheet);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
-
+        name = (TextView) findViewById(R.id.name_text);
+        categoryName = (TextView) findViewById(R.id.category_text);
+        adapter = new BottomInfoAdapter(this);
         setListeners();
     }
 
     private void setListeners() {
-        bottomInfo.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    MapActivityUtil.hideBottomInfo(parentActivity);
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+        bottomInfo.setBottomSheetCallback(adapter);
     }
 
     public void addInfo(String name, String category_name) {
         this.name.setText(name);
-        this.category_name.setText(category_name);
+        this.categoryName.setText(category_name);
     }
 
+    public void hide() {
+//        act.navigationButton.setVisibility(View.INVISIBLE);
+//        act.locationButton.setVisibility(View.VISIBLE);
+        bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    public void show(boolean showSheet) {
+//        act.navigationButton.setVisibility(View.VISIBLE);
+//        act.locationButton.setVisibility(View.INVISIBLE);
+        if (showSheet) {
+            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+    }
+
+    public boolean isOpened() {
+        return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
+    }
 }

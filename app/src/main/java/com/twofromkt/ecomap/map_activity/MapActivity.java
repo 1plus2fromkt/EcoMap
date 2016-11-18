@@ -1,45 +1,31 @@
 package com.twofromkt.ecomap.map_activity;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Pair;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.Consts;
 import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Place;
-import com.twofromkt.ecomap.map_activity.bottom_info_view.BottomInfoView;
-import com.twofromkt.ecomap.map_activity.bottom_sheet_view.BottomSheetView;
-import com.twofromkt.ecomap.map_activity.map_view.MapView;
-import com.twofromkt.ecomap.map_activity.search_bar_view.SearchBarView;
-
-import java.util.ArrayList;
-
-import static com.twofromkt.ecomap.util.Util.activeMarkers;
+import com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView;
+import com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView;
+import com.twofromkt.ecomap.map_activity.map.MapView;
+import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
 
 public class MapActivity extends FragmentActivity {
 
 //    FloatingActionButton locationButton, navigationButton;
 
-    TextView name, category_name;
-
-    Button[] trashCategoryButtons;
+//    Button[] trashCategoryButtons;
 //    NavigationView nv;
+
     DrawerLayout drawerLayout;
 
-    public Criteria criteria = new Criteria();
-    public LocationManager locationManager;
     public MapActivityAdapter adapter;
-    public MapActivityUtil util;
 
     public SearchBarView searchBar;
     public MapView map;
@@ -69,14 +55,9 @@ public class MapActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initFields();
-        setListeners();
     }
 
     private void initFields() {
-        if (activeMarkers.size() == 0)
-            for (int i = 0; i < CATEGORIES_N; i++) { // TODO: replace this crap
-                activeMarkers.add(new ArrayList<Pair<Marker, ? extends Place>>());
-            }
         map = (MapView) findViewById(R.id.map_view);
         map.attach(this, getSupportFragmentManager(), true);
         searchBar = (SearchBarView) findViewById(R.id.search_bar);
@@ -87,24 +68,18 @@ public class MapActivity extends FragmentActivity {
         bottomSheet.attach(getSupportFragmentManager(), this);
 
         adapter = new MapActivityAdapter(this);
-        util = new MapActivityUtil(this);
 
-        trashCategoryButtons = new Button[Consts.TRASH_N];
-        name = (TextView) findViewById(R.id.name_text);
-        category_name = (TextView) findViewById(R.id.category_text);
+//        trashCategoryButtons = new Button[Consts.TRASH_N];
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 //        locationButton = (FloatingActionButton) findViewById(R.id.location_button);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
 //        nv = (NavigationView) findViewById(R.id.nav_view);
 //        navigationButton = (FloatingActionButton) findViewById(R.id.nav_button);
 
 
-
-    }
-
-    private void setListeners() {
-        MapActivityUtil.hideBottomInfo(this);
-        MapActivityUtil.hideBottomList(this);
+        bottomInfo.hide();
+        bottomSheet.hide();
     }
 
     @Override
@@ -187,14 +162,16 @@ public class MapActivity extends FragmentActivity {
         switch (requestCode) {
             case GPS_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
-//                    MapActivityUtil.addLocationSearch(this, mMap);
+//                    MapActivityUtil.addLocationSearch(this, mMap); //TODO
         }
     }
 
     private boolean checkMarkers() {
-        for (int i = 0; i < CATEGORIES_N; i++)
-            if (activeMarkers.get(i).size() > 0)
+        for (int i = 0; i < CATEGORIES_N; i++) {
+            if (MapView.getActiveMarkers().get(i).size() > 0) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -213,14 +190,6 @@ public class MapActivity extends FragmentActivity {
 //        } else {
 //            super.onBackPressed();
 //        }
-    }
-
-    public void searchTrashes() {
-        map.searchNearTrashes();
-    }
-
-    public void searchCafe() {
-        map.searchNearCafe();
     }
 
 }

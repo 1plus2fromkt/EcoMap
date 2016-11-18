@@ -1,9 +1,9 @@
-package com.twofromkt.ecomap.map_activity.map_view;
+package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -13,11 +13,11 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.db.Place;
@@ -26,15 +26,20 @@ import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.util.Util.moveMap;
+import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 public class MapView extends RelativeLayout {
 
     MapActivity parentActivity;
+
     GoogleMap mMap;
     CameraPosition startPos;
     SupportMapFragment mapFragment;
     MapAdapter adapter;
+    MapUtil util;
+
+    Criteria criteria = new Criteria();
+    LocationManager locationManager;
 
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,9 +50,12 @@ public class MapView extends RelativeLayout {
     public void attach(MapActivity parentActivity, FragmentManager fragmentManager,
                        boolean retainInstance) {
         this.parentActivity = parentActivity;
+        criteria = new Criteria();
+        locationManager = (LocationManager) parentActivity.getSystemService(Context.LOCATION_SERVICE);
         mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.setRetainInstance(retainInstance);
         adapter = new MapAdapter(this);
+        util = new MapUtil(this);
         mapFragment.getMapAsync(adapter);
     }
 
@@ -56,39 +64,30 @@ public class MapView extends RelativeLayout {
     }
 
     public void searchNearCafe() {
-        Bundle b = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
-        b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
-        loader = parentActivity.getSupportLoaderManager()
-                .restartLoader(MapActivity.LOADER, b, parentActivity.adapter);
-        loader.onContentChanged();
-        MapActivityUtil.showBottomList(parentActivity);
+        util.searchNearCafe();
     }
 
     public void searchNearTrashes() {
-        Bundle bundle = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
-        bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
-        bundle.putBooleanArray(GetPlaces.CHOSEN, parentActivity.bottomSheet.getTrashCategories());
-        loader = parentActivity.getSupportLoaderManager()
-                .restartLoader(MapActivity.LOADER, bundle, parentActivity.adapter);
-        loader.onContentChanged();
+        util.searchNearTrashes();
     }
 
     public void focusOnMarker(Pair<Marker, ? extends Place> a) {
-        MapActivityUtil.hideBottomList(parentActivity);
-        MapActivityUtil.showBottomInfo(parentActivity, true);
-        parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());
-//        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
+        util.focusOnMarker(a);
     }
 
-    private Bundle createBundle() {
-        LatLng curr = mMap.getCameraPosition().target;
-        Bundle bundle = new Bundle();
-        bundle.putDouble(MapActivity.LAT, curr.latitude);
-        bundle.putDouble(MapActivity.LNG, curr.longitude);
-        bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
-        bundle.putFloat(GetPlaces.RADIUS, (float) 1e15);
-        return bundle;
+    public Marker addMarker(Place x, int num) {
+        return util.addMarker(x, num);
+    }
+
+    public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
+        util.addMarkers(p, cu, num);
+    }
+
+    public void clearMarkers(int num) {
+        util.clearMarkers(num);
+    }
+
+    public static ArrayList<ArrayList<Pair<Marker, ? extends Place>>> getActiveMarkers() {
+        return MapUtil.activeMarkers;
     }
 }

@@ -18,8 +18,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 public class Util {
-    public static volatile ArrayList<ArrayList<Pair<Marker, ? extends Place>>> activeMarkers =
-            new ArrayList<>();
 
     public static class Period {
         public Time open, close;

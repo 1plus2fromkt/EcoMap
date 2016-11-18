@@ -1,6 +1,9 @@
-package com.twofromkt.ecomap.map_activity.search_bar_view;
+package com.twofromkt.ecomap.map_activity.search_bar;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
@@ -10,6 +13,8 @@ import android.widget.LinearLayout;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+
+import java.util.Arrays;
 
 import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
 
@@ -21,6 +26,8 @@ public class SearchBarView extends LinearLayout {
     MapActivity parentActivity;
     ImageButton[] checkboxButtons;
     ImageButton showChecks;
+
+    SearchBarUtil util;
 
     public boolean[] chosenCheck;
 
@@ -50,6 +57,7 @@ public class SearchBarView extends LinearLayout {
         chosenCheck = new boolean[CATEGORIES_N];
         showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
 
+        util = new SearchBarUtil(this);
         setListeners();
     }
 
@@ -61,6 +69,25 @@ public class SearchBarView extends LinearLayout {
             button.setOnClickListener(adapter);
         }
         showChecks.setOnClickListener(adapter);
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superSaved = super.onSaveInstanceState();
+        return new SavedSearchBar(superSaved, checkboxes.getVisibility(), chosenCheck);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedSearchBar savedState = (SavedSearchBar) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        checkboxes.setVisibility(savedState.getVisibility());
+        chosenCheck = savedState.getChosen();
+        for (int i = 0; i < CATEGORIES_N; i++) {
+            if (chosenCheck[i]) {
+                util.setChosen(i, true, false);
+            }
+        }
     }
 
 }

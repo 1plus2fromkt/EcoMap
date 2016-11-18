@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.map_activity.bottom_sheet_view;
+package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Pair;

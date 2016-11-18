@@ -70,7 +70,7 @@ public class MapActivityAdapter implements
 
     @Override
     public void onClick(View v) {
-        Location location = getLocation(act.locationManager, act.criteria);
+//        Location location = getLocation(act.map.locationManager, act.map.criteria);
 //        if (v == act.locationButton) {
 //            if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //                return;
@@ -93,7 +93,7 @@ public class MapActivityAdapter implements
                                Pair<CameraUpdate, ArrayList<? extends Place>> data) {
         int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;
 //        act.util.addMarkers(data.second, data.first, act.mMap, t);
-        MapActivityUtil.showBottomList(act, data.second, t);
+        act.bottomSheet.show(data.second, t);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.map_activity.map_view;
+package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -13,7 +13,6 @@ import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.util.Util.activeMarkers;
 import static com.twofromkt.ecomap.util.Util.moveMap;
 
 class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -26,10 +25,10 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        MapActivityUtil.hideBottomList(map.parentActivity);
-        MapActivityUtil.showBottomInfo(map.parentActivity, true);
+        map.parentActivity.bottomSheet.hide();
+        map.parentActivity.bottomInfo.show(true);
         Place p = null;
-        for (ArrayList<Pair<Marker, ? extends Place>> ac : activeMarkers) {
+        for (ArrayList<Pair<Marker, ? extends Place>> ac : MapView.getActiveMarkers()) {
             for (Pair<Marker, ? extends Place> x : ac)
                 if (x.first.equals(marker)) {
                     p = x.second;
@@ -56,6 +55,6 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener 
                     MapActivity.GPS_REQUEST);
             return;
         }
-        MapActivityUtil.addLocationSearch(map.parentActivity, map.mMap);
+        map.util.addLocationSearch(map.parentActivity);
     }
 }
