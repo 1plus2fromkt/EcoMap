@@ -66,7 +66,4 @@ public class Util {
         return builder.build();
     }
 
-    public static void moveMap(GoogleMap map, CameraPosition pos) {
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
-    }
 }

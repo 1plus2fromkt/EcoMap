@@ -1,7 +1,6 @@
 package com.twofromkt.ecomap.map_activity;
 
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -12,7 +11,6 @@ import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdate;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.activities.SettingsActivity;
@@ -21,17 +19,14 @@ import com.twofromkt.ecomap.db.Place;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
-
-public class MapActivityAdapter implements
-        FloatingActionButton.OnClickListener, NavigationView.OnNavigationItemSelectedListener,
+class MapActivityAdapter implements
+        NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener,
         LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place>>> {
 
     private MapActivity act;
-    public boolean isCategory = false;
 
-    public MapActivityAdapter(MapActivity activity) {
+    MapActivityAdapter(MapActivity activity) {
         act = activity;
     }
 
@@ -69,21 +64,6 @@ public class MapActivityAdapter implements
     }
 
     @Override
-    public void onClick(View v) {
-//        Location location = getLocation(act.map.locationManager, act.map.criteria);
-//        if (v == act.locationButton) {
-//            if (ActivityCompat.checkSelfPermission(act, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                return;
-//            }
-//
-//            if (location != null) {
-//                moveMap(act.mMap, fromLatLngZoom(location.getLatitude(), location.getLongitude(), MAPZOOM));
-//            }
-//            return;
-//        }
-    }
-
-    @Override
     public Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> onCreateLoader(int id, Bundle args) {
         return new GetPlaces(act.getApplicationContext(), args);
     }
@@ -91,7 +71,7 @@ public class MapActivityAdapter implements
     @Override
     public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader,
                                Pair<CameraUpdate, ArrayList<? extends Place>> data) {
-        int t = data.second.size() > 0 ? data.second.get(0).category_number : -1;
+        int t = data.second.size() > 0 ? data.second.get(0).categoryNumber : -1;
 //        act.util.addMarkers(data.second, data.first, act.mMap, t);
         act.bottomSheet.show(data.second, t);
     }

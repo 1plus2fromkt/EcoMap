@@ -57,6 +57,7 @@ class MapUtil {
     }
 
     void focusOnMarker(Pair<Marker, ? extends Place> a) {
+        System.out.println("focus on marker");
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.show(true);
         map.parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());

@@ -6,18 +6,16 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.db.TrashBox;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.HashSet;
 
-import static com.twofromkt.ecomap.map_activity.MapActivity.CAFE_NUM;
 import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
-import static com.twofromkt.ecomap.map_activity.MapActivity.TRASH_NUM;
-import static com.twofromkt.ecomap.util.LocationUtil.findNearestAddress;
-import static com.twofromkt.ecomap.util.LocationUtil.getLocation;
 
 class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickListener {
 
@@ -30,14 +28,17 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//            Address address = findNearestAddress(
-//                    bar.searchBar.getText().toString(),
-//                    bar.parentActivity,
-//                    getLocation(bar.parentActivity.map.locationManager, bar.parentActivity.map.criteria));
-//            bar.parentActivity.map.addMarker(new TrashBox(
-//                    "found place",
-//                    new LatLng(address.getLatitude(), address.getLongitude()),
-//                    "info", null, "sosi", new HashSet<TrashBox.Category>()), TRASH_NUM);
+            Address address = bar.parentActivity.map.findNearestAddress(
+                    bar.searchBar.getText().toString());
+            if (address == null) {
+                Toast.makeText(bar.parentActivity, "Address not found", Toast.LENGTH_LONG).show();
+                return false;
+            }
+            bar.parentActivity.map.addMarker(new TrashBox(
+                    "Place that I found",
+                    new LatLng(address.getLatitude(), address.getLongitude()),
+                    "That place is very awesome and I need to make that string long to test the text view",
+                    null, "", new HashSet<TrashBox.Category>()), Place.TRASHBOX);
             MapActivityUtil.closeKeyboard(bar.parentActivity);
         }
         return true;
@@ -52,6 +53,7 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
             }
         }
         if (v == bar.openMenuButton) {
+            Toast.makeText(bar.parentActivity, "Menu in development ¯\\_(ツ)_/¯", Toast.LENGTH_SHORT).show();
 //            bar.parentActivity.drawerLayout.openDrawer(act.nv);
             return;
         }
@@ -65,7 +67,6 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
             } else {
                 bar.util.expand();
             }
-//            return;
         }
     }
 }

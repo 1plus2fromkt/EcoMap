@@ -19,7 +19,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
     final static String[] tabNames = new String[]{"Мусор", "Кафе", "Прочее"};
     public int r = 0;
 
-    public ListViewPagerAdapter(FragmentManager manager,
+    ListViewPagerAdapter(FragmentManager manager,
                                 ArrayList <ArrayList<Pair<Marker, ? extends Place>>> a,
                                 MapActivity act) {
         super(manager);
@@ -49,6 +49,5 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return tabNames[position];
     }
-
 
 }

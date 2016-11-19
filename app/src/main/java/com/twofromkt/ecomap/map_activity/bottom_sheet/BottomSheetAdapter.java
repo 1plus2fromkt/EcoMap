@@ -48,7 +48,7 @@ class BottomSheetAdapter extends ViewPagerBottomSheetBehavior.BottomSheetCallbac
         if (slideOffset < 1) {
             sheet.collapsedPart.setVisibility(View.VISIBLE);
             sheet.collapsedPart.setAlpha(1 - slideOffset);
-            if (sheet.parentActivity.adapter.isCategory) {
+            if (isCategory) {
                 sheet.categoriesLayout.setAlpha(slideOffset);
                 sheet.listLayout.setVisibility(View.INVISIBLE);
             } else {

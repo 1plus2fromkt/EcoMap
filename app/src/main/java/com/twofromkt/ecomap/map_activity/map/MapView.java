@@ -1,9 +1,13 @@
 package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.Context;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -12,6 +16,7 @@ import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -25,7 +30,9 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 public class MapView extends RelativeLayout {
@@ -41,6 +48,10 @@ public class MapView extends RelativeLayout {
     Criteria criteria = new Criteria();
     LocationManager locationManager;
 
+    FloatingActionButton locationButton;
+
+    public static final float MAPZOOM = 14;
+
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -55,6 +66,8 @@ public class MapView extends RelativeLayout {
         mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.setRetainInstance(retainInstance);
         adapter = new MapAdapter(this);
+        locationButton = (FloatingActionButton) findViewById(R.id.location_button);
+        locationButton.setOnClickListener(adapter);
         util = new MapUtil(this);
         mapFragment.getMapAsync(adapter);
     }
@@ -85,6 +98,56 @@ public class MapView extends RelativeLayout {
 
     public void clearMarkers(int num) {
         util.clearMarkers(num);
+    }
+
+    /**
+     * Find the last location where the device was noticed
+     *
+     * @return last known location
+     */
+    public Location getLocation() {
+        return locationManager.getLastKnownLocation(
+                locationManager.getBestProvider(criteria, false));
+    }
+
+    /**
+     * Find the closest to the current location address
+     * matching the request
+     *
+     * @param request an address to search for
+     * @return the closest address matching the request
+     */
+    public Address findNearestAddress(String request) {
+        Geocoder gc = new Geocoder(parentActivity);
+        List<Address> addresses;
+        try {
+            addresses = gc.getFromLocationName(request, 50);
+        } catch (Exception e) {
+            return null;
+        }
+        if (addresses.size() == 0) {
+            return null;
+        }
+        Address result = addresses.get(0);
+        Location myLocation = getLocation();
+        LatLng myCoords = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        double currDist = distanceLatLng(
+                new LatLng(result.getLatitude(), result.getLongitude()), myCoords);
+        for (Address a : addresses) {
+            if (distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords) < currDist) {
+                currDist = distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords);
+                result = a;
+            }
+        }
+        return result;
+    }
+
+    public void moveMap(CameraPosition pos) {
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(pos));
+    }
+
+    public void addLocationSearch() {
+        util.addLocationSearch(parentActivity);
     }
 
     public static ArrayList<ArrayList<Pair<Marker, ? extends Place>>> getActiveMarkers() {

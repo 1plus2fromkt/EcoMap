@@ -1,17 +1,10 @@
 package com.twofromkt.ecomap.util;
 
 import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationManager;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.data_struct.Pair;
-
-import java.util.List;
 
 public class LocationUtil {
     public static final double RADIUS = 6371e3;
@@ -49,32 +42,6 @@ public class LocationUtil {
 
     public static CameraPosition fromLatLngZoom(LatLng x, float z) {
         return fromLatLngZoom(x.latitude, x.longitude, z);
-    }
-
-    public static Location getLocation(LocationManager manager, Criteria criteria) {
-        return manager.getLastKnownLocation(manager.getBestProvider(criteria, false));
-    }
-
-    public static Address findNearestAddress(String request, MapActivity act, Location myLocation) {
-        Geocoder gc = new Geocoder(act);
-        List<Address> addresses;
-        try {
-            addresses = gc.getFromLocationName(request, 50);
-        } catch (Exception e) {
-            return null;
-        }
-        Address result = addresses.get(0);
-        LatLng myCoords = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-        double currDist = distanceLatLng(
-                new LatLng(result.getLatitude(), result.getLongitude()),
-                myCoords);
-        for (Address a : addresses) {
-            if (distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords) < currDist) {
-                currDist = distanceLatLng(new LatLng(a.getLatitude(), a.getLongitude()), myCoords);
-                result = a;
-            }
-        }
-        return result;
     }
 
     public static class Cartesian {

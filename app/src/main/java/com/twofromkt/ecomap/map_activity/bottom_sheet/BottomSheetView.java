@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -103,5 +104,18 @@ public class BottomSheetView extends RelativeLayout {
     public void hide() {
 //        act.locationButton.setVisibility(View.VISIBLE);
         bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superSaved = super.onSaveInstanceState();
+        return new SavedBottomSheet(superSaved, bottomList.getState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedBottomSheet savedState = (SavedBottomSheet) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        bottomList.setState(savedState.getState());
     }
 }

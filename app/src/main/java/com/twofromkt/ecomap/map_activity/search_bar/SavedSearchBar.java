@@ -30,5 +30,4 @@ class SavedSearchBar extends View.BaseSavedState {
         dest.writeBooleanArray(chosen);
     }
 
-
 }

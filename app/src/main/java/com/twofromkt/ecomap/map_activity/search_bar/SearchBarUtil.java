@@ -4,10 +4,9 @@ import android.animation.Animator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
-import io.codetail.animation.ViewAnimationUtils;
+import com.twofromkt.ecomap.db.Place;
 
-import static com.twofromkt.ecomap.map_activity.MapActivity.CAFE_NUM;
-import static com.twofromkt.ecomap.map_activity.MapActivity.TRASH_NUM;
+import io.codetail.animation.ViewAnimationUtils;
 
 class SearchBarUtil {
 
@@ -92,6 +91,14 @@ class SearchBarUtil {
         animator.start();
     }
 
+    /**
+     * Set a checkbox state. In case to just change the state without interacting with
+     * other components call with activateMap = false
+     *
+     * @param index index of checkbox to be chosen
+     * @param state true if checkbox should be chosen, false otherwise
+     * @param activateMap true if the method should change map to show new objects
+     */
     void setChosen(int index, boolean state, boolean activateMap) {
         bar.chosenCheck[index] = state;
         bar.checkboxButtons[index].setAlpha((float) (state ? 1 : 0.5));
@@ -99,9 +106,9 @@ class SearchBarUtil {
             return;
         }
         if (state) {
-            if (index == TRASH_NUM) {
+            if (index == Place.TRASHBOX) {
                 bar.parentActivity.map.searchNearTrashes();
-            } else if (index == CAFE_NUM) {
+            } else if (index == Place.CAFE) {
                 bar.parentActivity.map.searchNearCafe();
             }
             bar.parentActivity.bottomSheet.focusOnTab(index);

@@ -14,12 +14,11 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private ArrayList<Pair<Marker, ? extends Place>> data;
     final MapActivity act;
 
-    public ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data, MapActivity act) {
+    ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data, MapActivity act) {
         this.data = data;
         this.act = act;
         setHasStableIds(true);
@@ -61,7 +60,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         final TextView name, cat;
         final View container;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             container = itemView;
             this.name = (TextView) itemView.findViewById(R.id.list_name_text);

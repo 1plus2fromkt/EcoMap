@@ -4,33 +4,33 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
+class SettViewPagerAdapter extends FragmentPagerAdapter {
 
-public class SettViewPagerAdapter extends FragmentPagerAdapter {
-
-    TrashSett trashSett;
-    CafeSett cafeSett;
-    OtherSett otherSett;
+    Sett.TrashSett trashSett;
+    Sett.CafeSett cafeSett;
+    Sett.OtherSett otherSett;
 
     SettViewPagerAdapter(FragmentManager fm, MapActivity a) {
         super(fm);
-        trashSett = new TrashSett();
+        trashSett = new Sett.TrashSett();
         trashSett.setMapActivity(a);
-        cafeSett = new CafeSett();
+        cafeSett = new Sett.CafeSett();
         cafeSett.setMapActivity(a);
-        otherSett = new OtherSett();
+        otherSett = new Sett.OtherSett();
         otherSett.setMapActivity(a);
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case MapActivity.TRASH_NUM:
+            case Place.TRASHBOX:
                 return trashSett;
-            case MapActivity.CAFE_NUM:
+            case Place.CAFE:
                 return cafeSett;
-            case MapActivity.OTHER_NUM:
+            case Place.OTHER:
                 return otherSett;
 
         }
@@ -46,8 +46,5 @@ public class SettViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int pos) {
         return ListViewPagerAdapter.tabNames[pos];
     }
-
-
-
 
 }
