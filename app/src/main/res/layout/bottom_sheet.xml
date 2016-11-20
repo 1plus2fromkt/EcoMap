@@ -18,17 +18,40 @@
         <RelativeLayout
             android:id="@+id/collapsed_part"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="60dp">
 
-            <TextView
-                android:id="@+id/bottom_label"
+            <ImageView
+                android:id="@+id/list_hint"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+                android:padding="7dp"
+                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="10dp"
-                android:text="show_list"
-                android:textSize="12sp" />
+                android:src="@mipmap/list_arrow"
+                android:layout_alignParentLeft="true"
+                android:contentDescription="Hint about element usage" />
+
+            <ImageView
+                android:id="@+id/list_sett_separator"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:src="@mipmap/vertical_separator"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="Separator between two hints"/>
+
+            <ImageView
+                android:id="@+id/sett_hint"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+                android:padding="7dp"
+                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:src="@mipmap/cogwheel_arrow"
+                android:layout_alignParentRight="true"
+                android:contentDescription="Hint about element usage"/>
+
         </RelativeLayout>
 
         <RelativeLayout

@@ -14,7 +14,7 @@ import java.sql.Time;
 
 public abstract class Place implements Serializable {
 
-    public static final int CAFE = 0, TRASHBOX = 1, OTHER = 2;
+    public static final int TRASHBOX = 0, CAFE = 1, OTHER = 2;
 
     @NonNull
     public Pair<Double, Double> location;

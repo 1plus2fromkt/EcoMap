@@ -16,7 +16,6 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.map_activity.MapActivity.MAPZOOM;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 
 class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -82,7 +81,7 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
             }
 
             if (location != null) {
-                map.moveMap(fromLatLngZoom(location.getLatitude(), location.getLongitude(), MAPZOOM));
+                map.moveMap(fromLatLngZoom(location.getLatitude(), location.getLongitude(), MapView.MAPZOOM));
             }
         }
     }
