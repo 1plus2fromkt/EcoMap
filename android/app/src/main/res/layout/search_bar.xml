@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginTop="8dp">
+
+    <LinearLayout
+        android:id="@+id/search_box"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bordered"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/menu_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/ic_menu_open" />
+
+        <EditText
+            android:id="@+id/search_edit"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:layout_weight="10"
+            android:background="@color/cast_expanded_controller_text_color"
+            android:hint="Search query"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:textSize="15sp" />
+
+        <ImageButton
+            android:id="@+id/empty_search"
+            style="@style/expandButton"
+            android:src="@drawable/ic_collapse_00010" />
+
+    </LinearLayout>
+
+    <io.codetail.widget.RevealLinearLayout
+        android:id="@+id/checkboxes_wrap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/checkboxes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bordered"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <LinearLayout style="@style/CheckBoxLayout">
+
+                <ImageButton
+                    android:id="@+id/trash_checkbox"
+                    style="@style/CheckBoxImage"
+                    android:src="@drawable/red" />
+
+                <TextView
+                    style="@style/CheckBoxText"
+                    android:text="Мусор" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CheckBoxLayout">
+
+                <ImageButton
+                    android:id="@+id/cafe_checkbox"
+                    style="@style/CheckBoxImage"
+                    android:src="@drawable/green" />
+
+                <TextView
+                    style="@style/CheckBoxText"
+                    android:text="Кафе" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/CheckBoxLayout">
+
+                <ImageButton
+                    android:id="@+id/smth_checkbox"
+                    style="@style/CheckBoxImage"
+                    android:src="@drawable/green" />
+
+                <TextView
+                    style="@style/CheckBoxText"
+                    android:text="Так далее" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/emptyChecks"
+                style="@style/expandButton"
+                android:src="@drawable/ic_collapse_00010"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </io.codetail.widget.RevealLinearLayout>
+
+    <ImageButton
+        android:id="@+id/show_checkboxes"
+        style="@style/expandButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/search_box"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_collapse_00010" />
+</RelativeLayout>
