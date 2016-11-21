@@ -1,5 +1,7 @@
 package db;
 
+import places.Recycle.RecycleHandler;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,14 +11,19 @@ import static db.DBMover.*;
 
 public class DataUpdator9000 {
 
+    static final int CAT_N = 2;
+    public static final String versionFileName = "db_versions.txt";
+    public static final int TRASH_N = 0;
+    static final int CAFE_N = 1;
+
     private static Connection[] curr = new Connection[CAT_N], diff = new Connection[CAT_N], temp = new Connection[CAT_N];
-    static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text", "address",
+    private static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text", "address",
                                             "img_link", "info", "work_time", "site", "telephone", "e_mail"}, {"id"}};
     private static final String[][] tabTypes =
             {{"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}};
     private static String[] schemas = new String[CAT_N];
-    static final int[] TAB_N = {tabNames[TRASH_N].length, tabNames[CAFE_N].length};
+    private static final int[] TAB_N = {tabNames[TRASH_N].length, tabNames[CAFE_N].length};
     public static void main(String[] args) {
         initSchema();
         try {
@@ -40,6 +47,7 @@ public class DataUpdator9000 {
 
             RecycleHandler.updateData(temp[TRASH_N]);
             updateDB(curr[TRASH_N], temp[TRASH_N], diff[TRASH_N], TRASH_N);
+            DBMover.main(null);
 
         } catch ( Exception e ) {
             System.err.println("Oh, shit, couldn't create a database");
@@ -49,14 +57,14 @@ public class DataUpdator9000 {
 
 
     private static void updateDB(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
-        DBEquality(old, notOld, diff, cat);
+        getDifferenceOldNew(old, notOld, diff, cat);
         old.close();
         notOld.close();
         new File("temp_" + dbNames[cat]).renameTo(new File(folderNames[cat] + "/" + dbNames[cat]));
 
     }
 
-    private static void DBEquality(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
+    private static void getDifferenceOldNew(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
         ResultSet res;
         Statement oldSt = old.createStatement();
         Statement notOldSt = notOld.createStatement();
@@ -102,7 +110,7 @@ public class DataUpdator9000 {
         }
     }
 
-    static String getInsertScheme(int number, String s, boolean replace) {
+    public static String getInsertScheme(int number, String s, boolean replace) {
         String sch = (replace ? "REPLACE" : "INSERT") + " INTO " + DBMover.tableName + " (";
         for (int i = 0; i < DataUpdator9000.tabNames[number].length; i++)
             sch += DataUpdator9000.tabNames[number][i] + ((i == DataUpdator9000.tabNames[number].length - 1) ? ")" : ", ");
@@ -112,6 +120,8 @@ public class DataUpdator9000 {
 
 
     private static void initSchema() {
+        if (schemas[0] != null)
+            return;
         for (int tr = 0; tr < CAT_N; tr++) {
             schemas[tr] = "CREATE TABLE " + tableName +
                     "(";
@@ -120,5 +130,33 @@ public class DataUpdator9000 {
             }
             schemas[tr] += ");";
         }
+    }
+
+    public static void mergeChanges(Connection c, int category, int lastVersion, int currVersion) {
+        try {
+            initSchema();
+            c.createStatement().execute(schemas[category]);
+            for (int i = lastVersion; i <= currVersion; i++) {
+                Statement oldSt = c.createStatement();
+                Connection d = DriverManager.getConnection("jdbc:sqlite:" + folderNames[category] + "/" +
+                        i + ".db");
+                Statement newSt = d.createStatement();
+                ResultSet newR = newSt.executeQuery("SELECT * FROM " + tableName);
+                while (newR.next()) {
+                    String val = "\'";
+                    for (int j = 1; j <= TAB_N[category]; j++) {
+                        val += newR.getObject(j).toString() + ((j == TAB_N[category]) ? "\');" : "\', \'");
+                    }
+                    oldSt.execute(DataUpdator9000.getInsertScheme(category, val, true));
+                }
+                d.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String dbFileName(int cat) {
+        return folderNames[cat] + "/" + dbNames[cat];
     }
 }

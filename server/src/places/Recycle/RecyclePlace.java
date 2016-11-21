@@ -1,4 +1,6 @@
-package db;
+package places.Recycle;
+
+import db.DataUpdator9000;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,26 +11,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import static db.DBMover.TRASH_N;
+import static db.DataUpdator9000.TRASH_N;
 
-public class RecyclePlace {
+class RecyclePlace {
 
     int id, NUM = TRASH_N;
     double lat, lng, rate;
     String content_text, address, title, img_link, info = "", site = "", work_time = "", telephone = "", e_mail = "";
 
-    void wrightToDB(Connection conn) throws SQLException {
+    void writeToDB(Connection conn) throws SQLException {
         String sep = "', '";
         Statement st = conn.createStatement();
         readInfoRecycle();
         deleteA();
-        if (id == 1 || id == 2) {
-            address += "huez";
+        if (id == 1 || id == 2 || id == 3) {
+            address += "pyathuizov";
         }
         String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
                 content_text + sep + address+ sep + title+ sep + img_link + sep + title +
                 sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
-        String sch = DataUpdator9000.getInsertScheme(NUM, log);
+        String sch = DataUpdator9000.getInsertScheme(NUM, log, false);
         st.execute(sch);
         System.out.println(log);
     }
@@ -114,7 +116,7 @@ public class RecyclePlace {
     private static ArrayList<String> getPageInfo(int id) {
         ArrayList<String> ans = new ArrayList<>();
         try {
-            URL url = new URL("http://recyclemap.ru/index.php?task=infopoint&pointid=" + Integer.toString(id) +
+            URL url = new URL("http://recyclemap.ru/index.php?task=infopoint&pointid=" + id +
                 "&tmpl=component#");
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String s;

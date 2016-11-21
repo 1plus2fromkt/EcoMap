@@ -1,4 +1,4 @@
-package db;
+package places.Recycle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,21 +45,11 @@ public class RecycleHandler {
             RecyclePlace pl = new RecyclePlace();
             for (; !s.contains("},") && !s.contains("}};"); s = page.get(i++)) {
                 if (curr < tags.length && s.contains(tags[curr])) {
-                    s = s.substring(s.indexOf(":") + 1).trim();
-                    s = s.substring(0, s.length() - 1).trim();
-                    switch (curr) {
-                        case 0: pl.id = Integer.parseInt(s); break;
-                        case 1: pl.lat = Double.parseDouble(s); break;
-                        case 2: pl.lng = Double.parseDouble(s); break;
-                        case 3: pl.title = s; break;
-                        case 4: pl.rate = Double.parseDouble(s); break;
-                        case 5: pl.content_text = s; break;
-                        case 6: pl.address = s; break;
-                    }
+                    parseCurr(curr, pl, s);
                     curr++;
                 }
             }
-            pl.wrightToDB(connection);
+            pl.writeToDB(connection);
             cnt++;
             System.out.println(cnt + " " + pl.id);
             if (s.contains("}};"))
@@ -67,10 +57,24 @@ public class RecycleHandler {
         }
     }
 
+    private static void parseCurr(int curr, RecyclePlace pl, String s) {
+        s = s.substring(s.indexOf(":") + 1).trim();
+        s = s.substring(0, s.length() - 1).trim();
+        switch (curr) {
+            case 0: pl.id = Integer.parseInt(s); break;
+            case 1: pl.lat = Double.parseDouble(s); break;
+            case 2: pl.lng = Double.parseDouble(s); break;
+            case 3: pl.title = s; break;
+            case 4: pl.rate = Double.parseDouble(s); break;
+            case 5: pl.content_text = s; break;
+            case 6: pl.address = s; break;
+        }
+    }
+
     private static ArrayList<String> getSourceOfCity(int i) {
         ArrayList<String> s = new ArrayList<>();
         try {
-            URL url = new URL(basicURL + "?city=" + Integer.toString(i));
+            URL url = new URL(basicURL + "?city=" + i);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String t;
             while ((t = in.readLine()) != null)
