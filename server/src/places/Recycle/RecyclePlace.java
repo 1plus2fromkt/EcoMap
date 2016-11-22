@@ -24,9 +24,6 @@ class RecyclePlace {
         Statement st = conn.createStatement();
         readInfoRecycle();
         deleteA();
-        if (id == 1 || id == 2 || id == 3) {
-            address += "pyathuizov";
-        }
         String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
                 content_text + sep + address+ sep + title+ sep + img_link + sep + title +
                 sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";

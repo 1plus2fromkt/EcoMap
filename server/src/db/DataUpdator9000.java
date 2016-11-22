@@ -24,7 +24,7 @@ public class DataUpdator9000 {
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}};
     private static String[] schemas = new String[CAT_N];
     private static final int[] TAB_N = {tabNames[TRASH_N].length, tabNames[CAFE_N].length};
-    public static void main(String[] args) {
+    public static void main() {
         initSchema();
         try {
             Class.forName("org.sqlite.JDBC");
