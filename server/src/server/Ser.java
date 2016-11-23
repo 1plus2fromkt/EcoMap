@@ -10,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 public class Ser {
 
     private static class Sender implements Runnable{
@@ -27,7 +29,6 @@ public class Ser {
         @Override
         public void run() {
             try {
-                this.s.setTcpNoDelay(true);
                 BufferedReader inVersion = new BufferedReader(new FileReader(DataUpdator9000.versionFileName));
                 DataInputStream in = new DataInputStream(s.getInputStream());
                 DataOutputStream out = new DataOutputStream(s.getOutputStream());
@@ -44,7 +45,6 @@ public class Ser {
                     s.close();
                     return;
                 }
-                System.out.println("Received versions");
                 String temp;
                 while ((temp = inVersion.readLine()) != null) {
                     currVersions.add(Integer.parseInt(temp));
@@ -84,7 +84,6 @@ public class Ser {
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
             out.writeLong(f.length());
             out.flush();
-            System.out.println(f.length());
             int curr = (int) f.length();
             while (curr > 0) {
                 int sz = Math.min(arr.length, curr);
@@ -93,9 +92,7 @@ public class Ser {
                 out.flush();
                 curr -= sz;
             }
-            System.out.println(out.size());
             out.flush();
-            System.out.println("sent file " + curr + " left");
         }
 
     }
@@ -107,7 +104,7 @@ public class Ser {
             while (true) {
                 DataUpdator9000.main();
                 try {
-                    Thread.sleep((int) 1e3 * 43200);
+                    sleep((int) 1e3 * 43200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -115,14 +112,16 @@ public class Ser {
         }
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException, IOException {
+    public static void main(String[] args) throws ClassNotFoundException, IOException {
         Class.forName("org.sqlite.JDBC");
+        System.out.println("Server start");
         ServerSocket s = new ServerSocket(4444);
         int id = 1;
-        new Thread(new Timer()).run();
+        new Thread(new Timer()).start();
         while (true) {
             Socket socket = s.accept();
-            new Thread(new Sender(socket, id++)).run();
+            new Thread(new Sender(socket, id++)).start();
+            System.out.println(id + " client");
         }
     }
 
