@@ -35,77 +35,77 @@
             android:inputType="text"
             android:textSize="15sp" />
 
-        <ImageButton
-            android:id="@+id/empty_search"
-            style="@style/expandButton"
-            android:src="@drawable/ic_collapse_00010" />
+        <!--<ImageButton-->
+            <!--android:id="@+id/empty_search"-->
+            <!--style="@style/expandButton"-->
+            <!--android:src="@drawable/ic_collapse_00010" />-->
 
     </LinearLayout>
 
-    <io.codetail.widget.RevealLinearLayout
-        android:id="@+id/checkboxes_wrap"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--<io.codetail.widget.RevealLinearLayout-->
+        <!--android:id="@+id/checkboxes_wrap"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
 
-        <LinearLayout
-            android:id="@+id/checkboxes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bordered"
-            android:orientation="horizontal"
-            android:visibility="invisible">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/checkboxes"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/bordered"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:visibility="invisible">-->
 
-            <LinearLayout style="@style/CheckBoxLayout">
+            <!--<LinearLayout style="@style/CheckBoxLayout">-->
 
-                <ImageButton
-                    android:id="@+id/trash_checkbox"
-                    style="@style/CheckBoxImage"
-                    android:src="@drawable/red" />
+                <!--<ImageButton-->
+                    <!--android:id="@+id/trash_checkbox"-->
+                    <!--style="@style/CheckBoxImage"-->
+                    <!--android:src="@drawable/red" />-->
 
-                <TextView
-                    style="@style/CheckBoxText"
-                    android:text="Мусор" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--style="@style/CheckBoxText"-->
+                    <!--android:text="Мусор" />-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout style="@style/CheckBoxLayout">
+            <!--<LinearLayout style="@style/CheckBoxLayout">-->
 
-                <ImageButton
-                    android:id="@+id/cafe_checkbox"
-                    style="@style/CheckBoxImage"
-                    android:src="@drawable/green" />
+                <!--<ImageButton-->
+                    <!--android:id="@+id/cafe_checkbox"-->
+                    <!--style="@style/CheckBoxImage"-->
+                    <!--android:src="@drawable/green" />-->
 
-                <TextView
-                    style="@style/CheckBoxText"
-                    android:text="Кафе" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--style="@style/CheckBoxText"-->
+                    <!--android:text="Кафе" />-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout style="@style/CheckBoxLayout">
+            <!--<LinearLayout style="@style/CheckBoxLayout">-->
 
-                <ImageButton
-                    android:id="@+id/smth_checkbox"
-                    style="@style/CheckBoxImage"
-                    android:src="@drawable/green" />
+                <!--<ImageButton-->
+                    <!--android:id="@+id/smth_checkbox"-->
+                    <!--style="@style/CheckBoxImage"-->
+                    <!--android:src="@drawable/green" />-->
 
-                <TextView
-                    style="@style/CheckBoxText"
-                    android:text="Так далее" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--style="@style/CheckBoxText"-->
+                    <!--android:text="Так далее" />-->
+            <!--</LinearLayout>-->
 
-            <ImageButton
-                android:id="@+id/emptyChecks"
-                style="@style/expandButton"
-                android:src="@drawable/ic_collapse_00010"
-                android:visibility="invisible" />
-        </LinearLayout>
-    </io.codetail.widget.RevealLinearLayout>
+            <!--<ImageButton-->
+                <!--android:id="@+id/emptyChecks"-->
+                <!--style="@style/expandButton"-->
+                <!--android:src="@drawable/ic_collapse_00010"-->
+                <!--android:visibility="invisible" />-->
+        <!--</LinearLayout>-->
+    <!--</io.codetail.widget.RevealLinearLayout>-->
 
-    <ImageButton
-        android:id="@+id/show_checkboxes"
-        style="@style/expandButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/search_box"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/ic_collapse_00010" />
+    <!--<ImageButton-->
+        <!--android:id="@+id/show_checkboxes"-->
+        <!--style="@style/expandButton"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignBottom="@+id/search_box"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:src="@drawable/ic_collapse_00010" />-->
 </RelativeLayout>

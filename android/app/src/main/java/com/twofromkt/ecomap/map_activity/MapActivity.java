@@ -13,6 +13,7 @@ import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView;
 import com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView;
+import com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
 
@@ -31,6 +32,7 @@ public class MapActivity extends FragmentActivity {
     public MapView map;
     public BottomInfoView bottomInfo;
     public BottomSheetView bottomSheet;
+    public ChooseTypePanel typePanel;
 
     public static final String LAT = "LAT", LNG = "LNG";
     public static final int GPS_REQUEST = 111, LOADER = 42;
@@ -58,6 +60,8 @@ public class MapActivity extends FragmentActivity {
         bottomInfo.attach(this);
         bottomSheet = (BottomSheetView) findViewById(R.id.bsheet);
         bottomSheet.attach(getSupportFragmentManager(), this);
+        typePanel = (ChooseTypePanel) findViewById(R.id.choose_type);
+        typePanel.attach(this);
 
         adapter = new MapActivityAdapter(this);
 

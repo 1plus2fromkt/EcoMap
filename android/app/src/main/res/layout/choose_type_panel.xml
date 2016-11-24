@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp">
+
+    <RelativeLayout
+        android:id="@+id/choose_type_panel"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/bordered"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/type_button1"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="30dp"
+            style="@style/checkbox_image_style"
+            android:src="@mipmap/trashbox_icon" />
+
+        <ImageButton
+            android:id="@+id/type_button2"
+            android:layout_centerHorizontal="true"
+            style="@style/checkbox_image_style"
+            android:src="@mipmap/cafes_icon" />
+
+        <ImageButton
+            android:id="@+id/type_button3"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
+            style="@style/checkbox_image_style"
+            android:src="@mipmap/other_icon" />
+
+
+    </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/show_choose_type_panel"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"
+        android:background="#000000ff"
+        android:src="@mipmap/show_types_icon"/>
+
+</LinearLayout>

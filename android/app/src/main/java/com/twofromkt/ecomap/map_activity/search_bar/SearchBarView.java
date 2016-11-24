@@ -44,18 +44,13 @@ public class SearchBarView extends LinearLayout {
         searchBar = (EditText) findViewById(R.id.search_edit);
         searchBar.setCursorVisible(false);
         searchBar.setHint("Search query");
-        checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
+//        checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
         searchBox = (LinearLayout) findViewById(R.id.search_box);
-
-        checkboxButtons = new ImageButton[]{
-                (ImageButton) findViewById(R.id.trash_checkbox),
-                (ImageButton) findViewById(R.id.cafe_checkbox),
-                (ImageButton) findViewById(R.id.smth_checkbox)};
 
         this.parentActivity = parentActivity;
 
         chosenCheck = new boolean[CATEGORIES_N];
-        showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
+//        showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
 
         util = new SearchBarUtil(this);
         setListeners();
@@ -65,10 +60,10 @@ public class SearchBarView extends LinearLayout {
         adapter = new SearchBarAdapter(this);
         searchBar.setOnEditorActionListener(adapter);
         openMenuButton.setOnClickListener(adapter);
-        for (ImageButton button : checkboxButtons) {
-            button.setOnClickListener(adapter);
-        }
-        showChecks.setOnClickListener(adapter);
+//        for (ImageButton button : checkboxButtons) {
+//            button.setOnClickListener(adapter);
+//        }
+//        showChecks.setOnClickListener(adapter);
     }
 
     @Override
@@ -81,13 +76,13 @@ public class SearchBarView extends LinearLayout {
     public void onRestoreInstanceState(Parcelable state) {
         SavedSearchBar savedState = (SavedSearchBar) state;
         super.onRestoreInstanceState(savedState.getSuperState());
-        checkboxes.setVisibility(savedState.getVisibility());
+//        checkboxes.setVisibility(savedState.getVisibility());
         chosenCheck = savedState.getChosen();
-        for (int i = 0; i < CATEGORIES_N; i++) {
-            if (chosenCheck[i]) {
-                util.setChosen(i, true, false);
-            }
-        }
+//        for (int i = 0; i < CATEGORIES_N; i++) {
+//            if (chosenCheck[i]) {
+//                util.setChosen(i, true, false);
+//            }
+//        }
     }
 
 }
