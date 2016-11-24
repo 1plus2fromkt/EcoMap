@@ -71,8 +71,8 @@ class MapActivityAdapter implements
     @Override
     public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader,
                                Pair<CameraUpdate, ArrayList<? extends Place>> data) {
-        int t = data.second.size() > 0 ? data.second.get(0).categoryNumber : -1;
-//        act.util.addMarkers(data.second, data.first, act.mMap, t);
+        int t = data.second.size() > 0 ? data.second.get(0).categoryNumber : -1; // TODO: if no object added, we have to add fake object to identify type of object
+        act.map.addMarkers(data.second, data.first, t);
         act.bottomSheet.show(data.second, t);
     }
 

@@ -99,6 +99,7 @@ public class ChooseTypePanel extends LinearLayout {
                             getResources(),
                             chosenTypes[index] ? imageIds[index] : imageIdsChosen[index]));
                     chosenTypes[index] = !chosenTypes[index];
+                    parentActivity.searchBar.setChosen(index, chosenTypes[index], true);
                 }
             });
         }

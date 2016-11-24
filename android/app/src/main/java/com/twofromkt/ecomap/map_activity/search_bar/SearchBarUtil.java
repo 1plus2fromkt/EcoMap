@@ -100,8 +100,8 @@ class SearchBarUtil {
      * @param activateMap true if the method should change map to show new objects
      */
     void setChosen(int index, boolean state, boolean activateMap) {
-        bar.chosenCheck[index] = state;
-        bar.checkboxButtons[index].setAlpha((float) (state ? 1 : 0.5));
+//        bar.chosenCheck[index] = state;
+//        bar.checkboxButtons[index].setAlpha((float) (state ? 1 : 0.5));
         if (!activateMap) {
             return;
         }

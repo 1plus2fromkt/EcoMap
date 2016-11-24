@@ -87,6 +87,10 @@ public class BottomSheetView extends RelativeLayout {
         settViewPager.setCurrentItem(i);
     }
 
+    public void notifyChange() {
+        listPagerAdapter.notifyUpdate();
+    }
+
     public boolean[] getTrashCategories() {
         return settPagerAdapter.trashSett.chosen;
     }

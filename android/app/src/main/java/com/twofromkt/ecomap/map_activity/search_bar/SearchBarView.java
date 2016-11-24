@@ -29,7 +29,7 @@ public class SearchBarView extends LinearLayout {
 
     SearchBarUtil util;
 
-    public boolean[] chosenCheck;
+//    public boolean[] chosenCheck;
 
     private SearchBarAdapter adapter;
 
@@ -49,7 +49,7 @@ public class SearchBarView extends LinearLayout {
 
         this.parentActivity = parentActivity;
 
-        chosenCheck = new boolean[CATEGORIES_N];
+//        chosenCheck = new boolean[CATEGORIES_N];
 //        showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
 
         util = new SearchBarUtil(this);
@@ -69,7 +69,7 @@ public class SearchBarView extends LinearLayout {
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superSaved = super.onSaveInstanceState();
-        return new SavedSearchBar(superSaved, checkboxes.getVisibility(), chosenCheck);
+        return new SavedSearchBar(superSaved, checkboxes.getVisibility());
     }
 
     @Override
@@ -77,12 +77,16 @@ public class SearchBarView extends LinearLayout {
         SavedSearchBar savedState = (SavedSearchBar) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 //        checkboxes.setVisibility(savedState.getVisibility());
-        chosenCheck = savedState.getChosen();
+//        chosenCheck = savedState.getChosen();
 //        for (int i = 0; i < CATEGORIES_N; i++) {
 //            if (chosenCheck[i]) {
 //                util.setChosen(i, true, false);
 //            }
 //        }
+    }
+
+    public void setChosen(int index, boolean state, boolean activateMap) {
+        util.setChosen(index, state, activateMap);
     }
 
 }

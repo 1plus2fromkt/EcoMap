@@ -46,12 +46,12 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
 
     @Override
     public void onClick(View v) {
-        for (int i = 0; i < CATEGORIES_N; i++) {
-            if (v == bar.checkboxButtons[i]) {
-                bar.util.setChosen(i, !bar.chosenCheck[i], true);
-                return;
-            }
-        }
+//        for (int i = 0; i < CATEGORIES_N; i++) {
+//            if (v == bar.checkboxButtons[i]) {
+//                bar.util.setChosen(i, !bar.chosenCheck[i], true);
+//                return;
+//            }
+//        }
         if (v == bar.openMenuButton) {
             Toast.makeText(bar.parentActivity, "Menu in development ¯\\_(ツ)_/¯", Toast.LENGTH_SHORT).show();
 //            bar.parentActivity.drawerLayout.openDrawer(act.nv);

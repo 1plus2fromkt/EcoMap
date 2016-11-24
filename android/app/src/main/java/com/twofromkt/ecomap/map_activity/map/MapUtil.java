@@ -54,6 +54,7 @@ class MapUtil {
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();
+        map.parentActivity.bottomSheet.show();
     }
 
     void focusOnMarker(Pair<Marker, ? extends Place> a) {
@@ -80,7 +81,7 @@ class MapUtil {
         if (pos.size() > 0) {
             map.mMap.animateCamera(cu);
         }
-//        act.listPagerAdapter.notifyUpdate();
+        map.parentActivity.bottomSheet.notifyChange();
 
     }
 
@@ -91,7 +92,7 @@ class MapUtil {
             m.first.remove();
         }
         activeMarkers.get(num).clear();
-//        act.listPagerAdapter.notifyUpdate();
+        map.parentActivity.bottomSheet.notifyChange();
     }
 
     void addLocationSearch(MapActivity act) {

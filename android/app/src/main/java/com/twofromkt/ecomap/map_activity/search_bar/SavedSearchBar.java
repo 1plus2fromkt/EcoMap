@@ -7,27 +7,25 @@ import android.view.View;
 class SavedSearchBar extends View.BaseSavedState {
 
     private int visibility;
-    private boolean[] chosen;
 
-    SavedSearchBar(Parcelable superState, int visibility, boolean[] chosen) {
+    SavedSearchBar(Parcelable superState, int visibility) {
         super(superState);
         this.visibility = visibility;
-        this.chosen = chosen;
     }
 
     int getVisibility() {
         return visibility;
     }
 
-    boolean[] getChosen() {
-        return chosen;
-    }
+//    boolean[] getChosen() {
+//        return chosen;
+//    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(visibility);
-        dest.writeBooleanArray(chosen);
+//        dest.writeBooleanArray(chosen);
     }
 
 }
