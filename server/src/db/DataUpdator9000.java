@@ -29,6 +29,9 @@ public class DataUpdator9000 {
         try {
             Class.forName("org.sqlite.JDBC");
             for (int i = 0; i < CAT_N; i++) {
+                temp[i] = null;
+                curr[i] = null;
+                diff[i] = null;
                 new File("temp_" + dbNames[i]).delete();
                 new File("diff_" + dbNames[i]).delete();
                 if (!Files.exists(Paths.get(folderNames[i])))
@@ -37,12 +40,15 @@ public class DataUpdator9000 {
             for (int i = 0; i < CAT_N; i++) {
                 temp[i] = DriverManager.getConnection("jdbc:sqlite:temp_" + dbNames[i]);
                 curr[i] = DriverManager.getConnection("jdbc:sqlite:" + folderNames[i] + "/" + dbNames[i]);
-                Statement tr = curr[i].createStatement();
-                if (!curr[i].getMetaData().getTables(null, null, tableName, null).next())
-                    tr.execute(schemas[i]);
+                try (Statement tr = curr[i].createStatement()) {
+                    if (!curr[i].getMetaData().getTables(null, null, tableName, null).next())
+                        tr.execute(schemas[i]);
+                }
                 diff[i] = DriverManager.getConnection("jdbc:sqlite:diff_" + dbNames[i]);
-                temp[i].createStatement().execute(schemas[i]);
-                diff[i].createStatement().execute(schemas[i]);
+                try (Statement s1 = temp[i].createStatement(); Statement s2 = diff[i].createStatement()){
+                    s1.execute(schemas[i]);
+                    s2.execute(schemas[i]);
+                }
             }
 
             RecycleHandler.updateData(temp[TRASH_N]);
@@ -52,43 +58,59 @@ public class DataUpdator9000 {
         } catch ( Exception e ) {
             System.err.println("Oh, shit, couldn't create a database");
             e.printStackTrace();
+        } finally {
+            try {
+                for (int i = 0; i < CAT_N; i++) {
+                    if (temp[i] != null)
+                        temp[i].close();
+                    if (diff[i] != null)
+                        diff[i].close();
+                    if (curr[i] != null)
+                        curr[i].close();
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
 
     private static void updateDB(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
         getDifferenceOldNew(old, notOld, diff, cat);
-        old.close();
-        notOld.close();
         new File("temp_" + dbNames[cat]).renameTo(new File(folderNames[cat] + "/" + dbNames[cat]));
 
     }
 
     private static void getDifferenceOldNew(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
-        ResultSet res;
-        Statement oldSt = old.createStatement();
-        Statement notOldSt = notOld.createStatement();
-        ResultSet second = notOldSt.executeQuery("SELECT * FROM " + tableName);
-        Statement diffSt = diff.createStatement();
-        boolean toUpdate, empty;
-        String val;
-        while (second.next()) {
-            val = "\'";
-            res = oldSt.executeQuery("SELECT * FROM " + tableName + " WHERE id=" + second.getObject(1).toString() + ";");
-            toUpdate = false;
-            res.next();
-            empty = res.getObject(1) == null;
-            for (int i = 1; i <= TAB_N[cat]; i++) {
-                val += second.getObject(i).toString() + ((i == TAB_N[cat]) ? "\');" : "\', \'");
-                if (!empty && !res.getObject(i).equals(second.getObject(i))) {
-                    toUpdate = true;
+        try (Statement oldSt = old.createStatement();
+            Statement notOldSt = notOld.createStatement();
+            ResultSet second = notOldSt.executeQuery("SELECT * FROM " + tableName);
+            Statement diffSt = diff.createStatement()) {
+            boolean toUpdate, empty;
+            String val;
+            while (second.next()) {
+                val = "\'";
+                try (
+                    ResultSet res = oldSt.executeQuery("SELECT * FROM " + tableName + " WHERE id=" + second.getObject(1).toString() + ";");
+                ) {
+                    toUpdate = false;
+                    res.next();
+                    empty = res.getObject(1) == null;
+                    for (int i = 1; i <= TAB_N[cat]; i++) {
+                        val += second.getObject(i).toString() + ((i == TAB_N[cat]) ? "\');" : "\', \'");
+                        if (!empty && !res.getObject(i).equals(second.getObject(i))) {
+                            toUpdate = true;
+                        }
+                    }
+                    if (toUpdate) {
+                        diffSt.execute(getInsertScheme(cat, val, false));
+                    }
                 }
             }
-            if (toUpdate) {
-                diffSt.execute(getInsertScheme(cat, val, false));
-            }
+
+            addDeleted(old, notOld, diff, cat);
         }
-        addDeleted(old, notOld, diff, cat);
     }
 
     private static void addDeleted (Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
@@ -96,16 +118,20 @@ public class DataUpdator9000 {
         for (int i = 2; i < TAB_N[cat]; i++) {
             e += ",\'\'";
         }
-        ResultSet res, result;
+        try (
         Statement oldSt = old.createStatement();
         Statement notOldSt = notOld.createStatement();
         Statement diffSt = diff.createStatement();
-        res = oldSt.executeQuery("SELECT * FROM " + tableName + ";");
-        while (res.next()) {
-            result = notOldSt.executeQuery("SELECT * FROM " + tableName + " WHERE id=" + res.getObject(1).toString() + ";");
-            if (!result.next()) {
-                System.out.println(res.getObject(1).toString());
-                diffSt.execute(getInsertScheme(cat, res.getObject(1).toString() + e + ",\'DELETE ME PLS\');", false));
+        ResultSet res = oldSt.executeQuery("SELECT * FROM " + tableName + ";")) {
+            while (res.next()) {
+                try (
+                        ResultSet result = notOldSt.executeQuery("SELECT * FROM " + tableName + " WHERE id=" + res.getObject(1).toString() + ";")
+                ) {
+                    if (!result.next()) {
+                        System.out.println(res.getObject(1).toString());
+                        diffSt.execute(getInsertScheme(cat, res.getObject(1).toString() + e + ",\'DELETE ME PLS\');", false));
+                    }
+                }
             }
         }
     }
@@ -137,19 +163,20 @@ public class DataUpdator9000 {
             initSchema();
             c.createStatement().execute(schemas[category]);
             for (int i = lastVersion; i <= currVersion; i++) {
-                Statement oldSt = c.createStatement();
-                Connection d = DriverManager.getConnection("jdbc:sqlite:" + folderNames[category] + "/" +
+
+                try (Statement oldSt = c.createStatement();
+                     Connection d = DriverManager.getConnection("jdbc:sqlite:" + folderNames[category] + "/" +
                         i + ".db");
-                Statement newSt = d.createStatement();
-                ResultSet newR = newSt.executeQuery("SELECT * FROM " + tableName);
-                while (newR.next()) {
-                    String val = "\'";
-                    for (int j = 1; j <= TAB_N[category]; j++) {
-                        val += newR.getObject(j).toString() + ((j == TAB_N[category]) ? "\');" : "\', \'");
-                    }
-                    oldSt.execute(DataUpdator9000.getInsertScheme(category, val, true));
+                     Statement newSt = d.createStatement();
+                     ResultSet newR = newSt.executeQuery("SELECT * FROM " + tableName)) {
+                     while (newR.next()) {
+                         String val = "\'";
+                         for (int j = 1; j <= TAB_N[category]; j++) {
+                             val += newR.getObject(j).toString() + ((j == TAB_N[category]) ? "\');" : "\', \'");
+                         }
+                         oldSt.execute(DataUpdator9000.getInsertScheme(category, val, true));
+                     }
                 }
-                d.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();

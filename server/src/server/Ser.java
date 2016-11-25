@@ -6,6 +6,7 @@ import db.DataUpdator9000;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -66,12 +67,15 @@ public class Ser {
                         out.writeInt(UP_TO_DATE);
                     } else {
                         new File(dbName).delete();
-                        DataUpdator9000.mergeChanges(DriverManager.getConnection("jdbc:sqlite:" + dbName),
-                                i, ph, curr);
-                        out.writeInt(NEW_VERSION);
-                        sendFile(dbName, out);
+                        try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+                            DataUpdator9000.mergeChanges(c,
+                                    i, ph, curr);
+                            out.writeInt(NEW_VERSION);
+                            sendFile(dbName, out);
+                        }
                     }
                 }
+                out.writeInt(END_OF_INPUT);
                 s.close();
             } catch (IOException | SQLException e) {
                 e.printStackTrace();

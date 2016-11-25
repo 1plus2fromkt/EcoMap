@@ -54,11 +54,12 @@ class DBMover {
     private static void updateFiles() {
         try {
             for (int i = 0; i < CAT_N; i++) {
-                Connection c = DriverManager.getConnection("jdbc:sqlite:diff_" + dbNames[i]);
-                Statement st = c.createStatement();
-                ResultSet r = st.executeQuery("SELECT * FROM " + tableName);
-                if (r.next()) {
-                    updateFile(i);
+                try (Connection c = DriverManager.getConnection("jdbc:sqlite:diff_" + dbNames[i]);
+                     Statement st = c.createStatement();
+                     ResultSet r = st.executeQuery("SELECT * FROM " + tableName)) {
+                    if (r.next()) {
+                        updateFile(i);
+                    }
                 }
             }
             updateVersionFile();

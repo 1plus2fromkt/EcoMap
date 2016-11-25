@@ -21,15 +21,16 @@ class RecyclePlace {
 
     void writeToDB(Connection conn) throws SQLException {
         String sep = "', '";
-        Statement st = conn.createStatement();
-        readInfoRecycle();
-        deleteA();
-        String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
-                content_text + sep + address+ sep + title+ sep + img_link + sep + title +
-                sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
-        String sch = DataUpdator9000.getInsertScheme(NUM, log, false);
-        st.execute(sch);
-        System.out.println(log);
+        try (Statement st = conn.createStatement()) {
+            readInfoRecycle();
+            deleteA();
+            String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
+                    content_text + sep + address + sep + title + sep + img_link + sep + title +
+                    sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
+            String sch = DataUpdator9000.getInsertScheme(NUM, log, false);
+            st.execute(sch);
+            System.out.println(log);
+        }
     }
 
     private void deleteA() {
@@ -43,7 +44,6 @@ class RecyclePlace {
     }
 
     private void readInfoRecycle() {
-        return;/*
         ArrayList<String> page = getPageInfo(id);
         for (int i = 0; i < page.size(); i++) {
             String s = page.get(i);
@@ -76,7 +76,7 @@ class RecyclePlace {
                 getContacts(page.get(++i));
             }
 
-        }*/
+        }
     }
 
     private void getTime(String s) {
