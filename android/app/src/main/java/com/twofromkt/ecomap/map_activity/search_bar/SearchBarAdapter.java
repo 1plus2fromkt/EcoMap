@@ -57,16 +57,5 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
 //            bar.parentActivity.drawerLayout.openDrawer(act.nv);
             return;
         }
-        if (v == bar.showChecks) {
-            if (!bar.util.animating) {
-                v.setRotation(bar.showChecks.getRotation() + 180);
-            }
-
-            if (bar.checkboxes.getVisibility() == View.VISIBLE) {
-                bar.util.collapse();
-            } else {
-                bar.util.expand();
-            }
-        }
     }
 }

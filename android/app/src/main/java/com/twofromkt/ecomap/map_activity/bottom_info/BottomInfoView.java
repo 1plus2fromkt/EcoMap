@@ -79,6 +79,9 @@ public class BottomInfoView extends LinearLayout {
 
     //TODO: make different setPlace for Cafe and TrashBox
     public void setPlace(Place place) {
+        if (place == null) {
+            return;
+        }
         this.currPlace = place;
         name.setText(place.name);
         String currCategoryName;

@@ -53,7 +53,6 @@ public class ChooseTypePanel extends LinearLayout {
                 if (animating) return;
                 if (panel.getVisibility() == INVISIBLE) {
                     panelOffset = panel.getX();
-                    System.out.println(panelOffset);
                     panel.setX(-panel.getWidth());
                     panel.setVisibility(VISIBLE);
                 }
@@ -79,8 +78,12 @@ public class ChooseTypePanel extends LinearLayout {
 
                     }
                 });
-                animator.setDuration(400);
+                int duration = 400;
+                animator.setDuration(duration);
+                ViewPropertyAnimator buttonAnumator = openButton.animate();
+                buttonAnumator.setDuration(duration);
                 animator.xBy((showing ? -1 : 1) * (panel.getWidth() + panelOffset));
+                buttonAnumator.rotationBy((showing ? 1 : -1) * 90);
                 showing = !showing;
             }
         });

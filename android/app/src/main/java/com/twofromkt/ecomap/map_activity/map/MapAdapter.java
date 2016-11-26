@@ -10,9 +10,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.db.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
 
@@ -64,6 +66,10 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
             return;
         }
         map.util.addLocationSearch(map.parentActivity);
+        Location location = map.getLocation();
+        CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
+                location.getLongitude(), map.MAPZOOM - 5);
+        map.moveMap(position);
 //        map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = map.mMap.getUiSettings();
 //        ui.setZoomControlsEnabled(true);

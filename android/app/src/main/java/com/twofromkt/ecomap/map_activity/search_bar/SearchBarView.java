@@ -22,14 +22,10 @@ public class SearchBarView extends LinearLayout {
 
     Button openMenuButton;
     EditText searchBar;
-    LinearLayout checkboxes, searchBox;
+    LinearLayout searchBox;
     MapActivity parentActivity;
-    ImageButton[] checkboxButtons;
-    ImageButton showChecks;
 
     SearchBarUtil util;
-
-//    public boolean[] chosenCheck;
 
     private SearchBarAdapter adapter;
 
@@ -44,13 +40,9 @@ public class SearchBarView extends LinearLayout {
         searchBar = (EditText) findViewById(R.id.search_edit);
         searchBar.setCursorVisible(false);
         searchBar.setHint("Search query");
-//        checkboxes = (LinearLayout) findViewById(R.id.checkboxes);
         searchBox = (LinearLayout) findViewById(R.id.search_box);
 
         this.parentActivity = parentActivity;
-
-//        chosenCheck = new boolean[CATEGORIES_N];
-//        showChecks = (ImageButton) findViewById(R.id.show_checkboxes);
 
         util = new SearchBarUtil(this);
         setListeners();
@@ -66,16 +58,16 @@ public class SearchBarView extends LinearLayout {
 //        showChecks.setOnClickListener(adapter);
     }
 
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superSaved = super.onSaveInstanceState();
-        return new SavedSearchBar(superSaved, checkboxes.getVisibility());
-    }
+//    @Override
+//    public Parcelable onSaveInstanceState() {
+//        Parcelable superSaved = super.onSaveInstanceState();
+//        return new SavedSearchBar(superSaved);
+//    }
 
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        SavedSearchBar savedState = (SavedSearchBar) state;
-        super.onRestoreInstanceState(savedState.getSuperState());
+//    @Override
+//    public void onRestoreInstanceState(Parcelable state) {
+//        SavedSearchBar savedState = (SavedSearchBar) state;
+//        super.onRestoreInstanceState(savedState.getSuperState());
 //        checkboxes.setVisibility(savedState.getVisibility());
 //        chosenCheck = savedState.getChosen();
 //        for (int i = 0; i < CATEGORIES_N; i++) {
@@ -83,7 +75,7 @@ public class SearchBarView extends LinearLayout {
 //                util.setChosen(i, true, false);
 //            }
 //        }
-    }
+//    }
 
     public void setChosen(int index, boolean state, boolean activateMap) {
         util.setChosen(index, state, activateMap);

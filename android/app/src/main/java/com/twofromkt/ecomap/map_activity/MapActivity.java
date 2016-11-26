@@ -21,7 +21,6 @@ import java.util.Arrays;
 
 public class MapActivity extends FragmentActivity {
 
-//    Button[] trashCategoryButtons;
 //    NavigationView nv;
 
     DrawerLayout drawerLayout;
@@ -64,8 +63,6 @@ public class MapActivity extends FragmentActivity {
         typePanel.attach(this);
 
         adapter = new MapActivityAdapter(this);
-
-//        trashCategoryButtons = new Button[Consts.TRASH_N];
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 

@@ -1,6 +1,8 @@
 package com.twofromkt.ecomap.map_activity.map;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -8,6 +10,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -106,6 +109,13 @@ public class MapView extends RelativeLayout {
      * @return last known location
      */
     public Location getLocation() {
+        if (ActivityCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            System.out.println("permissions denied");
+            return null;
+        }
         return locationManager.getLastKnownLocation(
                 locationManager.getBestProvider(criteria, false));
     }

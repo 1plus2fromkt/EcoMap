@@ -1,32 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <Button
-            android:id="@+id/trash1"
-            android:layout_width="wrap_content"
-            android:alpha="0.6"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/trashItem1"/>
-        <Button
-            android:id="@+id/trash2"
-            android:layout_width="wrap_content"
-            android:alpha="0.6"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/clothes_trash_checkbox"
+                style="@style/checkbox_image_style"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/selected_icon"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="#000000ff"
+                android:layout_below="@+id/clothes_trash_checkbox"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:text="Одежда"
+                android:textSize="16dp"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/trashItem2"/>
-        <Button
-            android:id="@+id/trash3"
-            android:layout_width="wrap_content"
-            android:alpha="0.6"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/paper_trash_checkbox"
+                style="@style/checkbox_image_style"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/selected_icon"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="#000000ff"
+                android:layout_below="@+id/paper_trash_checkbox"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:text="Бумага"
+                android:textSize="16dp"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/trashItem3"/>
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/plastic_trash_checkbox"
+                style="@style/checkbox_image_style"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/selected_icon"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="#000000ff"
+                android:layout_below="@+id/plastic_trash_checkbox"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:text="Пластик"
+                android:textSize="16dp"
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/metal_trash_checkbox"
+                style="@style/checkbox_image_style"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/selected_icon"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:background="#000000ff"
+                android:layout_below="@+id/metal_trash_checkbox"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="7dp"
+                android:text="Металл"
+                android:textSize="16dp"
+                />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
