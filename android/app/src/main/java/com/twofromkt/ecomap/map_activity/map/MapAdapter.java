@@ -68,7 +68,7 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         map.util.addLocationSearch(map.parentActivity);
         Location location = map.getLocation();
         CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
-                location.getLongitude(), map.MAPZOOM - 5);
+                location.getLongitude(), MapView.MAPZOOM - 4);
         map.moveMap(position);
 //        map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = map.mMap.getUiSettings();

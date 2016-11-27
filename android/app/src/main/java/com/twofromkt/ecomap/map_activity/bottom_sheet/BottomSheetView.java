@@ -96,7 +96,6 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public void show() {
-//        act.locationButton.setVisibility(View.INVISIBLE);
         bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
@@ -107,8 +106,11 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public void hide() {
-//        act.locationButton.setVisibility(View.VISIBLE);
         bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);
+    }
+
+    public boolean isOpened() {
+        return bottomList.getState() == BottomSheetBehavior.STATE_EXPANDED;
     }
 
     @Override

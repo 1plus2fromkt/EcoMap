@@ -22,7 +22,7 @@ public class TrashBox extends Place {
     }
 
     public enum Category {
-        GLASS(0), AND(1), TIME(2);
+        CLOTHES(0), PAPER(1), PLASTIC(2), METAL(3);
         int n;
 
         Category(int n) {

@@ -52,26 +52,14 @@ public class BottomInfoView extends LinearLayout {
     }
 
     public void hide() {
-//        act.navigationButton.setVisibility(View.INVISIBLE);
-//        act.locationButton.setVisibility(View.VISIBLE);
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
     public void show(boolean showSheet) {
-//        act.navigationButton.setVisibility(View.VISIBLE);
-//        act.locationButton.setVisibility(View.INVISIBLE);
         if (showSheet) {
             bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
-
-//    public void setName(String nameText) {
-//        name.setText(nameText);
-//    }
-
-//    public void setCategoryName(String categoryNameText) {
-//        categoryName.setText(categoryNameText);
-//    }
 
     public boolean isOpened() {
         return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;

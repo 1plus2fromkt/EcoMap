@@ -13,7 +13,7 @@ class SavedBottomSheet extends View.BaseSavedState {
         this.state = state;
     }
 
-    public int getState() {
+    int getState() {
         return state;
     }
 

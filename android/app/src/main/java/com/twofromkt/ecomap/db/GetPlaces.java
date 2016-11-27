@@ -26,7 +26,7 @@ import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place> > > {
+public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place>>> {
     private static final String[] FILE_NAMES = new String[]{"cafes", "trashes"};
     public static final int CAFE = 0, TRASH = 1, NEAR = 0, ALL = 1;
     public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
@@ -126,9 +126,6 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
         super.onStartLoading();
         forceLoad();
     }
-
-
-
 
     @Override
     public Pair<CameraUpdate, ArrayList<? extends Place> > loadInBackground() {

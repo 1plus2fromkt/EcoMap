@@ -104,6 +104,15 @@ public class MapActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
+        if (bottomInfo.isOpened()) {
+            bottomInfo.hide();
+        } else if (bottomSheet.isOpened()) {
+            bottomSheet.hide();
+        } else if (typePanel.isOpened()) {
+            typePanel.hide();
+        } else {
+            super.onBackPressed();
+        }
 //        if (drawerLayout.isDrawerOpen(nv)) {
 //            drawerLayout.closeDrawer(nv);
 //        } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED) {

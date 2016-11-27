@@ -3,6 +3,7 @@ package com.twofromkt.ecomap.map_activity.choose_type_panel;
 import android.animation.Animator;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,10 +81,10 @@ public class ChooseTypePanel extends LinearLayout {
                 });
                 int duration = 400;
                 animator.setDuration(duration);
-                ViewPropertyAnimator buttonAnumator = openButton.animate();
-                buttonAnumator.setDuration(duration);
+                ViewPropertyAnimator buttonAnimator = openButton.animate();
+                buttonAnimator.setDuration(duration);
                 animator.xBy((showing ? -1 : 1) * (panel.getWidth() + panelOffset));
-                buttonAnumator.rotationBy((showing ? 1 : -1) * 90);
+                buttonAnimator.rotationBy((showing ? 1 : -1) * 90);
                 showing = !showing;
             }
         });
@@ -106,5 +107,35 @@ public class ChooseTypePanel extends LinearLayout {
                 }
             });
         }
+    }
+
+    public void hide() {
+        if (showing) {
+            openButton.callOnClick();
+        }
+    }
+
+    public boolean isOpened() {
+        return showing;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superSaver = super.onSaveInstanceState();
+        return new SavedChooseTypePanel(superSaver, showing, chosenTypes, panelOffset);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable savedState) {
+        SavedChooseTypePanel savedPanel = (SavedChooseTypePanel) savedState;
+        super.onRestoreInstanceState(savedPanel.getSuperState());
+        panelOffset = savedPanel.getPanelOffset();
+        showing = savedPanel.getShowing();
+        if (showing) {
+            panel.setX(panelOffset);
+            panel.setVisibility(VISIBLE);
+            openButton.setRotation(-90);
+        }
+        chosenTypes = savedPanel.getChosenTypes();
     }
 }
