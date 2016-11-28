@@ -9,11 +9,10 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 

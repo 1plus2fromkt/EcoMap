@@ -1,5 +1,7 @@
 package com.twofromkt.ecomap.db;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +12,9 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.twofromkt.ecomap.PlaceTypes.Cafe;
+import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 
 import java.io.EOFException;
 import java.io.File;
@@ -22,12 +27,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.twofromkt.ecomap.Consts.FILE_NAMES;
 import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place>>> {
-    private static final String[] FILE_NAMES = new String[]{"cafes", "trashes"};
+public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place> > > {
     public static final int CAFE = 0, TRASH = 1, NEAR = 0, ALL = 1;
     public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
                                 LAT = "LAT", LNG = "LNG", MODE = "MODE";
@@ -53,44 +58,57 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
         }
     }
 
-    public static void putObject(Place p, int category, Context cont) {
-        try {
-            File f = new File(cont.getFilesDir(), FILE_NAMES[category]);
-            boolean q = f.exists() && !f.isDirectory(); // might be crap
-            FileOutputStream out = new FileOutputStream(f, true);
-            ObjectOutputStream outO;
-            if (!q)
-                outO = new ObjectOutputStream(out);
-            else
-                outO = new AppendingObjectOutputStream(out);
-            outO.writeObject(p);
-            outO.flush();
-            outO.close();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+//    public static void putObject(Place p, int category, Context cont) {
+//        try {
+//            File f = new File(cont.getFilesDir(), FILE_NAMES[category]);
+//            boolean q = f.exists() && !f.isDirectory(); // might be crap
+//            FileOutputStream out = new FileOutputStream(f, true);
+//            ObjectOutputStream outO;
+//            if (!q)
+//                outO = new ObjectOutputStream(out);
+//            else
+//                outO = new AppendingObjectOutputStream(out);
+//            outO.writeObject(p);
+//            outO.flush();
+//            outO.close();
+//            out.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    private interface MyFactory<T> {
+        T init(Cursor c);
+    }
+
+    private static class CafeFactory implements MyFactory<Cafe> {
+        @Override
+        public Cafe init(Cursor c) {
+            return new Cafe(c);
         }
     }
 
-    private static <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr, int category, Context context) {
+    private static class TrashFactory implements MyFactory<TrashBox> {
+
+        @Override
+        public TrashBox init(Cursor c) {
+            return new TrashBox(c);
+        }
+    }
+
+    private static <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr, int category,
+                                                            Context context, MyFactory<T> fac) {
         ArrayList<T> ans = new ArrayList<>();
 
-        try {
-            File f = new File(context.getFilesDir(), FILE_NAMES[category]);
-            FileInputStream in = new FileInputStream(f);
-            ObjectInputStream inO = new ObjectInputStream(in);
+        try(SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(new File(context.getFilesDir(),
+                DBAdapter.getPathToDb(category)), null);
+            Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + ";", null)) {
+            cur.moveToFirst();
             T x;
-            try {
-                while (true) {
-                    x = (T) inO.readObject();
-                    if (pr.apply(x))
-                        ans.add(x);
-                }
-            } catch (EOFException ignored) {}
-            inO.close();
-            in.close();
-        } catch (IOException | ClassNotFoundException e) { //TODO: do something good
-            e.printStackTrace();
+            while (cur.moveToNext()) {
+                x = fac.init(cur);
+                ans.add(x);
+            }
         }
         return ans;
     }
@@ -102,7 +120,7 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
             public boolean apply(Cafe o) {
                 return distanceLatLng(x, getLatLng(o.location)) < radii;
             }
-        }, CAFE, context);
+        }, CAFE, context, new CafeFactory());
     }
 
     public static ArrayList<TrashBox> getTrashes(final LatLng x, final double radius,
@@ -118,7 +136,7 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
                 finalS.retainAll(o.category);
                 return distanceLatLng(x, getLatLng(o.location)) < radius && finalS.size() > 0;
             }
-        }, TRASH, context);
+        }, TRASH, context, new TrashFactory());
     }
 
     @Override

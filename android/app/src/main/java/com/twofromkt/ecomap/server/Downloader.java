@@ -4,15 +4,18 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.twofromkt.ecomap.data_struct.Pair;
+import com.twofromkt.ecomap.db.DBAdapter;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -25,21 +28,14 @@ public class Downloader {
 
     public static ArrayList<Pair<Double, Double>> data;
 
-    private static final String versionFileName = "version.txt", diffPath = "diff/",
-                            dbPath = "db/";
+    private static final String versionFileName = "version.txt";
 
     public static void update(Context context) throws IOException {
         ArrayList<Boolean> toUpdate = download(context);
         for (int i = 0; i < toUpdate.size(); i++) {
             if (toUpdate.get(i))
-                replace(i);
+                DBAdapter.replace(i, context);
         }
-    }
-
-    private static void replace (int i) {
-//        try (SQLiteDatabase curr = SQLiteDatabase.openDatabase()){
-//
-//        }
     }
 
     private static ArrayList<Boolean> download(Context context) throws IOException {
@@ -50,24 +46,27 @@ public class Downloader {
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
         ArrayList<Integer> versions = getVersions(context);
         for (int i : versions)
-            out.write(i);
-        out.write(-1);
+            out.writeInt(i);
+        out.writeInt(-1);
+        out.flush();
         int i = 0, version;
+        new File(context.getFilesDir(), DBAdapter.getDiffPath()).mkdir();
         ArrayList<Boolean> ans = new ArrayList<>();
         while ((version = in.readInt()) != -1) {
-            File f = new File(context.getFilesDir(), diffPath + "diff" + i + ".db");
+            File f = new File(context.getFilesDir(), DBAdapter.getDiffPath() + "diff" + i + ".db");
+            f.createNewFile();
             if (version == 1) {
-                FileOutputStream fileOut = new FileOutputStream(f);
-                long fileSize = in.readLong();
-                byte[] buffer = new byte[1024 * 8];
-                int cnt;
-                while (fileSize > 0 && (cnt = in.read(buffer, 0, (int) Math.min(buffer.length, fileSize))) != -1)
-                {
-                    fileOut.write(buffer, 0, cnt);
-                    fileSize -= cnt;
+                try (FileOutputStream fileOut = new FileOutputStream(f)) {
+                    long fileSize = in.readLong();
+                    byte[] buffer = new byte[1024 * 8];
+                    int cnt;
+                    while (fileSize > 0 && (cnt = in.read(buffer, 0, (int) Math.min(buffer.length, fileSize))) != -1) {
+                        fileOut.write(buffer, 0, cnt);
+                        fileSize -= cnt;
+                    }
+                    fileOut.close();
+                    ans.add(true);
                 }
-                fileOut.close();
-                ans.add(true);
             }
             else if (version == 0) {
                 ans.add(false);
@@ -86,31 +85,40 @@ public class Downloader {
         if (!ver.exists()) {
             return new ArrayList<>();
         }
-        BufferedReader in = new BufferedReader(new FileReader(ver));
-        String s;
         ArrayList<Integer> ans = new ArrayList<>();
-        while ((s = in.readLine()) != null) {
-            ans.add(Integer.parseInt(s));
+        try (DataInputStream in = new DataInputStream(new FileInputStream(ver))) {
+            int s;
+            try {
+                while (true) {
+                    s = in.readInt();
+                    ans.add(s);
+                }
+            } catch (EOFException ignored) {
+
+            }
         }
-        in.close();
         return ans;
     }
 
     private static void updateVersionFile(ArrayList<Integer> prevVersions,
                                           ArrayList<Boolean> isUpdated,
                                           Context context) {
+        File ver = new File(context.getFilesDir(), versionFileName);
+        if (ver.exists())
+            ver.delete();
         try {
-            File ver = new File(context.getFilesDir(), versionFileName);
-            PrintWriter out = new PrintWriter(ver);
-            if (ver.exists())
-                ver.delete();
             ver.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(ver))) {
             for (int i = 0; i < isUpdated.size(); i++) {
                 if (prevVersions.size() <= i)
-                    out.println(1);
+                    out.writeInt(1);
                 else
-                    out.println(prevVersions.get(i) + (isUpdated.get(i) ? 1 : 0));
+                    out.writeInt(prevVersions.get(i) + (isUpdated.get(i) ? 1 : 0));
             }
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

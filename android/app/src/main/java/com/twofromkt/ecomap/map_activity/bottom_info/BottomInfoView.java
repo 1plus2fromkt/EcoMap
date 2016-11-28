@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 public class BottomInfoView extends LinearLayout {

@@ -1,22 +1,14 @@
 package com.twofromkt.ecomap.map_activity.search_bar;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-
-import java.util.Arrays;
-
-import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
 
 public class SearchBarView extends LinearLayout {
 

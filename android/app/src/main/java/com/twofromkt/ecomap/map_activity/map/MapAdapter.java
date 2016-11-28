@@ -12,8 +12,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Marker;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.server.Downloader;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;

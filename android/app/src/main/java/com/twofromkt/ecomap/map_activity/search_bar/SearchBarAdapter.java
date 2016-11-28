@@ -9,13 +9,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.db.Place;
-import com.twofromkt.ecomap.db.TrashBox;
+import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.HashSet;
-
-import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
 
 class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickListener {
 

@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;

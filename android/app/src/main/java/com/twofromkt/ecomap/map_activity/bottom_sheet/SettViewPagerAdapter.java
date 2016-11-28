@@ -4,7 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.Consts;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 class SettViewPagerAdapter extends FragmentPagerAdapter {
@@ -39,7 +40,7 @@ class SettViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return MapActivity.CATEGORIES_N;
+        return Consts.CATEGORIES_N;
     }
 
     @Override

@@ -13,8 +13,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.server.Downloader;
+
+import java.io.IOException;
 
 public class ChooseTypePanel extends LinearLayout {
 
@@ -101,6 +104,16 @@ public class ChooseTypePanel extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Downloader.update(getContext());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
             });
         }

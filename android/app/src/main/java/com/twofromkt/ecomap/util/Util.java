@@ -1,15 +1,10 @@
 package com.twofromkt.ecomap.util;
 
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

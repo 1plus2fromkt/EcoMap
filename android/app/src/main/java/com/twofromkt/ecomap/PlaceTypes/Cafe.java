@@ -1,7 +1,8 @@
-package com.twofromkt.ecomap.db;
+package com.twofromkt.ecomap.PlaceTypes;
+
+import android.database.Cursor;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import static com.twofromkt.ecomap.util.Util.*;
 
@@ -10,6 +11,16 @@ public class Cafe extends Place {
     String website;
     String menuLink;
     String phone;
+
+    public Cafe() {
+        website = "";
+        menuLink = "";
+        phone = "";
+    }
+
+    public Cafe(Cursor c) {
+        super(c);
+    }
 
     public Cafe(String name, LatLng location, String information, Period[] workTime, String img_link, String phone,
                 String menuLink, String website) {

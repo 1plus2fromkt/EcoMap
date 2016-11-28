@@ -75,7 +75,7 @@ public class RecycleHandler {
         ArrayList<String> s = new ArrayList<>();
         try {
             URL url = new URL(basicURL + "?city=" + i);
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
             String t;
             while ((t = in.readLine()) != null)
                 s.add(t);

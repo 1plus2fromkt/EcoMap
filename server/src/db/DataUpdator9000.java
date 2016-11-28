@@ -138,8 +138,8 @@ public class DataUpdator9000 {
 
     public static String getInsertScheme(int number, String s, boolean replace) {
         String sch = (replace ? "REPLACE" : "INSERT") + " INTO " + DBMover.tableName + " (";
-        for (int i = 0; i < DataUpdator9000.tabNames[number].length; i++)
-            sch += DataUpdator9000.tabNames[number][i] + ((i == DataUpdator9000.tabNames[number].length - 1) ? ")" : ", ");
+        for (int i = 0; i < tabNames[number].length; i++)
+            sch += tabNames[number][i] + ((i == tabNames[number].length - 1) ? ")" : ", ");
         sch += " VALUES (" + s + ");";
         return sch;
     }
@@ -174,7 +174,7 @@ public class DataUpdator9000 {
                          for (int j = 1; j <= TAB_N[category]; j++) {
                              val += newR.getObject(j).toString() + ((j == TAB_N[category]) ? "\');" : "\', \'");
                          }
-                         oldSt.execute(DataUpdator9000.getInsertScheme(category, val, true));
+                         oldSt.execute(getInsertScheme(category, val, true));
                      }
                 }
             }

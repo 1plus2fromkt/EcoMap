@@ -11,12 +11,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.db.GetPlaces;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.map_activity.MapActivity.CATEGORIES_N;
+import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 class MapUtil {

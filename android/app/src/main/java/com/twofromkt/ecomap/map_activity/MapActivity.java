@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.twofromkt.ecomap.Consts;
 import com.twofromkt.ecomap.Mock;
@@ -17,7 +15,7 @@ import com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
 
-import java.util.Arrays;
+import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
 
 public class MapActivity extends FragmentActivity {
 
@@ -35,7 +33,6 @@ public class MapActivity extends FragmentActivity {
 
     public static final String LAT = "LAT", LNG = "LNG";
     public static final int GPS_REQUEST = 111, LOADER = 42;
-    public static final int CATEGORIES_N = 3;
 
     @Override
     protected void onStart() {

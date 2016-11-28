@@ -15,7 +15,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.activities.SettingsActivity;
 import com.twofromkt.ecomap.db.GetPlaces;
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 
 import java.util.ArrayList;
 
