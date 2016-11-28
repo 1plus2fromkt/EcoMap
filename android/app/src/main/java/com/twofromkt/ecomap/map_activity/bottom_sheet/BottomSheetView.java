@@ -95,22 +95,42 @@ public class BottomSheetView extends RelativeLayout {
         return settPagerAdapter.trashSett.chosen;
     }
 
-    public void show() {
+    public void collapse() {
+        if (isHidden()) {
+            parentActivity.map.moveUpLocationButton();
+        }
         bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomList.setHideable(false);
     }
 
     public void show(ArrayList<? extends Place> data, int num) {
         if (bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN) {
-            show();
+            collapse();
         }
     }
 
     public void hide() {
+        if (!isHidden()) {
+            parentActivity.map.moveDownLocationButton();
+        }
+        bottomList.setHideable(true);
         bottomList.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-    public boolean isOpened() {
+    public boolean isExpanded() {
         return bottomList.getState() == BottomSheetBehavior.STATE_EXPANDED;
+    }
+
+    public boolean isCollapsed() {
+        return bottomList.getState() == BottomSheetBehavior.STATE_COLLAPSED;
+    }
+
+    public boolean isHidden() {
+        return bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN;
+    }
+
+    public float getPeekHeight() {
+        return bottomList.getPeekHeight();
     }
 
     @Override
@@ -124,5 +144,8 @@ public class BottomSheetView extends RelativeLayout {
         SavedBottomSheet savedState = (SavedBottomSheet) state;
         super.onRestoreInstanceState(savedState.getSuperState());
         bottomList.setState(savedState.getState());
+        if (bottomList.getState() != BottomSheetBehavior.STATE_HIDDEN) {
+            bottomList.setHideable(false);
+        }
     }
 }

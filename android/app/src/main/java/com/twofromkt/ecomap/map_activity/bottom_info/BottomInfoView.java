@@ -51,18 +51,24 @@ public class BottomInfoView extends LinearLayout {
         this.categoryName.setText(category_name);
     }
 
+    public void collapse() {
+        bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
     public void hide() {
         bottomInfo.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
-    public void show(boolean showSheet) {
-        if (showSheet) {
-            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
+    public boolean isExpanded() {
+        return bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED;
     }
 
-    public boolean isOpened() {
-        return bottomInfo.getState() != BottomSheetBehavior.STATE_HIDDEN;
+    public boolean isCollapsed() {
+        return bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED;
+    }
+
+    public boolean isHidden() {
+        return bottomInfo.getState() == BottomSheetBehavior.STATE_HIDDEN;
     }
 
     //TODO: make different setPlace for Cafe and TrashBox

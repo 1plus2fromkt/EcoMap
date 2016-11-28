@@ -104,10 +104,13 @@ public class MapActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        if (bottomInfo.isOpened()) {
+        if (bottomInfo.isExpanded()) {
+            bottomInfo.collapse();
+        } else if (bottomInfo.isCollapsed()) {
             bottomInfo.hide();
-        } else if (bottomSheet.isOpened()) {
-            bottomSheet.hide();
+            bottomSheet.collapse();
+        } else if (bottomSheet.isExpanded()) {
+            bottomSheet.collapse();
         } else if (typePanel.isOpened()) {
             typePanel.hide();
         } else {

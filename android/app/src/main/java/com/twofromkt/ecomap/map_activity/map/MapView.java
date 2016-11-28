@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -52,6 +53,9 @@ public class MapView extends RelativeLayout {
     LocationManager locationManager;
 
     FloatingActionButton locationButton;
+
+    boolean hasCustomLocation;
+    private boolean locationButtonUp;
 
     public static final float MAPZOOM = 14;
 
@@ -101,6 +105,20 @@ public class MapView extends RelativeLayout {
 
     public void clearMarkers(int num) {
         util.clearMarkers(num);
+    }
+
+    public void moveUpLocationButton() {
+        if (!locationButtonUp) {
+            locationButton.setY(locationButton.getY() - parentActivity.bottomSheet.getPeekHeight());
+            locationButtonUp = true;
+        }
+    }
+
+    public void moveDownLocationButton() {
+        if (locationButtonUp) {
+            locationButton.setY(locationButton.getY() + parentActivity.bottomSheet.getPeekHeight());
+            locationButtonUp = false;
+        }
     }
 
     /**
@@ -162,5 +180,23 @@ public class MapView extends RelativeLayout {
 
     public static ArrayList<ArrayList<Pair<Marker, ? extends Place>>> getActiveMarkers() {
         return MapUtil.activeMarkers;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superSaved = super.onSaveInstanceState();
+        return new SavedMap(superSaved, locationButtonUp, hasCustomLocation);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable savedState) {
+        SavedMap savedMap = (SavedMap) savedState;
+        super.onRestoreInstanceState(savedMap.getSuperState());
+        locationButtonUp = savedMap.getLocationButtonUp();
+        if (locationButtonUp) {
+            locationButtonUp = false;
+            moveUpLocationButton();
+        }
+        hasCustomLocation = savedMap.hasCustomLocation();
     }
 }

@@ -25,8 +25,6 @@ public class SearchBarView extends LinearLayout {
     LinearLayout searchBox;
     MapActivity parentActivity;
 
-    SearchBarUtil util;
-
     private SearchBarAdapter adapter;
 
     public SearchBarView(Context context, AttributeSet attrs) {
@@ -44,7 +42,6 @@ public class SearchBarView extends LinearLayout {
 
         this.parentActivity = parentActivity;
 
-        util = new SearchBarUtil(this);
         setListeners();
     }
 
@@ -52,10 +49,6 @@ public class SearchBarView extends LinearLayout {
         adapter = new SearchBarAdapter(this);
         searchBar.setOnEditorActionListener(adapter);
         openMenuButton.setOnClickListener(adapter);
-//        for (ImageButton button : checkboxButtons) {
-//            button.setOnClickListener(adapter);
-//        }
-//        showChecks.setOnClickListener(adapter);
     }
 
 //    @Override
@@ -76,9 +69,5 @@ public class SearchBarView extends LinearLayout {
 //            }
 //        }
 //    }
-
-    public void setChosen(int index, boolean state, boolean activateMap) {
-        util.setChosen(index, state, activateMap);
-    }
 
 }

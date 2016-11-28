@@ -43,7 +43,7 @@ class MapUtil {
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, b, map.parentActivity.adapter);
         loader.onContentChanged();
-        map.parentActivity.bottomSheet.show();
+        map.parentActivity.bottomSheet.collapse();
     }
 
     void searchNearTrashes() {
@@ -54,13 +54,13 @@ class MapUtil {
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();
-        map.parentActivity.bottomSheet.show();
+        map.parentActivity.bottomSheet.collapse();
     }
 
     void focusOnMarker(Pair<Marker, ? extends Place> a) {
         System.out.println("focus on marker");
         map.parentActivity.bottomSheet.hide();
-        map.parentActivity.bottomInfo.show(true);
+        map.parentActivity.bottomInfo.collapse();
         map.parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());
 //        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }

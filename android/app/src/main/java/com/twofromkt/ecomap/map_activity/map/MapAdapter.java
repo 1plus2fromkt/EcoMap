@@ -32,7 +32,7 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     @Override
     public boolean onMarkerClick(Marker marker) {
         map.parentActivity.bottomSheet.hide();
-        map.parentActivity.bottomInfo.show(true);
+        map.parentActivity.bottomInfo.collapse();
         Place p = null;
         for (ArrayList<Pair<Marker, ? extends Place>> ac : MapView.getActiveMarkers()) {
             for (Pair<Marker, ? extends Place> x : ac) {
@@ -69,7 +69,10 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         Location location = map.getLocation();
         CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
                 location.getLongitude(), MapView.MAPZOOM - 4);
-        map.moveMap(position);
+        if (!map.hasCustomLocation) {
+            map.moveMap(position);
+            map.hasCustomLocation = true;
+        }
 //        map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = map.mMap.getUiSettings();
 //        ui.setZoomControlsEnabled(true);
