@@ -40,7 +40,7 @@ public class Downloader {
 
     private static ArrayList<Boolean> download(Context context) throws IOException {
         String server = "37.46.133.69";
-        Socket socket = new Socket(server, 4444);
+        Socket socket = new Socket(server, 4444); // TODO: catch exception and print message about no internet
         socket.setTcpNoDelay(true);
         DataInputStream in = new DataInputStream(socket.getInputStream());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());

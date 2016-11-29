@@ -68,11 +68,13 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         }
         map.util.addLocationSearch(map.parentActivity);
         Location location = map.getLocation();
-        CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
-                location.getLongitude(), MapView.MAPZOOM - 4);
-        if (!map.hasCustomLocation) {
-            map.moveMap(position);
-            map.hasCustomLocation = true;
+        if (location != null) {
+            CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
+                    location.getLongitude(), MapView.MAPZOOM - 4);
+            if (!map.hasCustomLocation) {
+                map.moveMap(position);
+                map.hasCustomLocation = true;
+            }
         }
 //        map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = map.mMap.getUiSettings();

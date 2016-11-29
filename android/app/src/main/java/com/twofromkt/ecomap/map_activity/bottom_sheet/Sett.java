@@ -14,6 +14,8 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.Arrays;
 
+import static com.twofromkt.ecomap.Consts.TRASH_N;
+
 public abstract class Sett extends android.support.v4.app.Fragment {
     MapActivity mapActivity;
 
@@ -42,7 +44,6 @@ public abstract class Sett extends android.support.v4.app.Fragment {
 
         boolean[] chosen;
         ImageButton[] trashCategoryButtons;
-        static final int TRASH_N = 4;
         static final int[] buttonIds = {R.id.clothes_trash_checkbox, R.id.paper_trash_checkbox,
                             R.id.plastic_trash_checkbox, R.id.metal_trash_checkbox};
 

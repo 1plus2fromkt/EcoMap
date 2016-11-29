@@ -20,6 +20,9 @@ public class TrashBox extends Place {
         super(c);
         name = c.getString(TITLE);
         information = c.getString(ADDRESS) + " " + c.getString(INFO);
+        category = new HashSet<>();
+        category.add(Category.GLASS);
+        category.add(Category.AND); //TODO: REPLACE THIS!
     }
 
     public TrashBox() {

@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
 
-import com.twofromkt.ecomap.db.Place;
+import com.twofromkt.ecomap.PlaceTypes.Place;
 
 class SavedMap extends View.BaseSavedState {
 

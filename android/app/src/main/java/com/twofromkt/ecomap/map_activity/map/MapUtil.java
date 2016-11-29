@@ -16,7 +16,9 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
+import static com.twofromkt.ecomap.Consts.CAFE_NUMBER;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
+import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 class MapUtil {
@@ -39,7 +41,7 @@ class MapUtil {
     void searchNearCafe() {
         Bundle b = createBundle();
         Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
-        b.putInt(GetPlaces.WHICH_PLACE, GetPlaces.CAFE);
+        b.putInt(GetPlaces.WHICH_PLACE, CAFE_NUMBER);
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, b, map.parentActivity.adapter);
         loader.onContentChanged();
@@ -49,7 +51,7 @@ class MapUtil {
     void searchNearTrashes() {
         Bundle bundle = createBundle();
         Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
-        bundle.putInt(GetPlaces.WHICH_PLACE, GetPlaces.TRASH);
+        bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
