@@ -11,7 +11,6 @@ import static com.twofromkt.ecomap.util.LocationUtil.latLngToPair;
 import static com.twofromkt.ecomap.util.Util.*;
 
 import java.io.Serializable;
-import java.sql.Time;
 
 public abstract class Place implements Serializable {
 
@@ -24,25 +23,36 @@ public abstract class Place implements Serializable {
     public Pair<Double, Double> location;
     @NonNull
     public String name;
+    public String website;
     public String address;
+    public double rate;
     public int categoryNumber;
-    Period[] workTime;
+    Timetable workTime;
     @Nullable
     String imgLink;
     public String information;
 
-    Place(String name, LatLng location, String information, Period[] workTime, String imgLink) {
+    Place(@NonNull String name, LatLng location, double rate, String information, Timetable workTime,
+          String imgLink, String website) {
         this.name = name;
         this.location = latLngToPair(location);
-        this.information = information;
         if (workTime != null)
-            System.arraycopy(workTime, 0, this.workTime, 0, workTime.length);
+            this.workTime = new Timetable(workTime);
         this.imgLink = imgLink;
+        this.rate = rate;
+        this.website = website;
+        this.information = information;
     }
 
     Place (Cursor cursor) {
         location = new Pair<>(cursor.getDouble(LAT_DB), cursor.getDouble(LNG_DB));
-        imgLink = "";
+        name = cursor.getString(TITLE);
+        address = cursor.getString(ADDRESS);
+        rate = cursor.getDouble(RATE);
+        website = cursor.getString(SITE);
+        information = cursor.getString(INFO);
+        imgLink = cursor.getString(IMG);
+        workTime = new Timetable(cursor.getString(WORK_TIME));
     }
 
     protected Place() {
@@ -54,8 +64,8 @@ public abstract class Place implements Serializable {
         information = "";
     }
 
-    boolean isOpened(Time t, int dayOfWeek) {
-        Time a = workTime[dayOfWeek].open, b = workTime[dayOfWeek].close;
+    boolean isOpened(Period.Time t, int dayOfWeek) {
+        Period.Time a = workTime.table[dayOfWeek].open, b = workTime.table[dayOfWeek].close;
         boolean bef = t.before(b), aft = t.after(a);
         if (a.before(b)) {
             return (bef && aft);

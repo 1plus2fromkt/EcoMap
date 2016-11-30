@@ -8,7 +8,6 @@ import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 
 import java.util.HashSet;
 
-import static com.twofromkt.ecomap.PlaceTypes.TrashBox.Category.AND;
 import static com.twofromkt.ecomap.PlaceTypes.TrashBox.Category.GLASS;
 
 public class Mock {

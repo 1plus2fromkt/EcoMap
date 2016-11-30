@@ -16,13 +16,14 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.activities.SettingsActivity;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.db.ResultType;
 
 import java.util.ArrayList;
 
 class MapActivityAdapter implements
         NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener,
-        LoaderManager.LoaderCallbacks<Pair<CameraUpdate, ArrayList<? extends Place>>> {
+        LoaderManager.LoaderCallbacks<ResultType> {
 
     private MapActivity act;
 
@@ -64,20 +65,20 @@ class MapActivityAdapter implements
     }
 
     @Override
-    public Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> onCreateLoader(int id, Bundle args) {
+    public Loader<ResultType> onCreateLoader(int id, Bundle args) {
         return new GetPlaces(act.getApplicationContext(), args);
     }
 
     @Override
-    public void onLoadFinished(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader,
-                               Pair<CameraUpdate, ArrayList<? extends Place>> data) {
-        int t = data.second.size() > 0 ? data.second.get(0).categoryNumber : -1; // TODO: if no object added, we have to add fake object to identify type of object
-        act.map.addMarkers(data.second, data.first, t);
-        act.bottomSheet.show(data.second, t);
+    public void onLoadFinished(Loader<ResultType> loader,
+                               ResultType data) {
+        int t = data.number;
+        act.map.addMarkers(data.res, data.cu, t);
+        act.bottomSheet.show(data.res, t);
     }
 
     @Override
-    public void onLoaderReset(Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader) {
+    public void onLoaderReset(Loader<ResultType> loader) {
 
     }
 

@@ -8,12 +8,10 @@ import static com.twofromkt.ecomap.util.Util.*;
 
 public class Cafe extends Place {
 
-    String website;
     String menuLink;
     String phone;
 
     public Cafe() {
-        website = "";
         menuLink = "";
         phone = "";
     }
@@ -22,12 +20,11 @@ public class Cafe extends Place {
         super(c);
     }
 
-    public Cafe(String name, LatLng location, String information, Period[] workTime, String img_link, String phone,
-                String menuLink, String website) {
-        super (name, location, information, workTime, img_link);
+    public Cafe(String name, LatLng location, double rate, String information, Timetable workTime,
+                String webSite, String phone, String menuLink, String website) {
+        super (name, location, rate, information, workTime, website, website);
         this.phone = phone;
         this.menuLink = menuLink;
-        this.website = website;
         categoryNumber = Place.CAFE;
     }
 }

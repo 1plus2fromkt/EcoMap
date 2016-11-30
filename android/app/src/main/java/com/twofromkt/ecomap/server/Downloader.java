@@ -31,14 +31,15 @@ public class Downloader {
     private static final String versionFileName = "version.txt";
 
     public static void update(Context context) throws IOException {
-        ArrayList<Boolean> toUpdate = download(context);
-        for (int i = 0; i < toUpdate.size(); i++) {
-            if (toUpdate.get(i))
+        Pair<ArrayList<Boolean>, ArrayList<Integer>> toUpdate = download(context);
+        for (int i = 0; i < toUpdate.val1.size(); i++) {
+            if (toUpdate.val1.get(i))
                 DBAdapter.replace(i, context);
         }
+        updateVersionFile(toUpdate.val2, context);
     }
 
-    private static ArrayList<Boolean> download(Context context) throws IOException {
+    private static Pair<ArrayList<Boolean>, ArrayList<Integer> > download(Context context) throws IOException {
         String server = "37.46.133.69";
         Socket socket = new Socket(server, 4444); // TODO: catch exception and print message about no internet
         socket.setTcpNoDelay(true);
@@ -52,11 +53,13 @@ public class Downloader {
         int i = 0, version;
         new File(context.getFilesDir(), DBAdapter.getDiffPath()).mkdir();
         ArrayList<Boolean> ans = new ArrayList<>();
+        ArrayList<Integer> currVers = new ArrayList<>();
         while ((version = in.readInt()) != -1) {
             File f = new File(context.getFilesDir(), DBAdapter.getDiffPath() + "diff" + i + ".db");
             f.createNewFile();
             if (version == 1) {
                 try (FileOutputStream fileOut = new FileOutputStream(f)) {
+                    currVers.add(in.readInt());
                     long fileSize = in.readLong();
                     byte[] buffer = new byte[1024 * 8];
                     int cnt;
@@ -69,15 +72,16 @@ public class Downloader {
                 }
             }
             else if (version == 0) {
+                currVers.add(versions.get(i));
                 ans.add(false);
             } else if (version < 0) {
+                currVers.add(versions.get(i));
                 ans.add(false);
                 System.err.println("ALERT! Error answer " + version);
             }
             i++;
         }
-        updateVersionFile(versions, ans, context);
-        return ans;
+        return new Pair<>(ans, currVers);
     }
 
     private static ArrayList<Integer> getVersions(Context context) throws IOException {
@@ -101,7 +105,6 @@ public class Downloader {
     }
 
     private static void updateVersionFile(ArrayList<Integer> prevVersions,
-                                          ArrayList<Boolean> isUpdated,
                                           Context context) {
         File ver = new File(context.getFilesDir(), versionFileName);
         if (ver.exists())
@@ -112,11 +115,11 @@ public class Downloader {
             e.printStackTrace();
         }
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(ver))) {
-            for (int i = 0; i < isUpdated.size(); i++) {
+            for (int i = 0; i < prevVersions.size(); i++) {
                 if (prevVersions.size() <= i)
                     out.writeInt(1);
                 else
-                    out.writeInt(prevVersions.get(i) + (isUpdated.get(i) ? 1 : 0));
+                    out.writeInt(prevVersions.get(i));
             }
             out.flush();
         } catch (IOException e) {

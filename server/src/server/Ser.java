@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import static java.lang.Thread.sleep;
 
 public class Ser {
+    private static final String folderForCliens = "clients/";
 
     private static class Sender implements Runnable{
         private static final int NEW_VERSION = 1, UP_TO_DATE = 0, END_OF_INPUT = -1, WRONG_FORMAT = -2,
@@ -38,6 +39,7 @@ public class Ser {
                 try {
                     int v = in.readInt();
                     while (v != END_OF_INPUT) {
+			        System.out.println(v + "-th version");
                         phoneVersions.add(v);
                         v = in.readInt();
                     }
@@ -53,9 +55,12 @@ public class Ser {
                 if (phoneVersions.size() > currVersions.size()) {
                     out.writeInt(WRONG_FORMAT);
                 }
+		        System.out.println("Starting to send databases");
                 for (int i = 0; i < currVersions.size(); i++) {
                     if (i >= phoneVersions.size()) {
+			        System.out.println("First database");
                         out.writeInt(NEW_VERSION);
+                        out.writeInt(currVersions.get(i));
                         out.flush();
                         sendFile(DataUpdator9000.dbFileName(i), out);
                         continue;
@@ -64,16 +69,20 @@ public class Ser {
                     if (curr < ph) {
                         out.writeInt(TOO_LARGE_VERSION);
                     } else if (curr == ph) {
+			            System.out.println("Up-to-date");
                         out.writeInt(UP_TO_DATE);
                     } else {
-                        new File(dbName).delete();
+                        new File(folderForCliens, dbName).delete();
+			            System.out.println("Update");
                         try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
                             DataUpdator9000.mergeChanges(c,
                                     i, ph, curr);
                             out.writeInt(NEW_VERSION);
+                            out.writeInt(currVersions.get(i));
                             sendFile(dbName, out);
                         }
                     }
+		            System.out.println("Sent " + i + " database");
                 }
                 out.writeInt(END_OF_INPUT);
                 s.close();
@@ -106,7 +115,7 @@ public class Ser {
         @Override
         public void run() {
             while (true) {
-                DataUpdator9000.main();
+                //DataUpdator9000.main();
                 try {
                     sleep((int) 1e3 * 43200);
                 } catch (InterruptedException e) {

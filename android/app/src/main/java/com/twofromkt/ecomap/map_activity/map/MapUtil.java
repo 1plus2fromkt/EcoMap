@@ -12,6 +12,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.twofromkt.ecomap.db.GetPlaces;
 import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.db.ResultType;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ class MapUtil {
 
     void searchNearCafe() {
         Bundle b = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
+        Loader<ResultType> loader;
         b.putInt(GetPlaces.WHICH_PLACE, CAFE_NUMBER);
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, b, map.parentActivity.adapter);
@@ -50,7 +51,7 @@ class MapUtil {
 
     void searchNearTrashes() {
         Bundle bundle = createBundle();
-        Loader<Pair<CameraUpdate, ArrayList<? extends Place>>> loader;
+        Loader<ResultType> loader;
         bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
         loader = map.parentActivity.getSupportLoaderManager()

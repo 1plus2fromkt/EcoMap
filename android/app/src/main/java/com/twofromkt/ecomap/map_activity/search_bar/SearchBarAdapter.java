@@ -34,9 +34,9 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
             }
             bar.parentActivity.map.addMarker(new TrashBox(
                     "Place that I found",
-                    new LatLng(address.getLatitude(), address.getLongitude()),
+                    new LatLng(address.getLatitude(), address.getLongitude()), 1.,
                     "That place is very awesome and I need to make that string long to test the text view",
-                    null, "", new HashSet<TrashBox.Category>()), Place.TRASHBOX);
+                    null, "", new HashSet<TrashBox.Category>(), ""), Place.TRASHBOX);
             MapActivityUtil.closeKeyboard(bar.parentActivity);
         }
         return true;

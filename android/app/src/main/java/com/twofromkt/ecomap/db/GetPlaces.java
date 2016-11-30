@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Pair;
 
 import com.android.internal.util.Predicate;
+import com.google.android.gms.common.api.Result;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,7 +36,7 @@ import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? extends Place> > > {
+public class GetPlaces extends AsyncTaskLoader<ResultType> {
     public static final int NEAR = 0, ALL = 1;
     public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
                                 LAT = "LAT", LNG = "LNG", MODE = "MODE";
@@ -60,25 +61,6 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
             }
         }
     }
-
-//    public static void putObject(Place p, int category, Context cont) {
-//        try {
-//            File f = new File(cont.getFilesDir(), FILE_NAMES[category]);
-//            boolean q = f.exists() && !f.isDirectory(); // might be crap
-//            FileOutputStream out = new FileOutputStream(f, true);
-//            ObjectOutputStream outO;
-//            if (!q)
-//                outO = new ObjectOutputStream(out);
-//            else
-//                outO = new AppendingObjectOutputStream(out);
-//            outO.writeObject(p);
-//            outO.flush();
-//            outO.close();
-//            out.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     private interface MyFactory<T> {
         T init(Cursor c);
@@ -110,7 +92,7 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
             T x;
             while (cur.moveToNext()) {
                 x = fac.init(cur);
-                if (pr.apply(x))
+//                if (pr.apply(x))
                     ans.add(x);
             }
         } catch (SQLiteCantOpenDatabaseException e) {
@@ -153,7 +135,7 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
     }
 
     @Override
-    public Pair<CameraUpdate, ArrayList<? extends Place> > loadInBackground() {
+    public ResultType loadInBackground() {
         ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
             case TRASH_NUMBER:
@@ -175,6 +157,6 @@ public class GetPlaces extends AsyncTaskLoader<Pair<CameraUpdate, ArrayList<? ex
         CameraUpdate cu = null;
         if (ans.size() > 0)
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
-        return new Pair<CameraUpdate, ArrayList<? extends Place>>(cu, ans);
+        return new ResultType(cu, ans, which);
     }
 }

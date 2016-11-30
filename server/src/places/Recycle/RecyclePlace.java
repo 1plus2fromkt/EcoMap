@@ -75,6 +75,8 @@ class RecyclePlace {
 //                        .replace("<br />", ">").replace("</td>", "").replace("</tr>", "").trim();
             } else if (s.contains(">Контакты</div>")) {
                 getContacts(page.get(++i));
+            } else if (s.contains(">Круглосуточно<")) {
+                work_time = "0 Круглосуточно";
             }
 
         }
@@ -116,7 +118,7 @@ class RecyclePlace {
         try {
             URL url = new URL("http://recyclemap.ru/index.php?task=infopoint&pointid=" + id +
                 "&tmpl=component#");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "URL-8"));
             String s;
             while ((s = in.readLine()) != null) {
                 ans.add(s);

@@ -162,7 +162,7 @@ public class DataUpdator9000 {
         try {
             initSchema();
             c.createStatement().execute(schemas[category]);
-            for (int i = lastVersion; i <= currVersion; i++) {
+            for (int i = lastVersion + 1; i <= currVersion; i++) {
 
                 try (Statement oldSt = c.createStatement();
                      Connection d = DriverManager.getConnection("jdbc:sqlite:" + folderNames[category] + "/" +
