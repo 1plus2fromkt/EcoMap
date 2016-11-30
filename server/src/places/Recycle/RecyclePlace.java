@@ -26,7 +26,7 @@ class RecyclePlace {
             readInfoRecycle();
             deleteA();
             String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
-                    content_text + sep + address + sep + title + sep + img_link + sep + title +
+                    title + sep + content_text + sep + address + sep + img_link + sep + info +
                     sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
             String sch = DataUpdator9000.getInsertScheme(NUM, log, false);
             st.execute(sch);
