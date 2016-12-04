@@ -31,8 +31,8 @@ public class ChooseTypePanel extends LinearLayout {
     float panelOffset;
 
     final private static int TYPES_NUMBER = 3;
-    final private static int[] imageIds = {R.mipmap.trashbox_icon, R.mipmap.cafes_icon, R.mipmap.other_icon};
-    final private static int[] imageIdsChosen = {R.mipmap.trashbox_icon_chosen,
+    final private static int[] imageIds = {R.mipmap.trashbox_type, R.mipmap.cafes_icon, R.mipmap.other_icon};
+    final private static int[] imageIdsChosen = {R.mipmap.trashbox_type_chosen,
             R.mipmap.cafes_icon_chosen, R.mipmap.other_icon_chosen};
 
     public ChooseTypePanel(Context context, AttributeSet attrs) {

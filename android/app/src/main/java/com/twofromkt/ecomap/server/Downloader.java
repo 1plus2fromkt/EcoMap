@@ -2,6 +2,8 @@ package com.twofromkt.ecomap.server;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.twofromkt.ecomap.data_struct.Pair;
 import com.twofromkt.ecomap.db.DBAdapter;
@@ -40,6 +42,7 @@ public class Downloader {
     }
 
     private static Pair<ArrayList<Boolean>, ArrayList<Integer> > download(Context context) throws IOException {
+        Log.d("downloader", "starting download");
         String server = "37.46.133.69";
         Socket socket = new Socket(server, 4444); // TODO: catch exception and print message about no internet
         socket.setTcpNoDelay(true);
@@ -81,6 +84,7 @@ public class Downloader {
             }
             i++;
         }
+        Log.d("downloader", "finished download");
         return new Pair<>(ans, currVers);
     }
 

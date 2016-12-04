@@ -11,7 +11,6 @@ import java.io.File;
 
 import static com.twofromkt.ecomap.Consts.*;
 
-
 public class DBAdapter {
 
     private static String[] schemas = new String[CATEGORIES_N];
@@ -23,6 +22,7 @@ public class DBAdapter {
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}, {"INT PRIMARY KEY"}};
     private static final int[] TAB_N = {tabNames[TRASH_NUMBER].length, tabNames[CAFE_NUMBER].length,
                                     tabNames[OTHER_NUMBER].length};
+
     public static void replace(int num, Context c) {
         initSchema();
         new File(c.getFilesDir(), dbPath).mkdir();

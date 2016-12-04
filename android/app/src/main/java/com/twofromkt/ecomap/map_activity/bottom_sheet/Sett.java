@@ -2,6 +2,7 @@ package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,11 @@ public abstract class Sett extends android.support.v4.app.Fragment {
 
         boolean[] chosen;
         ImageButton[] trashCategoryButtons;
-        static final int[] buttonIds = {R.id.clothes_trash_checkbox, R.id.paper_trash_checkbox,
-                            R.id.plastic_trash_checkbox, R.id.metal_trash_checkbox};
+        static final int[] buttonIds = {
+                R.id.trash_checkbox1,
+                R.id.trash_checkbox2,
+                R.id.trash_checkbox3,
+                R.id.trash_checkbox4};
 
         @Override
         public View onCreateView(LayoutInflater li, ViewGroup container, Bundle savedInstance) {
@@ -57,7 +61,15 @@ public abstract class Sett extends android.support.v4.app.Fragment {
                     @Override
                     public void onClick(View v) {
                         chosen[fi] = !chosen[fi];
-                        int iconId = chosen[fi] ? R.mipmap.selected_icon : R.mipmap.unselected_icon;
+                        String iconName = "trash" + (fi + 1) + (chosen[fi] ? "selected" : "");
+                        int iconId;
+                        try {
+                            iconId = R.mipmap.class.getField(iconName).getInt(null);
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            e.printStackTrace();
+                            Log.d("trash_type_buttons", "icon not found");
+                            return;
+                        }
                         trashCategoryButtons[fi].setImageBitmap(
                                 BitmapFactory.decodeResource(getResources(), iconId));
 //                    if (mapActivity.chosenCheck[TRASH_NUM]) {

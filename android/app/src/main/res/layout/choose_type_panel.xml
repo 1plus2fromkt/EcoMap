@@ -19,7 +19,7 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="30dp"
             style="@style/checkbox_image_style"
-            android:src="@mipmap/trashbox_icon" />
+            android:src="@mipmap/trashbox_type" />
 
         <ImageButton
             android:id="@+id/type_button2"

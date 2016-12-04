@@ -44,7 +44,7 @@ public abstract class Place implements Serializable {
         this.information = information;
     }
 
-    Place (Cursor cursor) {
+    Place(Cursor cursor) {
         location = new Pair<>(cursor.getDouble(LAT_DB), cursor.getDouble(LNG_DB));
         name = cursor.getString(TITLE);
         address = cursor.getString(ADDRESS);
