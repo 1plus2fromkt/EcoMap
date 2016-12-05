@@ -83,17 +83,20 @@ public class DataUpdator9000 {
     }
 
     private static void getDifferenceOldNew(Connection old, Connection notOld, Connection diff, int cat) throws SQLException {
+        diff.setAutoCommit(false);
         try (Statement oldSt = old.createStatement();
             Statement notOldSt = notOld.createStatement();
             ResultSet second = notOldSt.executeQuery("SELECT * FROM " + tableName);
             Statement diffSt = diff.createStatement()) {
             boolean toUpdate, empty;
             String val;
+
             while (second.next()) {
                 val = "\'";
                 try (
                     ResultSet res = oldSt.executeQuery("SELECT * FROM " + tableName + " WHERE id=" + second.getObject(1).toString() + ";");
                 ) {
+
                     toUpdate = false;
                     res.next();
                     empty = res.getObject(1) == null;
@@ -108,9 +111,10 @@ public class DataUpdator9000 {
                     }
                 }
             }
-
             addDeleted(old, notOld, diff, cat);
+            diff.commit();
         }
+        diff.setAutoCommit(true); // Hope that works
     }
 
     private static void addDeleted (Connection old, Connection notOld, Connection diff, int cat) throws SQLException {

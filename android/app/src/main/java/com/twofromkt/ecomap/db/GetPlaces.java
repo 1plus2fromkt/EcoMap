@@ -92,7 +92,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             T x;
             while (cur.moveToNext()) {
                 x = fac.init(cur);
-//                if (pr.apply(x))
+                if (pr.apply(x))
                     ans.add(x);
             }
         } catch (SQLiteCantOpenDatabaseException e) {

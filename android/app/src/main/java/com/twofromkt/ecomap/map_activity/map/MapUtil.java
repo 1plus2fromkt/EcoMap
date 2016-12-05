@@ -54,6 +54,12 @@ class MapUtil {
         Loader<ResultType> loader;
         bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
+        bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
+        LatLng x = map.mMap.getCameraPosition().target;
+        float z = map.mMap.getCameraPosition().zoom;
+        bundle.putDouble(GetPlaces.LAT, x.latitude);
+        bundle.putDouble(GetPlaces.LNG, x.longitude);
+        bundle.putFloat(GetPlaces.RADIUS, 100000); // TODO: send real radius
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();

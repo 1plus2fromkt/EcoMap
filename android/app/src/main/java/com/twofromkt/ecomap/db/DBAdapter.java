@@ -34,6 +34,7 @@ public class DBAdapter {
             if (isEmpty(diff))
                 return;
             curr.execSQL(schemas[num]);
+            curr.beginTransactionNonExclusive();
             try (Cursor all = diff.rawQuery("SELECT * FROM " + tableName + ";", null)) {
                 if (!all.moveToFirst())
                     return;
@@ -48,6 +49,8 @@ public class DBAdapter {
                     curr.execSQL(getInsertScheme(num, val, true));
                 } while (all.moveToNext());
             }
+            curr.setTransactionSuccessful();
+            curr.endTransaction();
         }
     }
 
