@@ -61,5 +61,9 @@ public class TrashBox extends Place {
             }
             return null;
         }
+
+        public static String nameFromIndex(int i) {
+            return names[i];
+        }
     }
 }

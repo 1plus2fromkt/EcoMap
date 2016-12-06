@@ -15,7 +15,7 @@ import java.io.Serializable;
 public abstract class Place implements Serializable {
 
     public static final int TRASHBOX = 0, CAFE = 1, OTHER = 2;
-    protected static final int ID = 0, LAT_DB = 1, LNG_DB = 2, RATE = 3, TITLE = 4, CONTENT = 5,
+    public static final int ID = 0, LAT_DB = 1, LNG_DB = 2, RATE = 3, TITLE = 4, CONTENT = 5,
             ADDRESS = 6, IMG = 7, INFO = 8, WORK_TIME = 9, SITE = 10, TEL = 11, EMAIL = 12;
 
 

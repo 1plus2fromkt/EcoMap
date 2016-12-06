@@ -6,10 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Pair;
 
-import com.android.internal.util.Predicate;
-import com.google.android.gms.common.api.Result;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -18,46 +15,40 @@ import com.twofromkt.ecomap.PlaceTypes.Cafe;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 
-import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.twofromkt.ecomap.Consts.CAFE_NUMBER;
-import static com.twofromkt.ecomap.Consts.FILE_NAMES;
 import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
-import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
 public class GetPlaces extends AsyncTaskLoader<ResultType> {
-    public static final int NEAR = 0, ALL = 1;
-    public static final String WHICH_PLACE = "WHICH", RADIUS = "RADIUS", CHOSEN = "CHOSEN",
-                                LAT = "LAT", LNG = "LNG", MODE = "MODE";
+    public static final int IN_BOUNDS = 0, ALL = 1, ONE_MATCH = 0, ALL_MATCH = 1;
+    public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
+                                LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
+                                LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP";
 
-    private int which, mode;
+    private int which, mode, match;
     private boolean[] chosen;
-    private double lat, lng;
-    private float radius;
+    private double latMinus, lngMinus, latPlus, lngPlus;
 
     public GetPlaces(Context context, Bundle args) {
         super(context);
         if (args != null) {
             which = args.getInt(WHICH_PLACE);
             mode = args.getInt(MODE);
+            match = args.getInt(ANY_MATCH_KEY);
             if (which == TRASH_NUMBER) { //and maybe && NEAR
                 chosen = args.getBooleanArray(CHOSEN);
             }
-            if (mode == NEAR) {
-                lat = args.getDouble(LAT);
-                lng = args.getDouble(LNG);
-                radius = args.getFloat(RADIUS);
+            if (mode == IN_BOUNDS) {
+                latMinus = args.getDouble(LAT_MINUS);
+                lngMinus = args.getDouble(LNG_MINUS);
+                latPlus = args.getDouble(LAT_PLUS);
+                lngPlus = args.getDouble(LNG_PLUS);
             }
         }
     }
@@ -81,19 +72,21 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         }
     }
 
-    private static <T extends Place> ArrayList<T> getPlaces(Predicate<T> pr, int category,
-                                                            Context context, MyFactory<T> fac) {
+    private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
+                                                            Context context, MyFactory<T> fac,
+                                                            int lim) {
         ArrayList<T> ans = new ArrayList<>();
-
+        String order = " ORDER BY rate ASC ", limit = " LIMIT " + lim + " "; //TODO: CHANGE rate TO SOMETHING CLEVER
         try(SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-            Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + ";", null)) {
+            Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " WHERE " +
+                    filter + order + limit + ";", null)) {
             cur.moveToFirst();
             T x;
+
             while (cur.moveToNext()) {
                 x = fac.init(cur);
-                if (pr.apply(x))
-                    ans.add(x);
+                ans.add(x);
             }
         } catch (SQLiteCantOpenDatabaseException e) {
             e.printStackTrace();
@@ -102,31 +95,36 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         return ans;
     }
 
-    public static ArrayList<Cafe> getCafes(final LatLng x, final double radius, Context context) {
-
-        return getPlaces(new Predicate<Cafe>() {
-            @Override
-            public boolean apply(Cafe o) {
-                return distanceLatLng(x, getLatLng(o.location)) < radius;
-            }
-        }, CAFE_NUMBER, context, new CafeFactory());
+    private ArrayList<Cafe> getCafes(final LatLng x_minus, final LatLng x_plus, Context context) {
+        String filter = sqlCoordBounds(x_minus, x_plus, CAFE_NUMBER);
+        return getPlaces(filter, CAFE_NUMBER, context, new CafeFactory(), 10);
     }
 
-    public static ArrayList<TrashBox> getTrashes(final LatLng x, final double radius,
-                                                 boolean[] arr, Context context) {
-        Set<TrashBox.Category> s = new HashSet<>();
-        for (int i = 0; i < arr.length; i++)
-            if (arr[i])
-                s.add(TrashBox.Category.fromIndex(i));
-        final Set<TrashBox.Category> finalS = s;
-        return getPlaces(new Predicate<TrashBox>() {
-            @Override
-            public boolean apply(TrashBox o) {
-                finalS.retainAll(o.category);
-                return distanceLatLng(x, getLatLng(o.location)) < radius && finalS.size() > 0;
+    private ArrayList<TrashBox> getTrashes(final LatLng x_minus, final LatLng x_plus,
+                                                 Context context) {
+        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_NUMBER) + " AND ("; // TODO: check minus < plus
+        boolean added = false;
+        for (int i = 0; i < chosen.length; i++) {
+            if (chosen[i]) {
+                if (added) {
+                    filter += (match == ONE_MATCH ? " OR " : " AND ");
+                }
+                filter += "(" + DBAdapter.getColumnName(TRASH_NUMBER, Place.CONTENT)
+                        + " LIKE " + "\'%" + TrashBox.Category.nameFromIndex(i) + "%\')";
+                added = true;
             }
-        }, TRASH_NUMBER, context, new TrashFactory());
+        }
+        filter += ")";
+        return getPlaces(filter, TRASH_NUMBER, context, new TrashFactory(), 10);
     }
+
+    private static String sqlCoordBounds(LatLng min, LatLng max, int category) {
+        return "(" + DBAdapter.getColumnName(category, Place.LAT_DB) + " BETWEEN " +
+                min.latitude + " AND " + max.latitude + ") AND (" +
+                DBAdapter.getColumnName(category, Place.LNG_DB) + " BETWEEN " + min.longitude +
+                " AND " + max.longitude + ")";
+    }
+
 
     @Override
     public void onStartLoading() {
@@ -140,15 +138,17 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         switch (which) {
             case TRASH_NUMBER:
                 switch (mode) {
-                    case NEAR:
-                        ans = getTrashes(getLatLng(lat, lng), radius, chosen, getContext());
+                    case IN_BOUNDS:
+                        ans = getTrashes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),
+                                getContext());
                         break;
                 }
                 break;
             case CAFE_NUMBER:
                 switch (mode) {
-                    case NEAR:
-                        ans = getCafes(getLatLng(lat, lng), radius, getContext());
+                    case IN_BOUNDS:
+                        ans = getCafes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),
+                                getContext());
                         break;
                 }
                 break;

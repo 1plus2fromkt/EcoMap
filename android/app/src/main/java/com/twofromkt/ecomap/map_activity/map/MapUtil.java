@@ -53,13 +53,9 @@ class MapUtil {
         Bundle bundle = createBundle();
         Loader<ResultType> loader;
         bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
+        bundle.putInt(GetPlaces.ANY_MATCH_KEY, GetPlaces.ONE_MATCH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
-        bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
-        LatLng x = map.mMap.getCameraPosition().target;
-        float z = map.mMap.getCameraPosition().zoom;
-        bundle.putDouble(GetPlaces.LAT, x.latitude);
-        bundle.putDouble(GetPlaces.LNG, x.longitude);
-        bundle.putFloat(GetPlaces.RADIUS, 100000); // TODO: send real radius
+        // TODO: also, when bounds are big, like whole country, we shouldn't show anything. Like Google does. Or we should show cities.
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();
@@ -114,12 +110,14 @@ class MapUtil {
     }
 
     private Bundle createBundle() {
-        LatLng curr = map.mMap.getCameraPosition().target;
         Bundle bundle = new Bundle();
-        bundle.putDouble(MapActivity.LAT, curr.latitude);
-        bundle.putDouble(MapActivity.LNG, curr.longitude);
-        bundle.putInt(GetPlaces.MODE, GetPlaces.NEAR);
-        bundle.putFloat(GetPlaces.RADIUS, (float) 1e15);
+        bundle.putInt(GetPlaces.MODE, GetPlaces.IN_BOUNDS);
+        LatLng x = map.mMap.getProjection().getVisibleRegion().latLngBounds.northeast;
+        LatLng y = map.mMap.getProjection().getVisibleRegion().latLngBounds.southwest;
+        bundle.putDouble(GetPlaces.LAT_MINUS, y.latitude);
+        bundle.putDouble(GetPlaces.LNG_MINUS, y.longitude);
+        bundle.putDouble(GetPlaces.LAT_PLUS, x.latitude);
+        bundle.putDouble(GetPlaces.LNG_PLUS, x.longitude);
         return bundle;
     }
 

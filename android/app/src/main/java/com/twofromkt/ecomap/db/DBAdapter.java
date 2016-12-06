@@ -15,8 +15,8 @@ public class DBAdapter {
 
     private static String[] schemas = new String[CATEGORIES_N];
     static final String dbPath = "db/", diffPath = "diff/", tableName = "Info";
-    private static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text", "address",
-            "img_link", "info", "work_time", "site", "telephone", "e_mail"}, {"id"}, {"id"}};
+    private static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text",
+            "address", "img_link", "info", "work_time", "site", "telephone", "e_mail"}, {"id"}, {"id"}};
     private static final String[][] tabTypes =
             {{"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}, {"INT PRIMARY KEY"}};
@@ -79,6 +79,10 @@ public class DBAdapter {
     public static String getDiffPath() {
 
         return diffPath;
+    }
+
+    public static String getColumnName(int category, int i) {
+        return tabNames[category][i];
     }
 
     static String getPathToDb(int num) {
