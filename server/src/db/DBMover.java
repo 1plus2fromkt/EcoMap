@@ -3,8 +3,8 @@ package db;
 import java.io.*;
 import java.sql.*;
 
-import static db.DataUpdator9000.CAT_N;
-import static db.DataUpdator9000.versionFileName;
+import static db.DataUpdater.CAT_N;
+import static db.DataUpdater.versionFileName;
 
 
 class DBMover {
@@ -14,7 +14,8 @@ class DBMover {
     static String[] folderNames = {"trash", "cafe"};
     private static int[] versions;
     private static File versionFile;
-    static void main(String[] args) throws IOException {
+
+    static void commitChanges() throws IOException {
         boolean q = false;
         versionFile = new File(versionFileName);
         if (!versionFile.exists()) {
@@ -44,19 +45,19 @@ class DBMover {
                     versions[i] = 0;
                 }
             }
-            updateFiles();
+            updateDataBases();
             in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void updateFiles() {
+    private static void updateDataBases() {
         try {
             for (int i = 0; i < CAT_N; i++) {
                 try (Connection c = DriverManager.getConnection("jdbc:sqlite:diff_" + dbNames[i]);
                      Statement st = c.createStatement();
-                     ResultSet r = st.executeQuery("SELECT * FROM " + tableName)) {
+                     ResultSet r = DBAdapter.getSelectResult(st, tableName)) {
                     if (r.next()) {
                         updateFile(i);
                     }
