@@ -22,7 +22,7 @@ public class SearchBarView extends LinearLayout {
     public SearchBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.search_bar, this);
+        inflater.inflate(R.layout.element_search_bar, this);
     }
 
     public void attach(MapActivity parentActivity) {

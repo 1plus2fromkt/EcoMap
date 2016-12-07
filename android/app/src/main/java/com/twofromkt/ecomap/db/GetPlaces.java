@@ -160,8 +160,10 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         }
         LatLngBounds bounds = includeAll(ans);
         CameraUpdate cu = null;
-        if (ans.size() > 0)
+        if (ans.size() > 0) {
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
+        }
+        Log.d("GETPLACES", "returning " + ans.size());
         return new ResultType(cu, ans, which, animateMap);
     }
 }

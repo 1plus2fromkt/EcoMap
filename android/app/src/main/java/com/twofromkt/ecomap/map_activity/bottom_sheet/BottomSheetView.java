@@ -41,7 +41,7 @@ public class BottomSheetView extends RelativeLayout {
     public BottomSheetView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.bottom_sheet, this);
+        inflater.inflate(R.layout.element_bottom_sheet, this);
     }
 
     public void attach(FragmentManager fragmentManager, MapActivity parentActivity) {

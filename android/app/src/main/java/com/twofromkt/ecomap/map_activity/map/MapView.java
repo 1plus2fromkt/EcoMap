@@ -57,7 +57,7 @@ public class MapView extends RelativeLayout {
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.map, this);
+        inflater.inflate(R.layout.element_map, this);
     }
 
     public void attach(MapActivity parentActivity, FragmentManager fragmentManager,

@@ -2,6 +2,7 @@ package com.twofromkt.ecomap.PlaceTypes;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -23,7 +24,12 @@ public class TrashBox extends Place implements Serializable {
         category = new boolean[TRASH_TYPES_NUMBER];
         String[] arr = c.getString(CONTENT).replace(" ", "").split(",");
         for (String s : arr) {
-            category[Category.numFromName(s)] = true;
+            int catIndex = Category.numFromName(s);
+            if (catIndex != -1) {
+                category[Category.numFromName(s)] = true;
+            } else {
+                Log.d("TrashBoxInit", "String " + s + " is not a known category!");
+            }
         }
     }
 

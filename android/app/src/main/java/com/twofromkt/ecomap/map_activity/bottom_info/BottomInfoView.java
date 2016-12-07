@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +36,7 @@ public class BottomInfoView extends LinearLayout {
     public BottomInfoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.bottom_info, this);
+        inflater.inflate(R.layout.element_bottom_info, this);
     }
 
     public void attach(MapActivity parentActivity) {

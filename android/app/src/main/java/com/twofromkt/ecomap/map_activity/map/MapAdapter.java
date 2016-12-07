@@ -80,15 +80,16 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         map.mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                if (map.parentActivity.typePanel.isChosen(TRASH_ID))
+                if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
                     map.util.searchNearTrashes(false);
-//                map.util.searchNearCafe();
+                }
+//                element_map.util.searchNearCafe();
             }
         });
-//        map.mMap.setMyLocationEnabled(true);
-//        UiSettings ui = map.mMap.getUiSettings();
+//        element_map.mMap.setMyLocationEnabled(true);
+//        UiSettings ui = element_map.mMap.getUiSettings();
 //        ui.setZoomControlsEnabled(true);
-//        map.mMap.setPadding(0, 0, 0, 600);
+//        element_map.mMap.setPadding(0, 0, 0, 600);
     }
 
     @Override

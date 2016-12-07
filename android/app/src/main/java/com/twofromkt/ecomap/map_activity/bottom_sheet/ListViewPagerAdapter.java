@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Pair;
 
 import com.google.android.gms.maps.model.Marker;
-import com.twofromkt.ecomap.activities.OneList;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
 class ListViewPagerAdapter extends FragmentPagerAdapter {
+
     OneList[] tabs;
     final static String[] tabNames = new String[]{"Мусор", "Кафе", "Прочее"};
 
@@ -25,13 +25,14 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
         tabs = new OneList[CATEGORIES_NUMBER];
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             tabs[i] = new OneList();
-            tabs[i].a = new ListAdapter(a.get(i), act);
+            tabs[i].adapter = new ListAdapter(a.get(i), act);
         }
     }
 
     public void notifyUpdate() {
-        for (int i = 0; i < CATEGORIES_NUMBER; i++)
-            tabs[i].a.notifyDataSetChanged();
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+            tabs[i].adapter.notifyDataSetChanged();
+        }
     }
 
     @Override

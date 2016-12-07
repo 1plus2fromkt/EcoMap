@@ -38,7 +38,7 @@ public class ChooseTypePanel extends LinearLayout {
     public ChooseTypePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.choose_type_panel, this);
+        inflater.inflate(R.layout.element_choose_type_panel, this);
     }
 
     public void attach(MapActivity parentActivity) {
@@ -161,7 +161,7 @@ public class ChooseTypePanel extends LinearLayout {
      *
      * @param index index of checkbox to be chosen
      * @param state true if checkbox should be chosen, false otherwise
-     * @param activateMap true if the method should change map to show new objects
+     * @param activateMap true if the method should change element_map to show new objects
      */
     void setChosen(int index, boolean state, boolean activateMap) {
         chosenTypes[index] = state;

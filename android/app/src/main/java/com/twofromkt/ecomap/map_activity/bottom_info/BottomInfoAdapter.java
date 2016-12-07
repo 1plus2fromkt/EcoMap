@@ -16,6 +16,7 @@ class BottomInfoAdapter extends BottomSheetBehavior.BottomSheetCallback {
     public void onStateChanged(@NonNull View bottomSheet, int newState) {
         if (newState == BottomSheetBehavior.STATE_HIDDEN) {
             bottomInfo.hide();
+            bottomInfo.parentActivity.bottomSheet.collapse();
         }
     }
 

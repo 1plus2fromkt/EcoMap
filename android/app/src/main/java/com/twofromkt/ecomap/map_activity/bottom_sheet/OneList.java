@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.activities;
+package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,12 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.twofromkt.ecomap.DividerItemDecorator;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.bottom_sheet.ListAdapter;
 
 public class OneList extends Fragment {
-    public ListAdapter a;
-    public RecyclerView rv;
+    public ListAdapter adapter;
+    public RecyclerView recycler;
 
     public OneList() {
     }
@@ -26,12 +27,13 @@ public class OneList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.list_fragment, container, false);
-        rv = (RecyclerView) rootView.findViewById(R.id.search_list);
-        rv.setHasFixedSize(true);
-        rv.setAdapter(a);
+        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
+        recycler = (RecyclerView) rootView.findViewById(R.id.search_list);
+        recycler.setHasFixedSize(true);
+        recycler.setAdapter(adapter);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        rv.setLayoutManager(llm);
+        recycler.setLayoutManager(llm);
+        recycler.addItemDecoration(new DividerItemDecorator(getContext()));
 
         return rootView;
     }

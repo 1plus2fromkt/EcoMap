@@ -60,7 +60,9 @@ class MapUtil {
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();
-        map.parentActivity.bottomSheet.collapse();
+        if (map.parentActivity.bottomInfo.isHidden()) {
+            map.parentActivity.bottomSheet.collapse();
+        }
     }
 
     void focusOnMarker(Pair<Marker, ? extends Place> a) {

@@ -57,7 +57,7 @@
     <!--android:layout_height="wrap_content"-->
     <!--android:layout_margin="@dimen/fab_margin"-->
     <!--app:layout_anchorGravity="top|right|end" />-->
-    <!--&lt;!&ndash;app:layout_anchor="@id/bottom_sheet"&ndash;&gt;-->
+    <!--&lt;!&ndash;app:layout_anchor="@id/element_bottom_sheet"&ndash;&gt;-->
 
     <!--</android.support.design.widget.CoordinatorLayout>-->
 
