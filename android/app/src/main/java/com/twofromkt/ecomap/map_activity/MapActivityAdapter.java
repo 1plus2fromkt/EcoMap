@@ -76,7 +76,7 @@ class MapActivityAdapter implements
         Log.d("ADAPTER", "load finished");
         int t = data.number;
         act.map.addMarkers(data.res, data.cu, t, data.animate);
-        act.bottomSheet.show(data.res, t);
+//        act.bottomSheet.show(data.res, t);
     }
 
     @Override
