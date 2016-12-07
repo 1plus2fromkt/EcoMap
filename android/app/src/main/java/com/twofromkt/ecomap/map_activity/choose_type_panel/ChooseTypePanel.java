@@ -100,10 +100,12 @@ public class ChooseTypePanel extends LinearLayout {
 
         for (int i = 0; i < 3; i++) {
             final int index = i;
+            final int finalI = i;
             typeButtons[i].setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
+                    if (finalI == 2)
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -170,14 +172,18 @@ public class ChooseTypePanel extends LinearLayout {
         }
         if (state) {
             if (index == Place.TRASHBOX) {
-                parentActivity.map.searchNearTrashes();
+                parentActivity.map.searchNearTrashes(true);
             } else if (index == Place.CAFE) {
-                parentActivity.map.searchNearCafe();
+                parentActivity.map.searchNearCafe(true);
             }
             parentActivity.bottomSheet.focusOnTab(index);
         } else {
             parentActivity.map.clearMarkers(index);
         }
+    }
+
+    public boolean isChosen(int i) {
+        return chosenTypes[i];
     }
 
 }

@@ -78,12 +78,12 @@ public class MapView extends RelativeLayout {
         return mMap;
     }
 
-    public void searchNearCafe() {
-        util.searchNearCafe();
+    public void searchNearCafe(boolean animate) {
+        util.searchNearCafe(animate);
     }
 
-    public void searchNearTrashes() {
-        util.searchNearTrashes();
+    public void searchNearTrashes(boolean animate) {
+        util.searchNearTrashes(animate);
     }
 
     public void focusOnMarker(Pair<Marker, ? extends Place> a) {
@@ -94,8 +94,9 @@ public class MapView extends RelativeLayout {
         return util.addMarker(x, num);
     }
 
-    public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
-        util.addMarkers(p, cu, num);
+    public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num,
+                                             boolean animate) {
+        util.addMarkers(p, cu, num, animate);
     }
 
     public void clearMarkers(int num) {

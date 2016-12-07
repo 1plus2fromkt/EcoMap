@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import static com.twofromkt.ecomap.Consts.CAFE_NUMBER;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
 import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
+import static com.twofromkt.ecomap.db.GetPlaces.ANIMATE_MAP;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 class MapUtil {
@@ -39,8 +40,8 @@ class MapUtil {
         this.map = map;
     }
 
-    void searchNearCafe() {
-        Bundle b = createBundle();
+    void searchNearCafe(boolean animateMap) {
+        Bundle b = createBundle(animateMap);
         Loader<ResultType> loader;
         b.putInt(GetPlaces.WHICH_PLACE, CAFE_NUMBER);
         loader = map.parentActivity.getSupportLoaderManager()
@@ -49,8 +50,8 @@ class MapUtil {
         map.parentActivity.bottomSheet.collapse();
     }
 
-    void searchNearTrashes() {
-        Bundle bundle = createBundle();
+    void searchNearTrashes(boolean animateMap) {
+        Bundle bundle = createBundle(animateMap);
         Loader<ResultType> loader;
         bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
         bundle.putInt(GetPlaces.ANY_MATCH_KEY, GetPlaces.ONE_MATCH);
@@ -76,14 +77,14 @@ class MapUtil {
         return m;
     }
 
-    <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
+    <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num, boolean animate) {
         clearMarkers(num);
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
             addMarker(place, num);
             pos.add(getLatLng(place.location));
         }
-        if (pos.size() > 0) {
+        if (pos.size() > 0 && animate) {
             map.mMap.animateCamera(cu);
         }
         map.parentActivity.bottomSheet.notifyChange();
@@ -109,7 +110,7 @@ class MapUtil {
         map.mMap.getUiSettings().setMyLocationButtonEnabled(false);
     }
 
-    private Bundle createBundle() {
+    private Bundle createBundle(boolean animateMap) {
         Bundle bundle = new Bundle();
         bundle.putInt(GetPlaces.MODE, GetPlaces.IN_BOUNDS);
         LatLng x = map.mMap.getProjection().getVisibleRegion().latLngBounds.northeast;
@@ -118,6 +119,7 @@ class MapUtil {
         bundle.putDouble(GetPlaces.LNG_MINUS, y.longitude);
         bundle.putDouble(GetPlaces.LAT_PLUS, x.latitude);
         bundle.putDouble(GetPlaces.LNG_PLUS, x.longitude);
+        bundle.putBoolean(ANIMATE_MAP, animateMap);
         return bundle;
     }
 

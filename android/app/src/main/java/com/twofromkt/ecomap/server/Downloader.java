@@ -26,8 +26,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class Downloader {
-    //this should connect to server and update database. but later
-
     public static ArrayList<Pair<Double, Double>> data;
 
     private static final String versionFileName = "version.txt";

@@ -29,20 +29,23 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     public static final int IN_BOUNDS = 0, ALL = 1, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
                                 LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
-                                LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP";
+                                LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
+                                ANIMATE_MAP = "ANIMATE_MAP";
 
     private int which, mode, match;
     private boolean[] chosen;
     private double latMinus, lngMinus, latPlus, lngPlus;
+    boolean animateMap;
 
     public GetPlaces(Context context, Bundle args) {
         super(context);
         if (args != null) {
             which = args.getInt(WHICH_PLACE);
             mode = args.getInt(MODE);
-            match = args.getInt(ANY_MATCH_KEY);
+            animateMap = args.getBoolean(ANIMATE_MAP);
             if (which == TRASH_NUMBER) { //and maybe && NEAR
                 chosen = args.getBooleanArray(CHOSEN);
+                match = args.getInt(ANY_MATCH_KEY);
             }
             if (mode == IN_BOUNDS) {
                 latMinus = args.getDouble(LAT_MINUS);
@@ -102,7 +105,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
 
     private ArrayList<TrashBox> getTrashes(final LatLng x_minus, final LatLng x_plus,
                                                  Context context) {
-        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_NUMBER) + " AND ("; // TODO: check minus < plus
+        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_NUMBER) + " AND (";
         boolean added = false;
         for (int i = 0; i < chosen.length; i++) {
             if (chosen[i]) {
@@ -157,6 +160,6 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         CameraUpdate cu = null;
         if (ans.size() > 0)
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
-        return new ResultType(cu, ans, which);
+        return new ResultType(cu, ans, which, animateMap);
     }
 }

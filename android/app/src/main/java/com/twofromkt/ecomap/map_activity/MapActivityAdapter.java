@@ -73,7 +73,7 @@ class MapActivityAdapter implements
     public void onLoadFinished(Loader<ResultType> loader,
                                ResultType data) {
         int t = data.number;
-        act.map.addMarkers(data.res, data.cu, t);
+        act.map.addMarkers(data.res, data.cu, t, data.animate);
         act.bottomSheet.show(data.res, t);
     }
 

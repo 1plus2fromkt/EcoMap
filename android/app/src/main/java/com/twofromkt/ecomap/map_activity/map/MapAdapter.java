@@ -19,6 +19,7 @@ import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
 
+import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 
 class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -76,6 +77,14 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
                 map.hasCustomLocation = true;
             }
         }
+        map.mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                if (map.parentActivity.typePanel.isChosen(TRASH_NUMBER))
+                    map.util.searchNearTrashes(false);
+//                map.util.searchNearCafe();
+            }
+        });
 //        map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = map.mMap.getUiSettings();
 //        ui.setZoomControlsEnabled(true);
