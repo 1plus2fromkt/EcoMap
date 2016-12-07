@@ -4,9 +4,11 @@ import android.database.Cursor;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class Cafe extends Place {
+public class Cafe extends Place implements Serializable {
 
     String menuLink;
     String phone;

@@ -9,11 +9,12 @@ import com.twofromkt.ecomap.PlaceTypes.Place;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Util {
 
-    public static class Timetable {
+    public static class Timetable implements Serializable {
         private static final String prefix = "0 ";
         private static final int DAYS_IN_WEEK = 7;
         public Period[] table;
@@ -38,7 +39,7 @@ public class Util {
         }
     }
 
-    public static class Period {
+    public static class Period implements Serializable {
         public Time open, close;
         String time;
         boolean isTimetable;

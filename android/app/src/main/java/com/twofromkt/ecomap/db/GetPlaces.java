@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,8 +21,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.twofromkt.ecomap.Consts.CAFE_NUMBER;
-import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
+import static com.twofromkt.ecomap.Consts.CAFE_ID;
+import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
@@ -43,7 +44,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             which = args.getInt(WHICH_PLACE);
             mode = args.getInt(MODE);
             animateMap = args.getBoolean(ANIMATE_MAP);
-            if (which == TRASH_NUMBER) { //and maybe && NEAR
+            if (which == TRASH_ID) { //and maybe && NEAR
                 chosen = args.getBooleanArray(CHOSEN);
                 match = args.getInt(ANY_MATCH_KEY);
             }
@@ -99,26 +100,26 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private ArrayList<Cafe> getCafes(final LatLng x_minus, final LatLng x_plus, Context context) {
-        String filter = sqlCoordBounds(x_minus, x_plus, CAFE_NUMBER);
-        return getPlaces(filter, CAFE_NUMBER, context, new CafeFactory(), 10);
+        String filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
+        return getPlaces(filter, CAFE_ID, context, new CafeFactory(), 10);
     }
 
     private ArrayList<TrashBox> getTrashes(final LatLng x_minus, final LatLng x_plus,
                                                  Context context) {
-        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_NUMBER) + " AND (";
+        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_ID) + " AND (";
         boolean added = false;
         for (int i = 0; i < chosen.length; i++) {
             if (chosen[i]) {
                 if (added) {
                     filter += (match == ONE_MATCH ? " OR " : " AND ");
                 }
-                filter += "(" + DBAdapter.getColumnName(TRASH_NUMBER, Place.CONTENT)
+                filter += "(" + DBAdapter.getColumnName(TRASH_ID, Place.CONTENT)
                         + " LIKE " + "\'%" + TrashBox.Category.nameFromIndex(i) + "%\')";
                 added = true;
             }
         }
         filter += ")";
-        return getPlaces(filter, TRASH_NUMBER, context, new TrashFactory(), 10);
+        return getPlaces(filter, TRASH_ID, context, new TrashFactory(), 10);
     }
 
     private static String sqlCoordBounds(LatLng min, LatLng max, int category) {
@@ -137,9 +138,10 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
 
     @Override
     public ResultType loadInBackground() {
+        Log.d("GETPLACES", "started");
         ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
-            case TRASH_NUMBER:
+            case TRASH_ID:
                 switch (mode) {
                     case IN_BOUNDS:
                         ans = getTrashes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),
@@ -147,7 +149,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
                         break;
                 }
                 break;
-            case CAFE_NUMBER:
+            case CAFE_ID:
                 switch (mode) {
                     case IN_BOUNDS:
                         ans = getCafes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),

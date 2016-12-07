@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/bottom_info_scroll_view"
@@ -15,42 +14,165 @@
         app:behavior_peekHeight="80dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/name_text"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:paddingBottom="10dp"
-                android:textSize="25sp" />
+                android:layout_height="80dp"
+                android:background="@drawable/bottom_info_lower_border">
 
-            <TextView
-                android:id="@+id/category_text"
+                <ImageView
+                    android:id="@+id/bottom_info_type_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="20dp"
+                    android:src="@mipmap/trashbox_type" />
+
+                <TextView
+                    android:id="@+id/bottom_info_name_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/bottom_info_type_icon"
+                    android:text="test text"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:id="@+id/bottom_info_trash_icons_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="22dp"
+                    android:layout_below="@+id/bottom_info_name_text"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/bottom_info_type_icon"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/name_text"
-                android:layout_marginStart="30dp"
-                android:textSize="14sp" />
+                android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/information_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/category_text"
-                android:padding="16dp"
-                android:textSize="20sp" />
+                <LinearLayout
+                    android:id="@+id/bottom_info_action_buttons_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/location_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/information_text"
-                android:padding="16dp"
-                android:textSize="20sp" />
-        </RelativeLayout>
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:text="Позвонить"
+                        android:textSize="12dp" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:text="Маршрут"
+                        android:textSize="12dp" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:text="Сайт"
+                        android:textSize="12dp" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:id="@+id/bottom_info_address_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/bottom_info_action_buttons_layout"
+                    android:layout_marginTop="20dp">
+
+                    <ImageView
+                        android:id="@+id/bottom_info_address_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="15dp"
+                        android:src="@mipmap/bottom_info_location_icon" />
+
+                    <TextView
+                        android:id="@+id/bottom_info_address_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_toRightOf="@+id/bottom_info_address_icon"
+                        android:text="Тестовый текст адреса"
+                        android:textIsSelectable="true"
+                        android:textSize="14dp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/bottom_info_info_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/bottom_info_address_layout"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/bottom_info_info_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="15dp"
+                        android:src="@mipmap/bottom_info_info_icon" />
+
+                    <TextView
+                        android:id="@+id/bottom_info_info_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_toRightOf="@+id/bottom_info_info_icon"
+                        android:text="Тестовый текст информации"
+                        android:textIsSelectable="true"
+                        android:textSize="14dp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/bottom_info_timetable_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/bottom_info_info_layout"
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/bottom_info_timetable_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="15dp"
+                        android:src="@mipmap/bottom_info_timetable_icon" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_toRightOf="@+id/bottom_info_timetable_icon"
+                        android:text="Тут будет расписание"
+                        android:textIsSelectable="true"
+                        android:textSize="14dp" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

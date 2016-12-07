@@ -12,7 +12,7 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
+import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
 class ListViewPagerAdapter extends FragmentPagerAdapter {
     OneList[] tabs;
@@ -22,15 +22,15 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
                                 ArrayList <ArrayList<Pair<Marker, ? extends Place>>> a,
                                 MapActivity act) {
         super(manager);
-        tabs = new OneList[CATEGORIES_N];
-        for (int i = 0; i < CATEGORIES_N; i++) {
+        tabs = new OneList[CATEGORIES_NUMBER];
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             tabs[i] = new OneList();
             tabs[i].a = new ListAdapter(a.get(i), act);
         }
     }
 
     public void notifyUpdate() {
-        for (int i = 0; i < CATEGORIES_N; i++)
+        for (int i = 0; i < CATEGORIES_NUMBER; i++)
             tabs[i].a.notifyDataSetChanged();
     }
 

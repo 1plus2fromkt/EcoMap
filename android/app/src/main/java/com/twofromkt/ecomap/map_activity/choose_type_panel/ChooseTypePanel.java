@@ -105,17 +105,18 @@ public class ChooseTypePanel extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
-                    if (finalI == 2)
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Downloader.update(getContext());
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                    if (finalI == 2) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Downloader.update(getContext());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    }).start();
+                        }).start();
+                    }
                 }
             });
         }

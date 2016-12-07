@@ -5,32 +5,35 @@ import android.support.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class TrashBox extends Place {
+public class TrashBox extends Place implements Serializable {
 
-
-    @NonNull
-    public HashSet<Category> category;
+    boolean[] category;
 
     public TrashBox(Cursor c) {
         super(c);
         name = c.getString(TITLE);
         information = c.getString(ADDRESS) + " " + c.getString(INFO);
-        category = new HashSet<>();
+        category = new boolean[TRASH_TYPES_NUMBER];
         String[] arr = c.getString(CONTENT).replace(" ", "").split(",");
         for (String s : arr) {
-            category.add(Category.fromIndex(Category.numFromName(s)));
+            category[Category.numFromName(s)] = true;
         }
     }
 
     public TrashBox(String name, LatLng location, double rate, String information, Timetable workTime,
                     String imgLink, Set<Category> cat, String website) {
         super(name, location, rate, information, workTime, imgLink, website);
-        category = new HashSet<>(cat);
+        category = new boolean[TRASH_TYPES_NUMBER];
+        for (Category currCat : cat) {
+            category[currCat.n] = true;
+        }
         categoryNumber = TRASHBOX;
     }
 
@@ -44,8 +47,9 @@ public class TrashBox extends Place {
 
         public static int numFromName(String s) {
             for (int i = 0; i < names.length; i++) {
-                if (names[i].contains(s) || s.contains(names[i]))
+                if (names[i].contains(s) || s.contains(names[i])) {
                     return i;
+                }
             }
             return -1;
         }

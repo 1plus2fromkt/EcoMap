@@ -13,15 +13,15 @@ import static com.twofromkt.ecomap.Consts.*;
 
 public class DBAdapter {
 
-    private static String[] schemas = new String[CATEGORIES_N];
+    private static String[] schemas = new String[CATEGORIES_NUMBER];
     static final String dbPath = "db/", diffPath = "diff/", tableName = "Info";
     private static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text",
             "address", "img_link", "info", "work_time", "site", "telephone", "e_mail"}, {"id"}, {"id"}};
     private static final String[][] tabTypes =
             {{"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}, {"INT PRIMARY KEY"}};
-    private static final int[] TAB_N = {tabNames[TRASH_NUMBER].length, tabNames[CAFE_NUMBER].length,
-                                    tabNames[OTHER_NUMBER].length};
+    private static final int[] TAB_N = {tabNames[TRASH_ID].length, tabNames[CAFE_ID].length,
+                                    tabNames[OTHER_ID].length};
 
     public static void replace(int num, Context c) {
         initSchema();
@@ -57,7 +57,7 @@ public class DBAdapter {
     private static void initSchema() {
         if (schemas[0] != null)
             return;
-        for (int tr = 0; tr < CATEGORIES_N; tr++) {
+        for (int tr = 0; tr < CATEGORIES_NUMBER; tr++) {
             schemas[tr] = "CREATE TABLE " + "if not exists " + tableName +
                     "(";
             for (int i = 0; i < TAB_N[tr]; i++) {

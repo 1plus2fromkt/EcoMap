@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 
-import com.twofromkt.ecomap.Consts;
-import com.twofromkt.ecomap.Mock;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView;
 import com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView;
@@ -15,7 +13,7 @@ import com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
 
-import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
+import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
 public class MapActivity extends FragmentActivity {
 
@@ -31,13 +29,11 @@ public class MapActivity extends FragmentActivity {
     public BottomSheetView bottomSheet;
     public ChooseTypePanel typePanel;
 
-    public static final String LAT = "LAT", LNG = "LNG";
     public static final int GPS_REQUEST = 111, LOADER = 42;
 
     @Override
     protected void onStart() {
         super.onStart();
-        Mock.putObjects(this);
     }
 
     @Override
@@ -91,7 +87,7 @@ public class MapActivity extends FragmentActivity {
     }
 
     private boolean checkMarkers() {
-        for (int i = 0; i < CATEGORIES_N; i++) {
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             if (MapView.getActiveMarkers().get(i).size() > 0) {
                 return true;
             }
@@ -113,19 +109,6 @@ public class MapActivity extends FragmentActivity {
         } else {
             super.onBackPressed();
         }
-//        if (drawerLayout.isDrawerOpen(nv)) {
-//            drawerLayout.closeDrawer(nv);
-//        } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-//            bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//        } else if (bottomInfo.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-//            MapActivityUtil.hideBottomInfo(this);
-//        } else if (checkMarkers()) {
-//            util.clearMarkers(TRASH_NUM);
-//            util.clearMarkers(CAFE_NUM);
-//            MapActivityUtil.hideBottomList(this);
-//        } else {
-//            super.onBackPressed();
-//        }
     }
 
 }

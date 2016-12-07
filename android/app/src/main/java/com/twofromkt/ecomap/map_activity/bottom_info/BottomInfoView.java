@@ -1,11 +1,17 @@
 package com.twofromkt.ecomap.map_activity.bottom_info;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,14 +19,18 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
+import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
+
 public class BottomInfoView extends LinearLayout {
 
     BottomSheetBehavior bottomInfo;
-    TextView name, categoryName, information, location;
+    TextView name, information, address;
     View bottomInfoView;
     MapActivity parentActivity;
 
     Place currPlace;
+    ImageView[] trashTypesIcons;
+    LinearLayout trashTypesIconsLayout;
 
     private BottomInfoAdapter adapter;
 
@@ -34,11 +44,32 @@ public class BottomInfoView extends LinearLayout {
         this.parentActivity = parentActivity;
         bottomInfoView = findViewById(R.id.bottom_info_scroll_view);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
-        name = (TextView) findViewById(R.id.name_text);
-        categoryName = (TextView) findViewById(R.id.category_text);
-        information = (TextView) findViewById(R.id.information_text);
-        location = (TextView) findViewById(R.id.location_text);
+        name = (TextView) findViewById(R.id.bottom_info_name_text);
+        address = (TextView) findViewById(R.id.bottom_info_address_text);
+        information = (TextView) findViewById(R.id.bottom_info_info_text);
         adapter = new BottomInfoAdapter(this);
+
+        trashTypesIconsLayout = (LinearLayout) findViewById(R.id.bottom_info_trash_icons_layout);
+        trashTypesIcons = new ImageView[TRASH_TYPES_NUMBER];
+        for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
+            ImageView icon = new ImageView(parentActivity);
+            try {
+                icon.setImageBitmap(BitmapFactory.decodeResource(getResources(),
+                        R.mipmap.class.getField("trash" + (i + 1) + "selected").getInt(null)));
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            LinearLayout.LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            int marginRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, metrics);
+            layoutParams.setMargins(0, 0, marginRight, 0);
+            int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22, metrics);
+            layoutParams.width = layoutParams.height = size;
+            trashTypesIconsLayout.addView(icon, layoutParams);
+            icon.setVisibility(VISIBLE);
+            trashTypesIcons[i] = icon;
+        }
+
         setListeners();
     }
 
@@ -48,7 +79,6 @@ public class BottomInfoView extends LinearLayout {
 
     public void addInfo(String name, String category_name) {
         this.name.setText(name);
-        this.categoryName.setText(category_name);
     }
 
     public void collapse() {
@@ -78,23 +108,8 @@ public class BottomInfoView extends LinearLayout {
         }
         this.currPlace = place;
         name.setText(place.name);
-        String currCategoryName;
-        switch (place.categoryNumber) {
-            case Place.CAFE:
-                currCategoryName = "Cafe";
-                break;
-            case Place.TRASHBOX:
-                currCategoryName = "Trashbox";
-                break;
-            case Place.OTHER:
-                currCategoryName = "Other";
-                break;
-            default:
-                currCategoryName = "Unknown";
-        }
-        categoryName.setText(currCategoryName);
+        address.setText(place.address);
         information.setText(place.information);
-        location.setText(place.location.toString());
     }
 
     @Override

@@ -19,7 +19,7 @@ import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
+import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 
 class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -80,7 +80,7 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
         map.mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                if (map.parentActivity.typePanel.isChosen(TRASH_NUMBER))
+                if (map.parentActivity.typePanel.isChosen(TRASH_ID))
                     map.util.searchNearTrashes(false);
 //                map.util.searchNearCafe();
             }

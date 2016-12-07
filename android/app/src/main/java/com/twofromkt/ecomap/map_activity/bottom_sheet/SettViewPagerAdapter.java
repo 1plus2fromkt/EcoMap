@@ -40,7 +40,7 @@ class SettViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return Consts.CATEGORIES_N;
+        return Consts.CATEGORIES_NUMBER;
     }
 
     @Override

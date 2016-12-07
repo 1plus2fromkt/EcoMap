@@ -17,9 +17,9 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.Consts.CAFE_NUMBER;
-import static com.twofromkt.ecomap.Consts.CATEGORIES_N;
-import static com.twofromkt.ecomap.Consts.TRASH_NUMBER;
+import static com.twofromkt.ecomap.Consts.CAFE_ID;
+import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
+import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.db.GetPlaces.ANIMATE_MAP;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
@@ -31,7 +31,7 @@ class MapUtil {
 
     static {
         activeMarkers = new ArrayList<>();
-        for (int i = 0; i < CATEGORIES_N; i++) {
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             MapView.getActiveMarkers().add(new ArrayList<Pair<Marker, ? extends Place>>());
         }
     }
@@ -43,7 +43,7 @@ class MapUtil {
     void searchNearCafe(boolean animateMap) {
         Bundle b = createBundle(animateMap);
         Loader<ResultType> loader;
-        b.putInt(GetPlaces.WHICH_PLACE, CAFE_NUMBER);
+        b.putInt(GetPlaces.WHICH_PLACE, CAFE_ID);
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, b, map.parentActivity.adapter);
         loader.onContentChanged();
@@ -53,7 +53,7 @@ class MapUtil {
     void searchNearTrashes(boolean animateMap) {
         Bundle bundle = createBundle(animateMap);
         Loader<ResultType> loader;
-        bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_NUMBER);
+        bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_ID);
         bundle.putInt(GetPlaces.ANY_MATCH_KEY, GetPlaces.ONE_MATCH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
         // TODO: also, when bounds are big, like whole country, we shouldn't show anything. Like Google does. Or we should show cities.

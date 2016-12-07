@@ -7,6 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
@@ -72,6 +73,7 @@ class MapActivityAdapter implements
     @Override
     public void onLoadFinished(Loader<ResultType> loader,
                                ResultType data) {
+        Log.d("ADAPTER", "load finished");
         int t = data.number;
         act.map.addMarkers(data.res, data.cu, t, data.animate);
         act.bottomSheet.show(data.res, t);

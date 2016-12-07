@@ -15,7 +15,7 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.Arrays;
 
-import static com.twofromkt.ecomap.Consts.TRASH_N;
+import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 public abstract class Sett extends android.support.v4.app.Fragment {
     MapActivity mapActivity;
@@ -37,24 +37,28 @@ public abstract class Sett extends android.support.v4.app.Fragment {
 
     public static class TrashSett extends Sett {
 
+        boolean[] chosen;
+        ImageButton[] trashCategoryButtons;
+        int[] buttonIds;
+
         public TrashSett() {
-            trashCategoryButtons = new ImageButton[TRASH_N];
-            chosen = new boolean[TRASH_N];
+            trashCategoryButtons = new ImageButton[TRASH_TYPES_NUMBER];
+            chosen = new boolean[TRASH_TYPES_NUMBER];
             Arrays.fill(chosen, true);
         }
 
-        boolean[] chosen;
-        ImageButton[] trashCategoryButtons;
-        static final int[] buttonIds = {
-                R.id.trash_checkbox1,
-                R.id.trash_checkbox2,
-                R.id.trash_checkbox3,
-                R.id.trash_checkbox4};
-
         @Override
         public View onCreateView(LayoutInflater li, ViewGroup container, Bundle savedInstance) {
+            buttonIds = new int[TRASH_TYPES_NUMBER];
+            for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
+                try {
+                    buttonIds[i] = R.id.class.getField("trash_checkbox" + (i + 1)).getInt(null);
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+            }
             View view = li.inflate(R.layout.categories_fragment, null);
-            for (int i = 0; i < TRASH_N; i++) {
+            for (int i = 0; i < 4; i++) { //TODO 4 -> TRASH_TYPES_NUMBER
                 trashCategoryButtons[i] = (ImageButton) view.findViewById(buttonIds[i]);
                 final int fi = i;
                 trashCategoryButtons[i].setOnClickListener(new View.OnClickListener() {
