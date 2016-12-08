@@ -20,9 +20,9 @@ public class TrashBox extends Place implements Serializable {
     public TrashBox(Cursor c) {
         super(c);
         name = c.getString(TITLE);
-        information = c.getString(ADDRESS) + " " + c.getString(INFO);
+        information = c.getString(INFO);
         category = new boolean[TRASH_TYPES_NUMBER];
-        String[] arr = c.getString(CONTENT).replace(" ", "").split(",");
+        String[] arr = c.getString(CONTENT).replace(", ", ",").split(",");
         for (String s : arr) {
             int catIndex = Category.numFromName(s);
             if (catIndex != -1) {
