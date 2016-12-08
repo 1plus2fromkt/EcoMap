@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 
 import java.util.ArrayList;
 
@@ -25,10 +26,10 @@ import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private ArrayList<Pair<Marker, ? extends Place>> data;
+    private ArrayList<Pair<MapClusterItem, ? extends Place>> data;
     final MapActivity parentActivity;
 
-    ListAdapter(ArrayList<Pair<Marker, ? extends Place>> data, MapActivity parentActivity) {
+    ListAdapter(ArrayList<Pair<MapClusterItem, ? extends Place>> data, MapActivity parentActivity) {
         this.data = data;
         this.parentActivity = parentActivity;
         setHasStableIds(true);

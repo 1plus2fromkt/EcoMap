@@ -27,12 +27,12 @@ class MapUtil {
 
     private MapView map;
 
-    static volatile ArrayList<ArrayList<Pair<Marker, ? extends Place>>> activeMarkers;
+    static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> activeMarkers;
 
     static {
         activeMarkers = new ArrayList<>();
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            MapView.getActiveMarkers().add(new ArrayList<Pair<Marker, ? extends Place>>());
+            MapView.getActiveMarkers().add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
         }
     }
 
@@ -65,18 +65,17 @@ class MapUtil {
         }
     }
 
-    void focusOnMarker(Pair<Marker, ? extends Place> a) {
-        System.out.println("focus on marker");
+    void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
         map.parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());
 //        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }
 
-    Marker addMarker(Place x, int num) {
-        Marker m = map.mMap.addMarker(new MarkerOptions().position(getLatLng(x.location)).title(x.name));
-        activeMarkers.get(num).add(new Pair<>(m, x));
-        return m;
+    void addMarker(Place place, int type) {
+        MapClusterItem clusterItem = new MapClusterItem(place);
+        map.clusterManager.addItem(clusterItem);
+        activeMarkers.get(type).add(new Pair<>(clusterItem, place));
     }
 
     <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num, boolean animate) {
@@ -94,10 +93,11 @@ class MapUtil {
     }
 
     void clearMarkers(int num) {
-        if (num == -1)
+        if (num == -1) {
             return;
-        for (Pair<Marker, ? extends Place> m : activeMarkers.get(num)) {
-            m.first.remove();
+        }
+        for (Pair<MapClusterItem, ? extends Place> m : activeMarkers.get(num)) {
+            map.clusterManager.removeItem(m.first);
         }
         activeMarkers.get(num).clear();
         map.parentActivity.bottomSheet.notifyChange();

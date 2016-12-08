@@ -73,4 +73,15 @@ public abstract class Place implements Serializable {
             return (bef || aft);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Place && equals((Place) o);
+    }
+
+    public boolean equals(Place p) { //TODO check work time and image link too
+        return location.equals(p.location) && name.equals(p.name) && website.equals(p.website) &&
+                address.equals(p.address) && rate == p.rate && categoryNumber == p.categoryNumber &&
+                information.equals(p.information);
+    }
 }

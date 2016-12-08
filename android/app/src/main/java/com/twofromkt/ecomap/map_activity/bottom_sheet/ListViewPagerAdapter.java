@@ -8,6 +8,7 @@ import android.util.Pair;
 import com.google.android.gms.maps.model.Marker;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
     final static String[] tabNames = new String[]{"Мусор", "Кафе", "Прочее"};
 
     ListViewPagerAdapter(FragmentManager manager,
-                                ArrayList <ArrayList<Pair<Marker, ? extends Place>>> a,
+                                ArrayList <ArrayList<Pair<MapClusterItem, ? extends Place>>> a,
                                 MapActivity act) {
         super(manager);
         tabs = new OneList[CATEGORIES_NUMBER];

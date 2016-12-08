@@ -33,7 +33,7 @@ public class Util {
                         table[i] = new Period(arr[i], true);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }

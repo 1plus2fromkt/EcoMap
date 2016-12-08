@@ -24,6 +24,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
@@ -46,6 +48,7 @@ public class MapView extends RelativeLayout {
 
     Criteria criteria = new Criteria();
     LocationManager locationManager;
+    ClusterManager<MapClusterItem> clusterManager;
 
     FloatingActionButton locationButton;
 
@@ -86,12 +89,12 @@ public class MapView extends RelativeLayout {
         util.searchNearTrashes(animate);
     }
 
-    public void focusOnMarker(Pair<Marker, ? extends Place> a) {
+    public void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
         util.focusOnMarker(a);
     }
 
-    public Marker addMarker(Place x, int num) {
-        return util.addMarker(x, num);
+    public void addMarker(Place x, int type) {
+        util.addMarker(x, type);
     }
 
     public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num,
@@ -174,7 +177,7 @@ public class MapView extends RelativeLayout {
         util.addLocationSearch(parentActivity);
     }
 
-    public static ArrayList<ArrayList<Pair<Marker, ? extends Place>>> getActiveMarkers() {
+    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getActiveMarkers() {
         return MapUtil.activeMarkers;
     }
 

@@ -11,10 +11,10 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Marker;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-import com.twofromkt.ecomap.server.Downloader;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 
-class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+class MapAdapter implements OnMapReadyCallback,
+        ClusterManager.OnClusterClickListener<MapClusterItem>,
+        ClusterManager.OnClusterItemClickListener<MapClusterItem>,
         FloatingActionButton.OnClickListener {
 
     private MapView map;
@@ -32,13 +34,19 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
+        Toast.makeText(map.parentActivity, "Cluster clicked", Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public boolean onClusterItemClick(MapClusterItem clusterItem) {
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
         Place p = null;
-        for (ArrayList<Pair<Marker, ? extends Place>> ac : MapView.getActiveMarkers()) {
-            for (Pair<Marker, ? extends Place> x : ac) {
-                if (x.first.equals(marker)) {
+        for (ArrayList<Pair<MapClusterItem, ? extends Place>> ac : MapView.getActiveMarkers()) {
+            for (Pair<MapClusterItem, ? extends Place> x : ac) {
+                if (x.first.equals(clusterItem)) {
                     p = x.second;
                     break;
                 }
@@ -55,7 +63,6 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map.mMap = googleMap;
-        map.mMap.setOnMarkerClickListener(this);
         if (map.startPos != null) {
             map.moveMap(map.startPos);
         }
@@ -77,7 +84,8 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
                 map.hasCustomLocation = true;
             }
         }
-        map.mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+        MapMultiListener listener = new MapMultiListener();
+        listener.addListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
                 if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
@@ -86,6 +94,13 @@ class MapAdapter implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
 //                element_map.util.searchNearCafe();
             }
         });
+        map.clusterManager = new ClusterManager<>(map.parentActivity, map.mMap);
+        listener.addListener(map.clusterManager);
+        map.mMap.setOnCameraIdleListener(listener);
+        map.mMap.setOnMarkerClickListener(map.clusterManager);
+        map.clusterManager.setOnClusterItemClickListener(this);
+        map.clusterManager.setOnClusterClickListener(this);
+
 //        element_map.mMap.setMyLocationEnabled(true);
 //        UiSettings ui = element_map.mMap.getUiSettings();
 //        ui.setZoomControlsEnabled(true);

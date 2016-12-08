@@ -29,9 +29,9 @@ import static com.twofromkt.ecomap.util.Util.*;
 public class GetPlaces extends AsyncTaskLoader<ResultType> {
     public static final int IN_BOUNDS = 0, ALL = 1, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
-                                LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
-                                LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
-                                ANIMATE_MAP = "ANIMATE_MAP";
+            LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
+            LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
+            ANIMATE_MAP = "ANIMATE_MAP";
 
     private int which, mode, match;
     private boolean[] chosen;
@@ -77,14 +77,14 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
-                                                            Context context, MyFactory<T> fac,
-                                                            int lim) {
+                                                     Context context, MyFactory<T> fac,
+                                                     int lim) {
         ArrayList<T> ans = new ArrayList<>();
         String order = " ORDER BY rate ASC ", limit = " LIMIT " + lim + " "; //TODO: CHANGE rate TO SOMETHING CLEVER
-        try(SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
+        try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-            Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " WHERE " +
-                    filter + order + limit + ";", null)) {
+             Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " WHERE " +
+                     filter + order + ";", null)) { //+limit was there
             cur.moveToFirst();
             T x;
 
@@ -105,7 +105,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private ArrayList<TrashBox> getTrashes(final LatLng x_minus, final LatLng x_plus,
-                                                 Context context) {
+                                           Context context) {
         String filter = sqlCoordBounds(x_minus, x_plus, TRASH_ID) + " AND (";
         boolean added = false;
         for (int i = 0; i < chosen.length; i++) {
@@ -144,7 +144,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             case TRASH_ID:
                 switch (mode) {
                     case IN_BOUNDS:
-                        ans = getTrashes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),
+                        ans = getTrashes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
                                 getContext());
                         break;
                 }
@@ -152,7 +152,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             case CAFE_ID:
                 switch (mode) {
                     case IN_BOUNDS:
-                        ans = getCafes(getLatLng(latMinus, lngMinus),  getLatLng(latPlus, lngPlus),
+                        ans = getCafes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
                                 getContext());
                         break;
                 }
