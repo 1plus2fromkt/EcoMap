@@ -1,6 +1,6 @@
 package places.Recycle;
 
-import db.DBAdapter;
+import db.DBUtil;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,37 +15,43 @@ import static db.DataUpdater.TRASH_N;
 
 class RecyclePlace {
 
-    int id, NUM = TRASH_N;
+    int id;
+    private final int NUM = TRASH_N;
     double lat, lng, rate;
     String content_text, address, title, img_link, info = "", site = "", work_time = "", telephone = "", e_mail = "";
+    static final String[] categoryNames = {"Бумага", "Стекло", "Пластик", "Металл", "Одежда",
+            "Иное", "Опасные отходы", "Батарейки", "Лампочки", "Бытовая техника", "Тетра Пак"};
+    RecyclePlace(int id) {
+        this.id = id;
+    }
 
-    static ArrayList<String> getPageInfo(int id) {
+    static ArrayList<String> getPageInfo(int id) throws IOException {
         ArrayList<String> ans = new ArrayList<>();
-        try {
-            URL url = new URL("http://recyclemap.ru/index.php?task=infopoint&pointid=" + id +
-                    "&tmpl=component#");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "URL-8"));
-            String s;
-            while ((s = in.readLine()) != null) {
-                ans.add(s);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        URL url = new URL("http://recyclemap.ru/index.php?task=infopoint&pointid=" + id +
+                "&tmpl=component#");
+        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+        String s;
+        while ((s = in.readLine()) != null) {
+            ans.add(s);
         }
         return ans;
     }
 
-    void writeToDB(Connection conn) throws SQLException {
+    boolean writeToDB(Connection conn) throws SQLException, IOException {
         String sep = "', '";
         try (Statement st = conn.createStatement()) {
-            RecycleParser.readInfoRecycle(this);
-            prepareStringsForSQL();
-            String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
-                    title + sep + content_text + sep + address + sep + img_link + sep + info +
-                    sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
-            String sch = DBAdapter.getInsertSchema(NUM, log, false);
-            st.execute(sch);
-            System.out.println(log);
+            if (RecycleParser.readInfoRecycle(this)) {
+                prepareStringsForSQL();
+                String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +
+                        title + sep + content_text + sep + address + sep + img_link + sep + info +
+                        sep + work_time + sep + site + sep + telephone + sep + e_mail + "\'";
+                String sch = DBUtil.getInsertSchema(NUM, log, false);
+                st.execute(sch);
+                System.out.println(log);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -60,6 +66,8 @@ class RecyclePlace {
     }
 
     private String removeIllegalSymbols(String s) {
+        if (s.isEmpty())
+            return s;
         return s.replaceAll("[\']", "");
     }
 

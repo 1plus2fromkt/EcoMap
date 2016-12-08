@@ -1,85 +1,65 @@
 package places.Recycle;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import static places.Recycle.RecycleHandler.tags;
+import static places.Recycle.RecyclePlace.categoryNames;
 import static places.Recycle.RecyclePlace.getPageInfo;
 
 class RecycleParser {
-    static void addPlaces(ArrayList<String> page, Connection connection) throws SQLException {
-        boolean start = false;
-        int cnt = 0;
-        for (int i = 0; i < page.size(); i++) {
-            String s = page.get(i);
-            if (s.contains("var point_info")) {
-                start = true;
-                continue;
-            }
-            if (!start)
-                continue;
-            int curr = 0;
-            RecyclePlace pl = new RecyclePlace();
-            for (; !s.contains("},") && !s.contains("}};"); s = page.get(i++)) {
-                if (curr < tags.length && s.contains(tags[curr])) {
-                    parseString(curr, pl, s);
-                    curr++;
-                }
-            }
-            pl.writeToDB(connection);
-            cnt++;
-            System.out.println(cnt + " " + pl.id);
-            if (s.contains("}};"))
-                return;
-        }
-    }
 
-    private static void parseString(int curr, RecyclePlace pl, String s) {
-        s = s.substring(s.indexOf(":") + 1).trim();
-        s = s.substring(0, s.length() - 1).trim();
-        switch (curr) {
-            case 0:
-                pl.id = Integer.parseInt(s);
-                break;
-            case 1:
-                pl.lat = Double.parseDouble(s);
-                break;
-            case 2:
-                pl.lng = Double.parseDouble(s);
-                break;
-            case 3:
-                pl.title = s;
-                break;
-            case 4:
-                pl.rate = Double.parseDouble(s);
-                break;
-            case 5:
-                pl.content_text = s;
-                break;
-            case 6:
-                pl.address = s;
-                break;
-        }
-    }
-
-    static void readInfoRecycle(RecyclePlace place) {
+    static boolean readInfoRecycle(RecyclePlace place) throws IOException {
         ArrayList<String> page = getPageInfo(place.id);
+        String t;
         for (int i = 0; i < page.size(); i++) {
             String s = page.get(i);
-            if (s.contains("point_image")) {
+            if(s.contains("point_head")) {
+                i += 2;
+                s = page.get(i);
+                t = s.substring(s.indexOf("<span>") + 6);
+                place.title = t.substring(0, t.indexOf("</span>"));
+            } else if (s.contains("data-lat=")) {
+                t = s.substring(s.indexOf("lat=\"") + 5);
+                if (t.charAt(0) == '\"')
+                    return false;
+                place.lat = Double.parseDouble(t.substring(0, t.indexOf("\"")));
+                t = s.substring(s.indexOf("lng=\"") + 5);
+                place.lng = Double.parseDouble(t.substring(0, t.indexOf("\"")));
+            } else if (s.contains("point_image")) {
                 i++;
                 s = page.get(i);
-                s = s.substring(s.indexOf('\"') + 1);
-                place.img_link = s.substring(0, s.indexOf('\"'));
-                if (place.img_link.contains("imgs.jpg"))
-                    place.img_link = "Default";
+                while (s.contains("href")) {
+                    place.img_link = "";
+                    s = s.substring(s.indexOf("href=\"") + 6);
+                    t = s.substring(0, s.indexOf('\"'));
+                    if (t.contains("imgs.jpg")) {
+                        place.img_link = "Default";
+                    } else {
+                        place.img_link += t + ", ";
+                    }
+                }
+            } else if (s.contains("point_address")) {
+                i++;
+                s = page.get(i);
+                place.address = s.replace("</div>", "").trim();
+            } else if (s.contains("point_reiting_val")) {
+                t = s.substring(s.indexOf("\">") + 2);
+                place.rate = Double.parseDouble(t.substring(0, t.indexOf("</")));
+            } else if(s.contains("=\"trash_type")) {
+                place.content_text = "";
+                for (String x : categoryNames) {
+                    if (s.contains(x)) {
+                        place.content_text += x + ", ";
+                    }
+                }
+                if (s.length() >= 2)
+                    place.content_text = place.content_text.substring(0, place.content_text.length() - 2);
             } else if (s.contains(">Общая информация</a>")) {
                 i += 3;
                 s = page.get(i);
                 for (; !s.contains("</div>"); s = page.get(++i)) {
                     s = s.replace("<br />", " ").replace("<br/>", " ").trim() + " ";
-                    place.info += s;
+                    place.info += getRef(s);
                 }
                 place.info += s.replace("</div>", " ").trim();
             } else if (s.contains(">Время работы</a>")) {
@@ -97,6 +77,7 @@ class RecycleParser {
             }
 
         }
+        return true;
     }
 
     private static void getTime(String s, RecyclePlace place) {
@@ -127,5 +108,16 @@ class RecycleParser {
                 place.site += a[i] + "; ";
             }
         }
+    }
+
+    private static String getRef(String s) {
+        while (s.contains("href")) {
+            String pref = s.substring(0, s.indexOf("<a "));
+            String suff = s.substring(s.indexOf("</a>") + 4);
+            String ref = s.substring(s.indexOf("<a "), s.indexOf("</a>") + 4);
+            ref = ref.substring(ref.indexOf("href=\"") + 6, ref.indexOf("\">"));
+            s = pref + suff + ref;
+        }
+        return s;
     }
 }

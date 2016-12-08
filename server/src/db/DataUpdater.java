@@ -6,11 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 
-import static db.DBAdapter.getSelectResult;
+import static db.DBUtil.closeIfNeeded;
+import static db.DBUtil.getSelectResult;
 import static db.DBMover.*;
 import static java.nio.file.Files.delete;
+import static java.nio.file.Files.deleteIfExists;
 
 public class DataUpdater {
 
@@ -37,7 +40,7 @@ public class DataUpdater {
                 updateDB(curr[i], temp[i], diff[i], i);
             }
             DBMover.commitChanges();
-
+            System.out.println("Chages commited successfully");
         } catch (Exception e) {
             System.err.println("Oh, shit, couldn't create a database");
             e.printStackTrace();
@@ -46,13 +49,13 @@ public class DataUpdater {
         }
     }
 
-    private static void initConnections() throws SQLException, IOException {
+    static void initConnections() throws SQLException, IOException {
         for (int i = 0; i < CAT_N; i++) {
             temp[i] = null;
             curr[i] = null;
             diff[i] = null;
-            delete(new File("temp_" + dbNames[i]).toPath());
-            delete(new File("diff_" + dbNames[i]).toPath());
+            deleteIfExists(new File("temp_" + dbNames[i]).toPath());
+            deleteIfExists(new File("diff_" + dbNames[i]).toPath());
             if (!Files.exists(Paths.get(folderNames[i])))
                 Files.createDirectory(new File(folderNames[i]).toPath());
             temp[i] = DriverManager.getConnection("jdbc:sqlite:temp_" + dbNames[i]);
@@ -73,13 +76,9 @@ public class DataUpdater {
     private static void closeConnections() {
         try {
             for (int i = 0; i < CAT_N; i++) {
-                if (temp[i] != null)
-                    temp[i].close();
-                if (diff[i] != null)
-                    diff[i].close();
-                if (curr[i] != null)
-                    curr[i].close();
-
+                closeIfNeeded(temp[i]);
+                closeIfNeeded(diff[i]);
+                closeIfNeeded(curr[i]);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -89,21 +88,22 @@ public class DataUpdater {
 
     private static void updateDB(Connection old, Connection newCon, Connection diff, int cat) throws SQLException, IOException {
         getDifference(old, newCon, diff, cat);
-        Files.move(new File("temp_" + dbNames[cat]).toPath(), (new File(folderNames[cat] + "/" + dbNames[cat])).toPath());
+        Files.move(new File("temp_" + dbNames[cat]).toPath(), (new File(folderNames[cat] + "/" + dbNames[cat])).toPath(),
+                StandardCopyOption.REPLACE_EXISTING);
     }
 
     private static void getDifference(Connection old, Connection newCon, Connection diff, int category) throws SQLException {
         diff.setAutoCommit(false);
         try (Statement oldSt = old.createStatement();
              Statement newConStatement = newCon.createStatement();
-             ResultSet second = getSelectResult(newConStatement, tableName);
+             ResultSet second = getSelectResult(newConStatement);
              Statement diffSt = diff.createStatement()) {
             boolean toUpdate, empty;
             String val;
             while (second.next()) {
                 val = "\'";
                 try (
-                        ResultSet res = getSelectResult(oldSt, tableName, " WHERE id=" + second.getObject(1).toString());
+                        ResultSet res = getSelectResult(oldSt, tableName)
                 ) {
                     toUpdate = false;
                     res.next();
@@ -115,7 +115,7 @@ public class DataUpdater {
                         }
                     }
                     if (toUpdate) {
-                        diffSt.execute(DBAdapter.getInsertSchema(category, val, false));
+                        diffSt.execute(DBUtil.getInsertSchema(category, val, false));
                     }
                 }
             }
@@ -134,15 +134,14 @@ public class DataUpdater {
                 Statement oldSt = old.createStatement();
                 Statement newConStatement = newCon.createStatement();
                 Statement diffSt = diff.createStatement();
-                ResultSet res = getSelectResult(oldSt, tableName)) {
+                ResultSet res = getSelectResult(oldSt)) {
             while (res.next()) {
                 try (
-                        ResultSet result = getSelectResult(newConStatement, tableName, "WHERE id=" +
-                                res.getObject(1).toString())
+                        ResultSet result = getSelectResult(newConStatement, tableName)
                 ) {
                     if (!result.next()) {
                         System.out.println(res.getObject(1).toString());
-                        diffSt.execute(DBAdapter.getInsertSchema(cat, res.getObject(1).toString() + e + ",\'DELETE ME PLS\');", false));
+                        diffSt.execute(DBUtil.getInsertSchema(cat, res.getObject(1).toString() + e + ",\'DELETE ME PLS\');", false));
                     }
                 }
             }
@@ -171,13 +170,13 @@ public class DataUpdater {
                  Connection d = DriverManager.getConnection("jdbc:sqlite:" + folderNames[category] + "/" +
                          i + ".db");
                  Statement newSt = d.createStatement();
-                 ResultSet newR = getSelectResult(newSt, tableName)) {
+                 ResultSet newR = getSelectResult(newSt)) {
                 while (newR.next()) {
                     String val = "\'";
                     for (int j = 1; j <= TAB_N[category]; j++) {
                         val += newR.getObject(j).toString() + ((j == TAB_N[category]) ? "\');" : "\', \'");
                     }
-                    oldSt.execute(DBAdapter.getInsertSchema(category, val, true));
+                    oldSt.execute(DBUtil.getInsertSchema(category, val, true));
                 }
             }
         }
