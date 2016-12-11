@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;

@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
@@ -9,6 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
@@ -73,7 +76,6 @@ public class BottomSheetView extends RelativeLayout {
         categoriesLayout = (RelativeLayout) findViewById(R.id.categories_layout);
         collapsedPart = (RelativeLayout) findViewById(R.id.collapsed_part);
         listLayout = (RelativeLayout) findViewById(R.id.list_layout);
-
     }
 
     private void setListeners() {

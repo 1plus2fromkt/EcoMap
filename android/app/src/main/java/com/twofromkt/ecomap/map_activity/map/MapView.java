@@ -23,18 +23,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
-import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.twofromkt.ecomap.util.LocationUtil.distanceLatLng;
-import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 public class MapView extends RelativeLayout {
 

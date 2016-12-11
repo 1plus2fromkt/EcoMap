@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+
+    <ImageButton
+        android:id="@+id/trash_checkbox"
+        style="@style/checkbox_image_style"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/trash_name"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_below="@+id/trash_checkbox"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="7dp"
+        android:background="#000000ff"
+        android:textSize="16dp" />
+
+</RelativeLayout>

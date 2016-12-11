@@ -1,121 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp">
 
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+        <include
+            android:id="@+id/trash_checkbox1"
+            layout="@layout/helper_trash_sett_button" />
 
-            <ImageButton
-                android:id="@+id/trash_checkbox1"
-                style="@style/checkbox_image_style"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@mipmap/trash1selected"
-                android:layout_centerHorizontal="true"/>
+        <include
+            android:id="@+id/trash_checkbox2"
+            layout="@layout/helper_trash_sett_button" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:background="#000000ff"
-                android:layout_below="@+id/trash_checkbox1"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="7dp"
-                android:text="Бумага"
-                android:textSize="16dp"
-                />
+        <include
+            android:id="@+id/trash_checkbox3"
+            layout="@layout/helper_trash_sett_button" />
 
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <ImageButton
-                android:id="@+id/trash_checkbox2"
-                style="@style/checkbox_image_style"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@mipmap/trash2selected"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:background="#000000ff"
-                android:layout_below="@+id/trash_checkbox2"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="7dp"
-                android:text="Бумага"
-                android:textSize="16dp"
-                />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <ImageButton
-                android:id="@+id/trash_checkbox3"
-                style="@style/checkbox_image_style"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@mipmap/trash3selected"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:background="#000000ff"
-                android:layout_below="@+id/trash_checkbox3"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="7dp"
-                android:text="Пластик"
-                android:textSize="16dp"
-                />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <ImageButton
-                android:id="@+id/trash_checkbox4"
-                style="@style/checkbox_image_style"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@mipmap/trash4selected"
-                android:layout_centerHorizontal="true"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:background="#000000ff"
-                android:layout_below="@+id/trash_checkbox4"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="7dp"
-                android:text="Металл"
-                android:textSize="16dp"
-                />
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/trash_checkbox4"
+            layout="@layout/helper_trash_sett_button" />
 
     </LinearLayout>
 
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <include
+            android:id="@+id/trash_checkbox5"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include
+            android:id="@+id/trash_checkbox6"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include
+            android:id="@+id/trash_checkbox7"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include
+            android:id="@+id/trash_checkbox8"
+            layout="@layout/helper_trash_sett_button" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp">
+
+        <include
+            android:id="@+id/trash_checkbox9"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include
+            android:id="@+id/trash_checkbox10"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include
+            android:id="@+id/trash_checkbox11"
+            layout="@layout/helper_trash_sett_button" />
+
+        <include layout="@layout/helper_trash_sett_button" />
+
+    </LinearLayout>
+
+</LinearLayout>

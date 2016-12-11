@@ -46,7 +46,7 @@ public class TrashBox extends Place implements Serializable {
     public enum Category {
         PAPER(0), GLASS(1), PLASTIC(2), METAL(3), CLOTHES(4), OTHER(5), DANGEROUS(6),
         BATTERY(7), BULB(8), APPLIANCES(9), TETRA_PACK(10);
-        static final String[] names = {"Бумага", "Стекло", "Пластик", "Металл", "Одежда",
+        public static final String[] names = {"Бумага", "Стекло", "Пластик", "Металл", "Одежда",
                                 "Иное", "Опасные отходы", "Батарейки", "Лампочки",
                                 "Бытовая техника", "Тетра Пак"};
         int n;
