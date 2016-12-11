@@ -56,7 +56,6 @@ class MapUtil {
         bundle.putInt(GetPlaces.WHICH_PLACE, TRASH_ID);
         bundle.putInt(GetPlaces.ANY_MATCH_KEY, GetPlaces.ONE_MATCH);
         bundle.putBooleanArray(GetPlaces.CHOSEN, map.parentActivity.bottomSheet.getTrashCategories());
-        // TODO: also, when bounds are big, like whole country, we shouldn't show anything. Like Google does. Or we should show cities.
         loader = map.parentActivity.getSupportLoaderManager()
                 .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
         loader.onContentChanged();
@@ -68,7 +67,7 @@ class MapUtil {
     void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
-        map.parentActivity.bottomInfo.addInfo(a.second.name, a.second.getClass().getName());
+        map.parentActivity.bottomInfo.addInfo(a.second.getName(), a.second.getClass().getName());
 //        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }
 
@@ -83,7 +82,7 @@ class MapUtil {
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place place : p) {
             addMarker(place, num);
-            pos.add(getLatLng(place.location));
+            pos.add(getLatLng(place.getLocation()));
         }
         if (pos.size() > 0 && animate) {
             map.mMap.animateCamera(cu);

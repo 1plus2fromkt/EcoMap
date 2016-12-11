@@ -20,17 +20,16 @@ public abstract class Place implements Serializable {
 
 
     @NonNull
-    public Pair<Double, Double> location;
+    private Pair<Double, Double> location;
     @NonNull
-    public String name;
-    public String website;
-    public String address;
-    public double rate;
-    public int categoryNumber;
-    Timetable workTime;
+    private String name;
+    private String website, address;
+    private double rate;
+    private int categoryNumber;
+    private Timetable workTime;
     @Nullable
-    String imgLink;
-    public String information;
+    private String imgLink;
+    private String information;
 
     Place(@NonNull String name, LatLng location, double rate, String information, Timetable workTime,
           String imgLink, String website) {
@@ -65,7 +64,8 @@ public abstract class Place implements Serializable {
     }
 
     boolean isOpened(Period.Time t, int dayOfWeek) {
-        Period.Time a = workTime.table[dayOfWeek].open, b = workTime.table[dayOfWeek].close;
+        Period.Time a = workTime.getTable()[dayOfWeek].getOpen(),
+                b = workTime.getTable()[dayOfWeek].getClose();
         boolean bef = t.before(b), aft = t.after(a);
         if (a.before(b)) {
             return (bef && aft);
@@ -83,5 +83,45 @@ public abstract class Place implements Serializable {
         return location.equals(p.location) && name.equals(p.name) && website.equals(p.website) &&
                 address.equals(p.address) && rate == p.rate && categoryNumber == p.categoryNumber &&
                 information.equals(p.information);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getImgLink() {
+        return imgLink;
+    }
+
+    public String getInformation() {
+        return information;
+    }
+
+    public Pair<Double, Double> getLocation() {
+        return location;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public int getCategoryNumber() {
+        return categoryNumber;
+    }
+
+    public Timetable getWorkTime() {
+        return workTime;
+    }
+
+    protected void setCategoryNumber(int x) {
+        categoryNumber = x;
     }
 }

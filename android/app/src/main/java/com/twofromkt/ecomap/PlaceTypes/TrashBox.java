@@ -15,12 +15,10 @@ import static com.twofromkt.ecomap.util.Util.*;
 
 public class TrashBox extends Place implements Serializable {
 
-    boolean[] category;
+    private boolean[] category;
 
     public TrashBox(Cursor c) {
         super(c);
-        name = c.getString(TITLE);
-        information = c.getString(INFO);
         category = new boolean[TRASH_TYPES_NUMBER];
         String[] arr = c.getString(CONTENT).replace(", ", ",").split(",");
         for (String s : arr) {
@@ -40,7 +38,7 @@ public class TrashBox extends Place implements Serializable {
         for (Category currCat : cat) {
             category[currCat.n] = true;
         }
-        categoryNumber = TRASHBOX;
+        setCategoryNumber(TRASHBOX);
     }
 
     public enum Category {
@@ -75,6 +73,10 @@ public class TrashBox extends Place implements Serializable {
         public static String nameFromIndex(int i) {
             return names[i];
         }
+    }
+
+    public boolean isOfCategory(int i) {
+        return (i < category.length && category[i]);
     }
 
     @Override

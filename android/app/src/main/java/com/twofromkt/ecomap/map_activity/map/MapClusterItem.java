@@ -14,7 +14,7 @@ public class MapClusterItem implements ClusterItem {
 
     @Override
     public LatLng getPosition() {
-        return LocationUtil.getLatLng(place.location);
+        return LocationUtil.getLatLng(place.getLocation());
     }
 
     @Override

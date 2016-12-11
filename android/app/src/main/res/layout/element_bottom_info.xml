@@ -153,20 +153,38 @@
 
                     <ImageView
                         android:id="@+id/bottom_info_timetable_icon"
-                        android:layout_width="20dp"
+                        android:layout_width="@dimen/bottom_info_timetable_icon_width"
                         android:layout_height="20dp"
-                        android:layout_marginLeft="15dp"
+                        android:layout_marginStart="15dp"
                         android:src="@mipmap/bottom_info_timetable_icon" />
-
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_toRightOf="@+id/bottom_info_timetable_icon"
-                        android:text="Тут будет расписание"
-                        android:textIsSelectable="true"
-                        android:textSize="14dp" />
+                        android:orientation="vertical"
+                        android:layout_toEndOf="@id/bottom_info_timetable_icon">
+                        <include
+                            android:id="@+id/timetable0"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable1"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable2"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable3"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable4"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable5"
+                            layout="@layout/time_table_text" />
+                        <include
+                            android:id="@+id/timetable6"
+                            layout="@layout/time_table_text" />
+
+                    </LinearLayout>
 
                 </RelativeLayout>
 

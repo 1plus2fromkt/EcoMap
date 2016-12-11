@@ -38,4 +38,14 @@
         <item name="android:layout_gravity">end|center_vertical</item>
     </style>
 
+    <style name="timetable_textview">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">15dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
 </resources>

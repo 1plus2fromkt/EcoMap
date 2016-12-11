@@ -32,7 +32,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
             LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
             ANIMATE_MAP = "ANIMATE_MAP";
-
+    
     private int which, mode, match;
     private boolean[] chosen;
     private double latMinus, lngMinus, latPlus, lngPlus;

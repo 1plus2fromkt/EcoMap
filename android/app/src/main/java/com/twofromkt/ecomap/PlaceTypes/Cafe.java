@@ -10,8 +10,8 @@ import static com.twofromkt.ecomap.util.Util.*;
 
 public class Cafe extends Place implements Serializable {
 
-    String menuLink;
-    String phone;
+    private String menuLink;
+    private String phone;
 
     public Cafe() {
         menuLink = "";
@@ -27,6 +27,6 @@ public class Cafe extends Place implements Serializable {
         super (name, location, rate, information, workTime, website, website);
         this.phone = phone;
         this.menuLink = menuLink;
-        categoryNumber = Place.CAFE;
+        setCategoryNumber(CAFE);
     }
 }

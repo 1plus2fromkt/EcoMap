@@ -195,4 +195,8 @@ public class MapView extends RelativeLayout {
         }
         hasCustomLocation = savedMap.hasCustomLocation();
     }
+
+    public void onClusterUpdate() {
+        clusterManager.cluster();
+    }
 }

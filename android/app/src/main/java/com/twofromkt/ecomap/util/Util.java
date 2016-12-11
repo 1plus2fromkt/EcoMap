@@ -1,5 +1,6 @@
 package com.twofromkt.ecomap.util;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -17,33 +18,56 @@ public class Util {
     public static class Timetable implements Serializable {
         private static final String prefix = "0 ";
         private static final int DAYS_IN_WEEK = 7;
-        public Period[] table;
+        private  Period[] table;
         public Timetable (Timetable rhs) {
             System.arraycopy(rhs.table, 0, table, 0, table.length);
         }
 
         public Timetable (String s) {
             table = new Period[DAYS_IN_WEEK];
-            if (s.startsWith(prefix) || s.equals("")) {
+            if (s.startsWith(prefix)) {
+                table[0] = new Period(s.substring(prefix.length()), false);
+            } else if(s.equals("")) {
                 table[0] = new Period(s, false);
             } else {
                 try {
                     String[] arr = s.split("[\\$]");
                     for (int i = 0; i < DAYS_IN_WEEK; i++) {
-                        table[i] = new Period(arr[i], true);
+                        try {
+                            table[i] = new Period(arr[i], true);
+                        } catch (Exception e) {
+                            table[i] = new Period("Закрыто", false);
+                        }
                     }
                 } catch (Exception e) {
 //                    e.printStackTrace();
                 }
+                if (!checkTimetables()) { // in case of empty timetable
+                    for (int i = 0; i < DAYS_IN_WEEK; i++) {
+                        table[i].setTime("");
+                    }
+                }
             }
+        }
+
+        public Period[] getTable() {
+            return table;
+        }
+
+        public boolean checkTimetables() {
+            boolean ans = false;
+            for (int i = 0; i < DAYS_IN_WEEK; i++) {
+                ans |= (table[i] != null && table[i].isItTimetable());
+            }
+            return ans;
         }
     }
 
     public static class Period implements Serializable {
-        public Time open, close;
-        String time;
-        boolean isTimetable;
-        public Period (String s, boolean isTimetable){
+        private Time open, close;
+        private String time = "";
+        private boolean isTimetable;
+        Period (String s, boolean isTimetable){
             this.isTimetable = isTimetable;
             if (!isTimetable) {
                 time = s;
@@ -54,8 +78,33 @@ public class Util {
             }
         }
 
+        public Time getOpen() {
+            return open;
+        }
+
+        public Time getClose() {
+            return close;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public String getTimeString() {
+            return open.getTimeString() +
+                    "-" + close.getTimeString();
+        }
+
+        public boolean isItTimetable() {
+            return isTimetable;
+        }
+
+        public void setTime(String s) {
+            time = s;
+        }
+
         public static class Time {
-            int h, m;
+            private int h, m;
             Time (int h, int m) {
                 this.h = h;
                 this.m = m;
@@ -73,6 +122,19 @@ public class Util {
             public boolean after(Time t) {
                 return !before(t);
             }
+            public int getH() {
+                return h;
+            }
+
+            public int getM() {
+                return m;
+            }
+
+            @SuppressLint("DefaultLocale")
+            String getTimeString() {
+                return String.format("%02d", h) + ":" + String.format("%02d", m);
+            }
+
         }
     }
 
@@ -93,7 +155,7 @@ public class Util {
     public static LatLngBounds includeAll(ArrayList<? extends Place> data) {
         ArrayList<LatLng> pos = new ArrayList<>();
         for (Place x : data) {
-            pos.add(LocationUtil.getLatLng(x.location));
+            pos.add(LocationUtil.getLatLng(x.getLocation()));
         }
         if (pos.size() == 0) {
             return null;
