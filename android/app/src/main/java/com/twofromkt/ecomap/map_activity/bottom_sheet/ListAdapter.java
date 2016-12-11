@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Marker;
+import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
@@ -44,11 +45,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Place p = data.get(position).second;
-        holder.name.setText(p.getName());
+        Place place = data.get(position).second;
+        holder.name.setText(place.getName());
 
         if (!holder.typesSet) {
             for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
+                if (!(place instanceof TrashBox) || !((TrashBox) place).isOfCategory(i)) {
+                    continue;
+                }
                 ImageView icon = new ImageView(parentActivity);
                 Resources res = parentActivity.getResources();
                 try {

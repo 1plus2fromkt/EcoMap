@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.PlaceTypes.Place;
@@ -36,16 +35,6 @@ class MapAdapter implements OnMapReadyCallback,
 
     @Override
     public boolean onClusterClick(Cluster<MapClusterItem> cluster) {
-//        double latMax, lonMax, latMin, lonMin;
-//        latMax = lonMax = Long.MIN_VALUE;
-//        latMin = lonMin = Long.MAX_VALUE;
-//        for (MapClusterItem item : cluster.getItems()) {
-//            LatLng pos = item.getPosition();
-//            latMax = Math.max(latMax, pos.latitude);
-//            latMin = Math.min(latMin, pos.latitude);
-//            lonMax = Math.max(lonMax, pos.longitude);
-//            lonMin = Math.min(lonMin, pos.longitude);
-//        }
         map.moveMap(LocationUtil.fromLatLngZoom(cluster.getPosition(),
                 map.mMap.getCameraPosition().zoom + 1));
         return true;

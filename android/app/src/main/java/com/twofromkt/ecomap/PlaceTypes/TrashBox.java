@@ -76,7 +76,7 @@ public class TrashBox extends Place implements Serializable {
     }
 
     public boolean isOfCategory(int i) {
-        return (i < category.length && category[i]);
+        return i < category.length && category[i];
     }
 
     @Override

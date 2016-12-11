@@ -57,18 +57,18 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         }
     }
 
-    private interface MyFactory<T> {
+    private interface PlaceFactory<T> {
         T init(Cursor c);
     }
 
-    private static class CafeFactory implements MyFactory<Cafe> {
+    private static class CafeFactory implements PlaceFactory<Cafe> {
         @Override
         public Cafe init(Cursor c) {
             return new Cafe(c);
         }
     }
 
-    private static class TrashFactory implements MyFactory<TrashBox> {
+    private static class TrashFactory implements PlaceFactory<TrashBox> {
 
         @Override
         public TrashBox init(Cursor c) {
@@ -77,7 +77,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
-                                                     Context context, MyFactory<T> fac,
+                                                     Context context, PlaceFactory<T> fac,
                                                      int lim) {
         ArrayList<T> ans = new ArrayList<>();
         String order = " ORDER BY rate ASC ", limit = " LIMIT " + lim + " "; //TODO: CHANGE rate TO SOMETHING CLEVER
@@ -104,9 +104,9 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         return getPlaces(filter, CAFE_ID, context, new CafeFactory(), 10);
     }
 
-    private ArrayList<TrashBox> getTrashes(final LatLng x_minus, final LatLng x_plus,
+    private ArrayList<TrashBox> getTrashes(final LatLng xMinus, final LatLng xPlus,
                                            Context context) {
-        String filter = sqlCoordBounds(x_minus, x_plus, TRASH_ID) + " AND (";
+        String filter = sqlCoordBounds(xMinus, xPlus, TRASH_ID) + " AND (";
         boolean added = false;
         for (int i = 0; i < chosen.length; i++) {
             if (chosen[i]) {
@@ -128,7 +128,6 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
                 DBAdapter.getColumnName(category, Place.LNG_DB) + " BETWEEN " + min.longitude +
                 " AND " + max.longitude + ")";
     }
-
 
     @Override
     public void onStartLoading() {

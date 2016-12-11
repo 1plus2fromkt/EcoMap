@@ -21,16 +21,16 @@ public class DBAdapter {
             {{"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}, {"INT PRIMARY KEY"}};
     private static final int[] TAB_N = {tabNames[TRASH_ID].length, tabNames[CAFE_ID].length,
-                                    tabNames[OTHER_ID].length};
+            tabNames[OTHER_ID].length};
 
     public static void replace(int num, Context c) {
         initSchema();
         new File(c.getFilesDir(), dbPath).mkdir();
         new File(c.getFilesDir(), diffPath).mkdir();
-        try(SQLiteDatabase diff = SQLiteDatabase.openOrCreateDatabase(
+        try (SQLiteDatabase diff = SQLiteDatabase.openOrCreateDatabase(
                 new File(c.getFilesDir(), diffPath + "diff" + num + ".db"), null);
-            SQLiteDatabase curr = SQLiteDatabase.openOrCreateDatabase(
-                new File(c.getFilesDir(), dbPath + FILE_NAMES[num] + ".db"), null)) {
+             SQLiteDatabase curr = SQLiteDatabase.openOrCreateDatabase(
+                     new File(c.getFilesDir(), dbPath + FILE_NAMES[num] + ".db"), null)) {
             if (isEmpty(diff))
                 return;
             curr.execSQL(schemas[num]);
@@ -55,11 +55,11 @@ public class DBAdapter {
     }
 
     private static void initSchema() {
-        if (schemas[0] != null)
+        if (schemas[0] != null) {
             return;
+        }
         for (int tr = 0; tr < CATEGORIES_NUMBER; tr++) {
-            schemas[tr] = "CREATE TABLE " + "if not exists " + tableName +
-                    "(";
+            schemas[tr] = "CREATE TABLE " + "if not exists " + tableName + "(";
             for (int i = 0; i < TAB_N[tr]; i++) {
                 schemas[tr] += tabNames[tr][i] + " " + tabTypes[tr][i] + ((i == TAB_N[tr] - 1) ? "" : ", ");
             }
@@ -67,17 +67,16 @@ public class DBAdapter {
         }
     }
 
-    static boolean isEmpty (SQLiteDatabase db) {
-        try (Cursor diff_curs = db.
+    static boolean isEmpty(SQLiteDatabase db) {
+        try (Cursor diffCurs = db.
                 rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" +
                         tableName + "';", null)) {
-            diff_curs.moveToFirst();
-            return diff_curs.getCount() == 0;
+            diffCurs.moveToFirst();
+            return diffCurs.getCount() == 0;
         }
     }
 
     public static String getDiffPath() {
-
         return diffPath;
     }
 
