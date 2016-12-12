@@ -18,13 +18,13 @@ public class Cafe extends Place implements Serializable {
         phone = "";
     }
 
-    public Cafe(Cursor c) {
-        super(c);
+    public Cafe(Cursor c, boolean lite) {
+        super(c, lite);
     }
 
     public Cafe(String name, LatLng location, double rate, String information, Timetable workTime,
-                String webSite, String phone, String menuLink, String website) {
-        super (name, location, rate, information, workTime, website, website);
+                String webSite, String phone, String menuLink, String imgLink) {
+        super (name, location, rate, information, workTime, imgLink, webSite);
         this.phone = phone;
         this.menuLink = menuLink;
         setCategoryNumber(CAFE);

@@ -3,7 +3,6 @@ package com.twofromkt.ecomap.map_activity.bottom_sheet;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +88,7 @@ public abstract class Sett extends android.support.v4.app.Fragment {
                         }
                         trashCategoryButtons[fi].setImageBitmap(
                                 BitmapFactory.decodeResource(getResources(), iconId));
+                        mapActivity.map.showTrashMarkers();
                     }
                 });
             }

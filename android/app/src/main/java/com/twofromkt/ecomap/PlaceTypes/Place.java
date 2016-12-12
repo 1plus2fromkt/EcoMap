@@ -21,6 +21,7 @@ public abstract class Place implements Serializable {
 
     @NonNull
     private Pair<Double, Double> location;
+    private int id;
     @NonNull
     private String name;
     private String website, address;
@@ -43,9 +44,12 @@ public abstract class Place implements Serializable {
         this.information = information;
     }
 
-    Place(Cursor cursor) {
+    Place(Cursor cursor, boolean lite) {
+        this.id = cursor.getInt(ID);
         location = new Pair<>(cursor.getDouble(LAT_DB), cursor.getDouble(LNG_DB));
         name = cursor.getString(TITLE);
+        if (lite)
+            return;
         address = cursor.getString(ADDRESS);
         rate = cursor.getDouble(RATE);
         website = cursor.getString(SITE);
@@ -80,9 +84,7 @@ public abstract class Place implements Serializable {
     }
 
     public boolean equals(Place p) { //TODO check work time and image link too
-        return location.equals(p.location) && name.equals(p.name) && website.equals(p.website) &&
-                address.equals(p.address) && rate == p.rate && categoryNumber == p.categoryNumber &&
-                information.equals(p.information);
+        return location.equals(p.location) && name.equals(p.name);
     }
 
     public String getName() {

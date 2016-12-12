@@ -6,7 +6,7 @@ import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 public class MapClusterItem implements ClusterItem {
-    Place place;
+    private Place place;
 
     MapClusterItem(Place place) {
         this.place = place;

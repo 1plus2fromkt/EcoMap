@@ -27,24 +27,24 @@ import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
 public class GetPlaces extends AsyncTaskLoader<ResultType> {
-    public static final int IN_BOUNDS = 0, ALL = 1, ONE_MATCH = 0, ALL_MATCH = 1;
+    public static final int IN_BOUNDS = 0, ALL = 1, BY_ID = 2, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
             LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
             LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
-            ANIMATE_MAP = "ANIMATE_MAP";
-    
-    private int which, mode, match;
+            ANIMATE_MAP = "ANIMATE_MAP", LITE = "LITE", ID = "ID";
+
+    private int which, mode, match, id;
     private boolean[] chosen;
     private double latMinus, lngMinus, latPlus, lngPlus;
-    boolean animateMap;
+    private boolean lite;
 
     public GetPlaces(Context context, Bundle args) {
         super(context);
         if (args != null) {
             which = args.getInt(WHICH_PLACE);
             mode = args.getInt(MODE);
-            animateMap = args.getBoolean(ANIMATE_MAP);
-            if (which == TRASH_ID) { //and maybe && NEAR
+            lite = args.getBoolean(LITE);
+            if (which == TRASH_ID && mode != ALL) {
                 chosen = args.getBooleanArray(CHOSEN);
                 match = args.getInt(ANY_MATCH_KEY);
             }
@@ -53,26 +53,28 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
                 lngMinus = args.getDouble(LNG_MINUS);
                 latPlus = args.getDouble(LAT_PLUS);
                 lngPlus = args.getDouble(LNG_PLUS);
+            } else if (mode == BY_ID) {
+                id = args.getInt(ID);
             }
         }
     }
 
     private interface PlaceFactory<T> {
-        T init(Cursor c);
+        T init(Cursor c, boolean lite);
     }
 
     private static class CafeFactory implements PlaceFactory<Cafe> {
         @Override
-        public Cafe init(Cursor c) {
-            return new Cafe(c);
+        public Cafe init(Cursor c, boolean lite) {
+            return new Cafe(c, lite);
         }
     }
 
     private static class TrashFactory implements PlaceFactory<TrashBox> {
 
         @Override
-        public TrashBox init(Cursor c) {
-            return new TrashBox(c);
+        public TrashBox init(Cursor c, boolean lite) {
+            return new TrashBox(c, lite);
         }
     }
 
@@ -83,13 +85,13 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         String order = " ORDER BY rate ASC ", limit = " LIMIT " + lim + " "; //TODO: CHANGE rate TO SOMETHING CLEVER
         try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-             Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " WHERE " +
-                     filter + order + ";", null)) { //+limit was there
+             Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + /*" WHERE " +
+                     filter + order +*/ ";", null)) { //+limit was there
             cur.moveToFirst();
             T x;
 
             while (cur.moveToNext()) {
-                x = fac.init(cur);
+                x = fac.init(cur, lite);
                 ans.add(x);
             }
         } catch (SQLiteCantOpenDatabaseException e) {
@@ -100,33 +102,42 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private ArrayList<Cafe> getCafes(final LatLng x_minus, final LatLng x_plus, Context context) {
-        String filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
+        String filter = "";
+//        if (mode == IN_BOUNDS)
+//            filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
         return getPlaces(filter, CAFE_ID, context, new CafeFactory(), 10);
     }
 
     private ArrayList<TrashBox> getTrashes(final LatLng xMinus, final LatLng xPlus,
                                            Context context) {
-        String filter = sqlCoordBounds(xMinus, xPlus, TRASH_ID) + " AND (";
-        boolean added = false;
-        for (int i = 0; i < chosen.length; i++) {
-            if (chosen[i]) {
-                if (added) {
-                    filter += (match == ONE_MATCH ? " OR " : " AND ");
-                }
-                filter += "(" + DBAdapter.getColumnName(TRASH_ID, Place.CONTENT)
-                        + " LIKE " + "\'%" + TrashBox.Category.nameFromIndex(i) + "%\')";
-                added = true;
-            }
-        }
-        filter += ")";
+        String filter = "";
+//        if (mode == IN_BOUNDS) {
+//            filter = sqlCoordBounds(xMinus, xPlus, TRASH_ID) + " AND (";
+//            boolean added = false;
+//            for (int i = 0; i < chosen.length; i++) {
+//                if (chosen[i]) {
+//                    if (added) {
+//                        filter += (match == ONE_MATCH ? " OR " : " AND ");
+//                    }
+//                    filter += "(" + DBAdapter.getColumnName(TRASH_ID, Place.CONTENT)
+//                            + " LIKE " + "\'%" + TrashBox.Category.nameFromIndex(i) + "%\')";
+//                    added = true;
+//                }
+//            }
+//            filter += ")";
+//        }
         return getPlaces(filter, TRASH_ID, context, new TrashFactory(), 10);
     }
 
-    private static String sqlCoordBounds(LatLng min, LatLng max, int category) {
-        return "(" + DBAdapter.getColumnName(category, Place.LAT_DB) + " BETWEEN " +
-                min.latitude + " AND " + max.latitude + ") AND (" +
-                DBAdapter.getColumnName(category, Place.LNG_DB) + " BETWEEN " + min.longitude +
-                " AND " + max.longitude + ")";
+////    private static String sqlCoordBounds(LatLng min, LatLng max, int category) {
+////        return "(" + DBAdapter.getColumnName(category, Place.LAT_DB) + " BETWEEN " +
+////                min.latitude + " AND " + max.latitude + ") AND (" +
+////                DBAdapter.getColumnName(category, Place.LNG_DB) + " BETWEEN " + min.longitude +
+//                " AND " + max.longitude + ")";
+//    }
+
+    private <T extends Place> ArrayList<T> getPlaceById(int category, Context context, PlaceFactory<T> f) {
+        return getPlaces("id=" + id, category, context, f, 1);
     }
 
     @Override
@@ -141,20 +152,18 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
             case TRASH_ID:
-                switch (mode) {
-                    case IN_BOUNDS:
-                        ans = getTrashes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
-                                getContext());
-                        break;
-                }
+                if (mode == IN_BOUNDS || mode == ALL)
+                    ans = getTrashes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
+                            getContext());
+                else
+                    ans = getPlaceById(which, getContext(), new TrashFactory());
                 break;
             case CAFE_ID:
-                switch (mode) {
-                    case IN_BOUNDS:
-                        ans = getCafes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
-                                getContext());
-                        break;
-                }
+                if (mode == IN_BOUNDS || mode == ALL)
+                    ans = getCafes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
+                            getContext());
+                else
+                    ans = getPlaceById(which, getContext(), new CafeFactory());
                 break;
         }
         LatLngBounds bounds = includeAll(ans);
@@ -163,6 +172,6 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
         }
         Log.d("GETPLACES", "returning " + ans.size());
-        return new ResultType(cu, ans, which, animateMap);
+        return new ResultType(cu, ans, which, mode == BY_ID);
     }
 }

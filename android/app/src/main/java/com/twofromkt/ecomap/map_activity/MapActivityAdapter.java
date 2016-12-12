@@ -75,8 +75,11 @@ class MapActivityAdapter implements
                                ResultType data) {
         Log.d("ADAPTER", "load finished");
         int t = data.number;
-        act.map.addMarkers(data.res, data.cu, t, data.animate);
-        act.map.onClusterUpdate();
+        if (!data.searchById) {
+            act.map.addMarkers(data.res, data.cu, t);
+        } else {
+            act.bottomInfo.setPlace(data.res.get(0));
+        }
     }
 
     @Override

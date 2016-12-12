@@ -17,8 +17,8 @@ public class TrashBox extends Place implements Serializable {
 
     private boolean[] category;
 
-    public TrashBox(Cursor c) {
-        super(c);
+    public TrashBox(Cursor c, boolean lite) {
+        super(c, lite);
         category = new boolean[TRASH_TYPES_NUMBER];
         String[] arr = c.getString(CONTENT).replace(", ", ",").split(",");
         for (String s : arr) {

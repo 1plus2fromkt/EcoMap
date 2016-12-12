@@ -149,4 +149,8 @@ public class BottomSheetView extends RelativeLayout {
             bottomList.setHideable(false);
         }
     }
+
+    public boolean isChecked(int i) {
+        return settPagerAdapter.trashSett.chosen[i];
+    }
 }

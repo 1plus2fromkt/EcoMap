@@ -173,9 +173,11 @@ public class ChooseTypePanel extends LinearLayout {
         }
         if (state) {
             if (index == Place.TRASHBOX) {
-                parentActivity.map.searchNearTrashes(true);
+                parentActivity.map.showTrashMarkers();
+
             } else if (index == Place.CAFE) {
-                parentActivity.map.searchNearCafe(true);
+                parentActivity.map.showCafeMarkers();
+
             }
             parentActivity.bottomSheet.focusOnTab(index);
         } else {

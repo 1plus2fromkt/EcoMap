@@ -78,12 +78,12 @@ public class MapView extends RelativeLayout {
         return mMap;
     }
 
-    public void searchNearCafe(boolean animate) {
-        util.searchNearCafe(animate);
+    public void showCafeMarkers() {
+        util.showCafeMarkers();
     }
 
-    public void searchNearTrashes(boolean animate) {
-        util.searchNearTrashes(animate);
+    public void showTrashMarkers() {
+        util.showTrashMarkers(true);
     }
 
     public void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
@@ -94,9 +94,8 @@ public class MapView extends RelativeLayout {
         util.addMarker(x, type);
     }
 
-    public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num,
-                                             boolean animate) {
-        util.addMarkers(p, cu, num, animate);
+    public <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
+        util.addMarkers(p, cu, num);
     }
 
     public void clearMarkers(int num) {

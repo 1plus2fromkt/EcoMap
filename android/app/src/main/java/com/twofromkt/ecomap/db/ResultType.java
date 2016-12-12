@@ -9,12 +9,13 @@ public class ResultType {
     public CameraUpdate cu;
     public ArrayList<? extends Place> res;
     public int number;
-    public boolean animate;
+    public boolean searchById;
 
-    public ResultType(CameraUpdate cu, ArrayList<? extends Place> res, int number, boolean animate) {
+    public ResultType(CameraUpdate cu, ArrayList<? extends Place> res, int number,
+                      boolean searchById) {
         this.cu = cu;
         this.res = res;
         this.number = number;
-        this.animate = animate;
+        this.searchById = searchById;
     }
 }

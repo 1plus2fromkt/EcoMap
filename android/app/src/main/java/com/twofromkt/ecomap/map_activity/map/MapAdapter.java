@@ -86,26 +86,13 @@ class MapAdapter implements OnMapReadyCallback,
             }
         }
         MapMultiListener listener = new MapMultiListener();
-        listener.addListener(new GoogleMap.OnCameraIdleListener() {
-            @Override
-            public void onCameraIdle() {
-                if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
-                    map.util.searchNearTrashes(false);
-                }
-//                element_map.util.searchNearCafe();
-            }
-        });
         map.clusterManager = new ClusterManager<>(map.parentActivity, map.mMap);
         listener.addListener(map.clusterManager);
         map.mMap.setOnCameraIdleListener(listener);
         map.mMap.setOnMarkerClickListener(map.clusterManager);
         map.clusterManager.setOnClusterItemClickListener(this);
         map.clusterManager.setOnClusterClickListener(this);
-
-//        element_map.mMap.setMyLocationEnabled(true);
-//        UiSettings ui = element_map.mMap.getUiSettings();
-//        ui.setZoomControlsEnabled(true);
-//        element_map.mMap.setPadding(0, 0, 0, 600);
+        map.util.loadAllPlaces();
     }
 
     @Override
