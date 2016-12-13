@@ -1,24 +1,32 @@
 package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
@@ -103,7 +111,17 @@ class MapAdapter implements OnMapReadyCallback,
         map.mMap.setOnMarkerClickListener(map.clusterManager);
         map.clusterManager.setOnClusterItemClickListener(this);
         map.clusterManager.setOnClusterClickListener(this);
+        IconRenderer renderer = new IconRenderer(map.parentActivity, map.mMap, map.clusterManager);
+        map.clusterManager.setRenderer(renderer);
         map.util.loadAllPlaces();
+
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inMutable = true;
+//        boolean[] taken = new boolean[11];
+//        Bitmap b = MarkerGenerator.getIcon(taken);
+//        map.mMap.addMarker(new MarkerOptions()
+//                .position(new LatLng(10, 10))
+//                .icon(BitmapDescriptorFactory.fromBitmap(b)));
     }
 
     @Override

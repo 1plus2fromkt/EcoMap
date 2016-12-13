@@ -17,12 +17,16 @@ public class MapClusterItem implements ClusterItem {
         return LocationUtil.getLatLng(place.getLocation());
     }
 
+    public Place getPlace() {
+        return place;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof MapClusterItem && equals((MapClusterItem) o);
     }
 
-    public boolean equals(MapClusterItem o) {
+    boolean equals(MapClusterItem o) {
         return place.equals(o.place);
     }
 }

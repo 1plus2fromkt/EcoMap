@@ -79,6 +79,10 @@ public class TrashBox extends Place implements Serializable {
         return i < category.length && category[i];
     }
 
+    public boolean[] getChosenCategories() {
+        return category;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof TrashBox && equals((TrashBox) o);
