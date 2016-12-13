@@ -91,6 +91,10 @@ public abstract class Place implements Serializable {
         return name;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getWebsite() {
         return website;
     }

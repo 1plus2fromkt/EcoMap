@@ -198,4 +198,8 @@ public class MapView extends RelativeLayout {
     public void onClusterUpdate() {
         clusterManager.cluster();
     }
+
+    public void loadPlace(int id, int category) {
+        util.loadPlace(id, category);
+    }
 }

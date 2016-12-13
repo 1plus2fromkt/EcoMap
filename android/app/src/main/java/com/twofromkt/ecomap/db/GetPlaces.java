@@ -18,8 +18,6 @@ import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
@@ -79,21 +77,20 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
-                                                     Context context, PlaceFactory<T> fac,
-                                                     int lim) {
+                                                     Context context, PlaceFactory<T> fac) {
         ArrayList<T> ans = new ArrayList<>();
-        String order = " ORDER BY rate ASC ", limit = " LIMIT " + lim + " "; //TODO: CHANGE rate TO SOMETHING CLEVER
+        String order = " ORDER BY rate ASC ", limit = " LIMIT "; //TODO: CHANGE rate TO SOMETHING CLEVER
         try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-             Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + /*" WHERE " +
-                     filter + order +*/ ";", null)) { //+limit was there
+             Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " " +
+                     filter + /*+ order +*/ ";", null)) {
             cur.moveToFirst();
             T x;
 
-            while (cur.moveToNext()) {
+            do {
                 x = fac.init(cur, lite);
                 ans.add(x);
-            }
+            } while (cur.moveToNext());
         } catch (SQLiteCantOpenDatabaseException e) {
             e.printStackTrace();
             //TODO: send no database message and maybe update it
@@ -105,7 +102,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         String filter = "";
 //        if (mode == IN_BOUNDS)
 //            filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
-        return getPlaces(filter, CAFE_ID, context, new CafeFactory(), 10);
+        return getPlaces(filter, CAFE_ID, context, new CafeFactory());
     }
 
     private ArrayList<TrashBox> getTrashes(final LatLng xMinus, final LatLng xPlus,
@@ -126,7 +123,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
 //            }
 //            filter += ")";
 //        }
-        return getPlaces(filter, TRASH_ID, context, new TrashFactory(), 10);
+        return getPlaces(filter, TRASH_ID, context, new TrashFactory());
     }
 
 ////    private static String sqlCoordBounds(LatLng min, LatLng max, int category) {
@@ -137,7 +134,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
 //    }
 
     private <T extends Place> ArrayList<T> getPlaceById(int category, Context context, PlaceFactory<T> f) {
-        return getPlaces("id=" + id, category, context, f, 1);
+        return getPlaces("WHERE id=\'" + id + "\'", category, context, f);
     }
 
     @Override

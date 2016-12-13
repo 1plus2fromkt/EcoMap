@@ -8,6 +8,7 @@ import android.util.Pair;
 
 import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.model.LatLng;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.PlaceTypes.TrashBox;
 import com.twofromkt.ecomap.db.GetPlaces;
@@ -19,7 +20,11 @@ import java.util.ArrayList;
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
+import static com.twofromkt.ecomap.db.GetPlaces.BY_ID;
+import static com.twofromkt.ecomap.db.GetPlaces.ID;
 import static com.twofromkt.ecomap.db.GetPlaces.LITE;
+import static com.twofromkt.ecomap.db.GetPlaces.MODE;
+import static com.twofromkt.ecomap.map_activity.MapActivity.LOADER;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
 class MapUtil {
@@ -40,16 +45,13 @@ class MapUtil {
     }
 
     private void showPlaces(final int category, final Predicate<Place> predicate) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (Pair<MapClusterItem, ? extends Place> x : activeMarkers.get(category)) {
-                    if (predicate.apply(x.second)) {
-                        showMarker(x.first);
-                    }
-                }
+        clearMarkers(category);
+        for (Pair<MapClusterItem, ? extends Place> x : activeMarkers.get(category)) {
+            if (predicate.apply(x.second)) {
+                showMarker(x.first);
             }
-        }).start();
+        }
+        map.clusterManager.cluster();
     }
 
     void showCafeMarkers() {
@@ -62,11 +64,14 @@ class MapUtil {
     }
 
     void showTrashMarkers(final boolean anyMatch) {
+        final LatLng min = map.getMap().getProjection().getVisibleRegion().latLngBounds.southwest,
+                max = map.getMap().getProjection().getVisibleRegion().latLngBounds.northeast;
         showPlaces(TRASH_ID, new Predicate<Place>() {
             @Override
             public boolean apply(Place place) {
                 TrashBox t = (TrashBox) place;
-                boolean any = false, all = true;
+                boolean any = false, all = true, inBounds = inBounds(min, max,
+                        getLatLng(place.getLocation()));
                 for (int i = 0; i < CATEGORIES_NUMBER; i++) {
                     if (map.parentActivity.bottomSheet.isChecked(i) && t.isOfCategory(i)) {
                         any = true;
@@ -75,11 +80,21 @@ class MapUtil {
                     }
                 }
                 if (anyMatch)
-                    return any;
+                    return any && inBounds;
                 else
-                    return all;
+                    return all && inBounds;
             }
         });
+    }
+
+    private boolean inBounds(LatLng min, LatLng max, LatLng x) {
+        double dLat = (max.latitude - min.latitude) / 4,
+                dLng = (max.longitude - min.longitude) / 2;
+        return min.latitude - dLat <= x.latitude &&
+                x.latitude <= max.latitude + dLat &&
+                min.longitude - dLng <= x.longitude &&
+                x.longitude <= max.longitude + dLng;
+
     }
 
     void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
@@ -110,10 +125,15 @@ class MapUtil {
         if (num == -1) {
             return;
         }
-        for (Pair<MapClusterItem, ? extends Place> m : activeMarkers.get(num)) {
-            map.clusterManager.removeItem(m.first);
-        }
-//        activeMarkers.get(num).clear();
+//        for (Pair<MapClusterItem, ? extends Place> m : activeMarkers.get(num)) {
+//            try {
+//                map.clusterManager.removeItem(m.first);
+//            } catch (Exception ignored) {
+//
+//            }
+//        }
+        map.clusterManager.clearItems();
+        map.clusterManager.cluster();
         map.parentActivity.bottomSheet.notifyChange();
     }
 
@@ -133,10 +153,20 @@ class MapUtil {
             Loader<ResultType> loader;
             bundle.putInt(GetPlaces.WHICH_PLACE, i);
             bundle.putBoolean(LITE, true);
-            bundle.putInt(GetPlaces.MODE, GetPlaces.ALL);
+            bundle.putInt(MODE, GetPlaces.ALL);
             loader = map.parentActivity.getSupportLoaderManager()
-                    .restartLoader(MapActivity.LOADER, bundle, map.parentActivity.adapter);
+                    .restartLoader(LOADER, bundle, map.parentActivity.adapter);
             loader.onContentChanged();
         }
+    }
+
+    void loadPlace(int id, int category) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(GetPlaces.WHICH_PLACE, category);
+        bundle.putBoolean(LITE, false);
+        bundle.putInt(MODE, BY_ID);
+        bundle.putInt(ID, id);
+        map.parentActivity.getSupportLoaderManager().restartLoader(LOADER, bundle,
+                map.parentActivity.adapter).onContentChanged();
     }
 }

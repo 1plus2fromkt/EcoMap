@@ -2,6 +2,7 @@ package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.util.Pair;
@@ -57,7 +58,8 @@ class MapAdapter implements OnMapReadyCallback,
             Toast.makeText(map.parentActivity, "Unable to find place", Toast.LENGTH_SHORT).show();
             return false;
         }
-        map.parentActivity.bottomInfo.setPlace(p);
+//        map.parentActivity.bottomInfo.setPlace(p);
+        map.loadPlace(p.getId(), p.getCategoryNumber());
         return true;
     }
 
@@ -87,6 +89,15 @@ class MapAdapter implements OnMapReadyCallback,
         }
         MapMultiListener listener = new MapMultiListener();
         map.clusterManager = new ClusterManager<>(map.parentActivity, map.mMap);
+        listener.addListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
+                    map.showTrashMarkers();
+                }
+//                element_map.util.searchNearCafe();
+            }
+        });
         listener.addListener(map.clusterManager);
         map.mMap.setOnCameraIdleListener(listener);
         map.mMap.setOnMarkerClickListener(map.clusterManager);
@@ -110,4 +121,5 @@ class MapAdapter implements OnMapReadyCallback,
             }
         }
     }
+
 }
