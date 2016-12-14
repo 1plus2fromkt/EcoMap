@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
+import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 import static com.twofromkt.ecomap.db.GetPlaces.BY_ID;
 import static com.twofromkt.ecomap.db.GetPlaces.ID;
 import static com.twofromkt.ecomap.db.GetPlaces.LITE;
@@ -46,12 +47,14 @@ class MapUtil {
 
     private void showPlaces(final int category, final Predicate<Place> predicate) {
         clearMarkers(category);
+
         for (Pair<MapClusterItem, ? extends Place> x : activeMarkers.get(category)) {
             if (predicate.apply(x.second)) {
                 showMarker(x.first);
             }
         }
         map.clusterManager.cluster();
+        map.parentActivity.bottomSheet.notifyChange();
     }
 
     void showCafeMarkers() {
@@ -66,13 +69,15 @@ class MapUtil {
     void showTrashMarkers(final boolean anyMatch) {
         final LatLng min = map.getMap().getProjection().getVisibleRegion().latLngBounds.southwest,
                 max = map.getMap().getProjection().getVisibleRegion().latLngBounds.northeast;
+        final double ZOOM_THRESHOLD = 12.6;
+        final int outOfBounds = map.getMap().getCameraPosition().zoom > ZOOM_THRESHOLD ? 1 : 0;
         showPlaces(TRASH_ID, new Predicate<Place>() {
             @Override
             public boolean apply(Place place) {
                 TrashBox t = (TrashBox) place;
                 boolean any = false, all = true, inBounds = inBounds(min, max,
-                        getLatLng(place.getLocation()));
-                for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+                        getLatLng(place.getLocation()), outOfBounds);
+                for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
                     if (map.parentActivity.bottomSheet.isChecked(i) && t.isOfCategory(i)) {
                         any = true;
                     } else {
@@ -87,9 +92,9 @@ class MapUtil {
         });
     }
 
-    private boolean inBounds(LatLng min, LatLng max, LatLng x) {
-        double dLat = (max.latitude - min.latitude) / 4,
-                dLng = (max.longitude - min.longitude) / 2;
+    private boolean inBounds(LatLng min, LatLng max, LatLng x, int outOfBounds) {
+        double dLat = (max.latitude - min.latitude) / 4 * outOfBounds,
+                dLng = (max.longitude - min.longitude) / 2 * outOfBounds;
         return min.latitude - dLat <= x.latitude &&
                 x.latitude <= max.latitude + dLat &&
                 min.longitude - dLng <= x.longitude &&
@@ -118,13 +123,14 @@ class MapUtil {
         for (Place place : p) {
             addMarker(place, num);
         }
-
+        map.parentActivity.bottomSheet.notifyChange();
     }
 
     void clearMarkers(int num) {
         if (num == -1) {
             return;
         }
+        //TODO: clear only current category, naive loop is too long, we should keep current markers to delete them fast
 //        for (Pair<MapClusterItem, ? extends Place> m : activeMarkers.get(num)) {
 //            try {
 //                map.clusterManager.removeItem(m.first);

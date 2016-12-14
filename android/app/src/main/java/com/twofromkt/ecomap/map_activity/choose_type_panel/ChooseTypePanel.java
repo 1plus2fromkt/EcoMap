@@ -12,12 +12,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.twofromkt.ecomap.Consts;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.server.Downloader;
 
 import java.io.IOException;
+
+import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
 public class ChooseTypePanel extends LinearLayout {
 
@@ -30,7 +33,6 @@ public class ChooseTypePanel extends LinearLayout {
     boolean[] chosenTypes;
     float panelOffset;
 
-    final private static int TYPES_NUMBER = 3;
     final private static int[] imageIds = {R.mipmap.trashbox_type, R.mipmap.cafes_icon, R.mipmap.other_icon};
     final private static int[] imageIdsChosen = {R.mipmap.trashbox_type_chosen,
             R.mipmap.cafes_icon_chosen, R.mipmap.other_icon_chosen};
@@ -45,8 +47,8 @@ public class ChooseTypePanel extends LinearLayout {
         this.parentActivity = parentActivity;
         panel = (RelativeLayout) findViewById(R.id.choose_type_panel);
         openButton = (ImageButton) findViewById(R.id.show_choose_type_panel);
-        typeButtons = new ImageButton[TYPES_NUMBER];
-        chosenTypes = new boolean[TYPES_NUMBER];
+        typeButtons = new ImageButton[CATEGORIES_NUMBER];
+        chosenTypes = new boolean[CATEGORIES_NUMBER];
         typeButtons[0] = (ImageButton) findViewById(R.id.type_button1);
         typeButtons[1] = (ImageButton) findViewById(R.id.type_button2);
         typeButtons[2] = (ImageButton) findViewById(R.id.type_button3);
@@ -150,7 +152,7 @@ public class ChooseTypePanel extends LinearLayout {
             openButton.setRotation(-90);
         }
         chosenTypes = savedPanel.getChosenTypes();
-        for (int i = 0; i < TYPES_NUMBER; i++) {
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             setChosen(i, chosenTypes[i], false);
         }
     }
@@ -177,12 +179,24 @@ public class ChooseTypePanel extends LinearLayout {
 
             } else if (index == Place.CAFE) {
                 parentActivity.map.showCafeMarkers();
-
             }
+            parentActivity.bottomSheet.show();
             parentActivity.bottomSheet.focusOnTab(index);
         } else {
             parentActivity.map.clearMarkers(index);
+            if (allUnchecked()) {
+                parentActivity.bottomSheet.hide();
+                parentActivity.bottomInfo.hide();
+            }
         }
+    }
+
+    private boolean allUnchecked() {
+        boolean ans = true;
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+            ans &= chosenTypes[i];
+        }
+        return ans;
     }
 
     public boolean isChosen(int i) {

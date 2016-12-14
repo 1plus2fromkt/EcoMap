@@ -104,7 +104,7 @@ public class BottomSheetView extends RelativeLayout {
         bottomList.setHideable(false);
     }
 
-    public void show(ArrayList<? extends Place> data, int num) {
+    public void show() {
         if (bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN) {
             collapse();
         }

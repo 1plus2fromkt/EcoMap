@@ -84,13 +84,14 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
              Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " " +
                      filter + /*+ order +*/ ";", null)) {
-            cur.moveToFirst();
-            T x;
 
-            do {
-                x = fac.init(cur, lite);
-                ans.add(x);
-            } while (cur.moveToNext());
+            T x;
+            if (cur.moveToFirst()) {
+                do {
+                    x = fac.init(cur, lite);
+                    ans.add(x);
+                } while (cur.moveToNext());
+            }
         } catch (SQLiteCantOpenDatabaseException e) {
             e.printStackTrace();
             //TODO: send no database message and maybe update it
