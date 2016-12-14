@@ -174,14 +174,14 @@ public class ChooseTypePanel extends LinearLayout {
             return;
         }
         if (state) {
+            parentActivity.bottomSheet.show();
+            parentActivity.bottomSheet.focusOnTab(index);
             if (index == Place.TRASHBOX) {
                 parentActivity.map.showTrashMarkers();
 
             } else if (index == Place.CAFE) {
                 parentActivity.map.showCafeMarkers();
             }
-            parentActivity.bottomSheet.show();
-            parentActivity.bottomSheet.focusOnTab(index);
         } else {
             parentActivity.map.clearMarkers(index);
             if (allUnchecked()) {
@@ -194,7 +194,7 @@ public class ChooseTypePanel extends LinearLayout {
     private boolean allUnchecked() {
         boolean ans = true;
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            ans &= chosenTypes[i];
+            ans &= !chosenTypes[i];
         }
         return ans;
     }

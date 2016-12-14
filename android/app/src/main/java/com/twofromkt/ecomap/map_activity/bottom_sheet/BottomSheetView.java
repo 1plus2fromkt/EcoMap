@@ -1,7 +1,6 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
@@ -10,16 +9,11 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
-
-import java.util.ArrayList;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
@@ -61,7 +55,7 @@ public class BottomSheetView extends RelativeLayout {
         bottomList = ViewPagerBottomSheetBehavior.from(bottomListView);
 
         listPagerAdapter =
-                new ListViewPagerAdapter(fragmentManager, MapView.getActiveMarkers(), parentActivity);
+                new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
         settPagerAdapter = new SettViewPagerAdapter(fragmentManager, parentActivity);
 
         listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
@@ -100,8 +94,8 @@ public class BottomSheetView extends RelativeLayout {
         if (isHidden()) {
             parentActivity.map.moveUpLocationButton();
         }
-        bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
         bottomList.setHideable(false);
+        bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     public void show() {

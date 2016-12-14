@@ -1,32 +1,23 @@
 package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
@@ -54,7 +45,7 @@ class MapAdapter implements OnMapReadyCallback,
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
         Place p = null;
-        for (ArrayList<Pair<MapClusterItem, ? extends Place>> ac : MapView.getActiveMarkers()) {
+        for (ArrayList<Pair<MapClusterItem, ? extends Place>> ac : MapView.getAllMarkers()) {
             for (Pair<MapClusterItem, ? extends Place> x : ac) {
                 if (x.first.equals(clusterItem)) {
                     p = x.second;

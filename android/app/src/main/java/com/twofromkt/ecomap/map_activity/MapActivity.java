@@ -88,7 +88,7 @@ public class MapActivity extends FragmentActivity {
 
     private boolean checkMarkers() {
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            if (MapView.getActiveMarkers().get(i).size() > 0) {
+            if (MapView.getAllMarkers().get(i).size() > 0) {
                 return true;
             }
         }

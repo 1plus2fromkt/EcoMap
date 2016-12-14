@@ -32,12 +32,15 @@ class MapUtil {
 
     private MapView map;
 
-    static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> activeMarkers;
+    static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> allMarkers,
+                                                                            shownMarkers;
 
     static {
-        activeMarkers = new ArrayList<>();
+        allMarkers = new ArrayList<>();
+        shownMarkers = new ArrayList<>();
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            MapView.getActiveMarkers().add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
+            allMarkers.add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
+            shownMarkers.add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
         }
     }
 
@@ -48,9 +51,9 @@ class MapUtil {
     private void showPlaces(final int category, final Predicate<Place> predicate) {
         clearMarkers(category);
 
-        for (Pair<MapClusterItem, ? extends Place> x : activeMarkers.get(category)) {
+        for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
             if (predicate.apply(x.second)) {
-                showMarker(x.first);
+                showMarker(x, category);
             }
         }
         map.clusterManager.cluster();
@@ -109,13 +112,14 @@ class MapUtil {
 //        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
     }
 
-    private void showMarker(MapClusterItem item) {
-        map.clusterManager.addItem(item);
+    private void showMarker(Pair<MapClusterItem, ? extends Place> p, int category) {
+        map.clusterManager.addItem(p.first);
+        shownMarkers.get(category).add(p);
     }
 
     void addMarker(Place place, int type) {
         MapClusterItem clusterItem = new MapClusterItem(place);
-        activeMarkers.get(type).add(new Pair<>(clusterItem, place));
+        allMarkers.get(type).add(new Pair<>(clusterItem, place));
     }
 
     <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
@@ -130,15 +134,14 @@ class MapUtil {
         if (num == -1) {
             return;
         }
-        //TODO: clear only current category, naive loop is too long, we should keep current markers to delete them fast
-//        for (Pair<MapClusterItem, ? extends Place> m : activeMarkers.get(num)) {
-//            try {
-//                map.clusterManager.removeItem(m.first);
-//            } catch (Exception ignored) {
-//
-//            }
-//        }
-        map.clusterManager.clearItems();
+        for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(num)) {
+            try {
+                map.clusterManager.removeItem(m.first);
+            } catch (Exception ignored) {
+
+            }
+        }
+        shownMarkers.get(num).clear();
         map.clusterManager.cluster();
         map.parentActivity.bottomSheet.notifyChange();
     }
@@ -154,7 +157,7 @@ class MapUtil {
 
     void loadAllPlaces() {
         for (int i = 0; i < 1; i++) {
-            activeMarkers.get(i).clear();
+            allMarkers.get(i).clear();
             Bundle bundle = new Bundle();
             Loader<ResultType> loader;
             bundle.putInt(GetPlaces.WHICH_PLACE, i);

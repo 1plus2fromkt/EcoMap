@@ -173,8 +173,12 @@ public class MapView extends RelativeLayout {
         util.addLocationSearch(parentActivity);
     }
 
-    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getActiveMarkers() {
-        return MapUtil.activeMarkers;
+    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getAllMarkers() {
+        return MapUtil.allMarkers;
+    }
+
+    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getShownMarkers() {
+        return MapUtil.shownMarkers;
     }
 
     @Override
