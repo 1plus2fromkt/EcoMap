@@ -2,18 +2,24 @@ package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
-import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
 
@@ -25,7 +31,9 @@ import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 class MapAdapter implements OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<MapClusterItem>,
         ClusterManager.OnClusterItemClickListener<MapClusterItem>,
-        FloatingActionButton.OnClickListener {
+        FloatingActionButton.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private MapView map;
 
@@ -76,7 +84,8 @@ class MapAdapter implements OnMapReadyCallback,
                     MapActivity.GPS_REQUEST);
             return;
         }
-        map.util.addLocationSearch(map.parentActivity);
+        map.mMap.setMyLocationEnabled(true);
+        map.mMap.getUiSettings().setMyLocationButtonEnabled(false);
         Location location = map.getLocation();
         if (location != null) {
             CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
@@ -105,30 +114,40 @@ class MapAdapter implements OnMapReadyCallback,
         IconRenderer renderer = new IconRenderer(map.parentActivity, map.mMap, map.clusterManager);
         map.clusterManager.setRenderer(renderer);
         map.util.loadAllPlaces();
-
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inMutable = true;
-//        boolean[] taken = new boolean[11];
-//        Bitmap b = MarkerGenerator.getIcon(taken);
-//        map.mMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(10, 10))
-//                .icon(BitmapDescriptorFactory.fromBitmap(b)));
     }
 
     @Override
     public void onClick(View v) {
         if (v == map.locationButton) {
             Location location = map.getLocation();
-            if (ActivityCompat.checkSelfPermission(
-                    map.parentActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-
             if (location != null) {
                 map.moveMap(fromLatLngZoom(location.getLatitude(), location.getLongitude(), MapView.MAPZOOM));
             }
         }
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d("MAP", "google api connected");
+        Location location = map.getLocation();
+        if (location != null && !map.hasCustomLocation) {
+            CameraPosition position = LocationUtil.fromLatLngZoom(location.getLatitude(),
+                    location.getLongitude(), MapView.MAPZOOM - 4);
+            map.moveMap(position);
+            map.hasCustomLocation = true;
+        }
+    }
+
+    //TODO do something with that
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d("MAP", "connection suspended");
+        Toast.makeText(map.parentActivity, "Connection suspended", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("MAP", "connection failed");
+        Toast.makeText(map.parentActivity, "Connection failed", Toast.LENGTH_SHORT).show();
+    }
 }

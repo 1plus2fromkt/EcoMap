@@ -2,7 +2,7 @@ package com.twofromkt.ecomap.map_activity.map;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 public class MapClusterItem implements ClusterItem {

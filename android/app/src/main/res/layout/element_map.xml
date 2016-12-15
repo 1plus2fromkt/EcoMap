@@ -22,14 +22,16 @@
         android:layout_height="match_parent"
         tools:context="com.twofromkt.ecomap.map_activity.MapActivity" />
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageButton
         android:id="@+id/location_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitXY"
+        android:background="#000000ff"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="20dp"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@mipmap/location_button"
         android:layout_marginEnd="@dimen/fab_margin" />
 
 </RelativeLayout>

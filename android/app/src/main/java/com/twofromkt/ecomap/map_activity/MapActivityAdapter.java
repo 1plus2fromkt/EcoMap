@@ -8,23 +8,19 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.activities.SettingsActivity;
-import com.twofromkt.ecomap.db.GetPlaces;
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.db.ResultType;
-
-import java.util.ArrayList;
+import com.twofromkt.ecomap.db.PlacesLoader;
+import com.twofromkt.ecomap.db.PlaceResultType;
 
 class MapActivityAdapter implements
         NavigationView.OnNavigationItemSelectedListener,
         DrawerLayout.DrawerListener,
-        LoaderManager.LoaderCallbacks<ResultType> {
+        LoaderManager.LoaderCallbacks<PlaceResultType> {
 
     private MapActivity act;
 
@@ -65,25 +61,30 @@ class MapActivityAdapter implements
 //        }
     }
 
+    // That loader is started from loadAllPlaces or loadPlace in MapUtil
     @Override
-    public Loader<ResultType> onCreateLoader(int id, Bundle args) {
-        return new GetPlaces(act.getApplicationContext(), args);
+    public Loader<PlaceResultType> onCreateLoader(int id, Bundle args) {
+        return new PlacesLoader(act.getApplicationContext(), args);
     }
 
     @Override
-    public void onLoadFinished(Loader<ResultType> loader,
-                               ResultType data) {
-        Log.d("ADAPTER", "load finished");
-        int t = data.number;
-        if (!data.searchById) {
-            act.map.addMarkers(data.res, data.cu, t);
+    public void onLoadFinished(Loader<PlaceResultType> loader,
+                               PlaceResultType data) {
+        if (data.loadSucces) {
+            act.map.placesLoaded = true;
+            int t = data.number;
+            if (!data.searchById) {
+                act.map.addMarkers(data.res, data.cu, t);
+            } else {
+                act.bottomInfo.setPlace(data.res.get(0));
+            }
         } else {
-            act.bottomInfo.setPlace(data.res.get(0));
+            act.updateDatabase();
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<ResultType> loader) {
+    public void onLoaderReset(Loader<PlaceResultType> loader) {
 
     }
 

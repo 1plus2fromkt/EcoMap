@@ -12,9 +12,9 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.twofromkt.ecomap.PlaceTypes.Cafe;
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
+import com.twofromkt.ecomap.place_types.Cafe;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,19 +24,20 @@ import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class GetPlaces extends AsyncTaskLoader<ResultType> {
+public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     public static final int IN_BOUNDS = 0, ALL = 1, BY_ID = 2, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
             LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
             LAT_PLUS = "LATPLUS", LNG_PLUS = "LNGPLUS", ANY_MATCH_KEY = "OVERLAP",
             ANIMATE_MAP = "ANIMATE_MAP", LITE = "LITE", ID = "ID";
+    private static final String TAG = "GETPLACES";
 
     private int which, mode, match, id;
     private boolean[] chosen;
     private double latMinus, lngMinus, latPlus, lngPlus;
     private boolean lite;
 
-    public GetPlaces(Context context, Bundle args) {
+    public PlacesLoader(Context context, Bundle args) {
         super(context);
         if (args != null) {
             which = args.getInt(WHICH_PLACE);
@@ -69,13 +70,22 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     private static class TrashFactory implements PlaceFactory<TrashBox> {
-
         @Override
         public TrashBox init(Cursor c, boolean lite) {
             return new TrashBox(c, lite);
         }
     }
 
+    /**
+     * Read places from database
+     *
+     * @param filter filter for database queries
+     * @param category type of places to read
+     * @param context
+     * @param fac factory to create places
+     * @param <T> type of places
+     * @return ArrayList of Place if place were read successfully, null otherwise
+     */
     private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
                                                      Context context, PlaceFactory<T> fac) {
         ArrayList<T> ans = new ArrayList<>();
@@ -93,12 +103,13 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
                 } while (cur.moveToNext());
             }
         } catch (SQLiteCantOpenDatabaseException e) {
-            e.printStackTrace();
+            return null;
             //TODO: send no database message and maybe update it
         }
         return ans;
     }
 
+    // Returns null in case of error!
     private ArrayList<Cafe> getCafes(final LatLng x_minus, final LatLng x_plus, Context context) {
         String filter = "";
 //        if (mode == IN_BOUNDS)
@@ -106,6 +117,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
         return getPlaces(filter, CAFE_ID, context, new CafeFactory());
     }
 
+    // Returns null in case of error!
     private ArrayList<TrashBox> getTrashes(final LatLng xMinus, final LatLng xPlus,
                                            Context context) {
         String filter = "";
@@ -134,6 +146,7 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
 //                " AND " + max.longitude + ")";
 //    }
 
+    // Returns null in case of error!
     private <T extends Place> ArrayList<T> getPlaceById(int category, Context context, PlaceFactory<T> f) {
         return getPlaces("WHERE id=\'" + id + "\'", category, context, f);
     }
@@ -145,31 +158,39 @@ public class GetPlaces extends AsyncTaskLoader<ResultType> {
     }
 
     @Override
-    public ResultType loadInBackground() {
-        Log.d("GETPLACES", "started");
+    public PlaceResultType loadInBackground() {
+        Log.d(TAG, "started loading places from database");
         ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
             case TRASH_ID:
-                if (mode == IN_BOUNDS || mode == ALL)
+                if (mode == IN_BOUNDS || mode == ALL) {
                     ans = getTrashes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
                             getContext());
-                else
+                } else {
                     ans = getPlaceById(which, getContext(), new TrashFactory());
+                }
                 break;
             case CAFE_ID:
-                if (mode == IN_BOUNDS || mode == ALL)
+                if (mode == IN_BOUNDS || mode == ALL) {
                     ans = getCafes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
                             getContext());
-                else
+                } else {
                     ans = getPlaceById(which, getContext(), new CafeFactory());
+                }
                 break;
         }
+        if (ans == null) {
+            //probably database is not downloaded yet or is damaged (which is unlikely)
+            Log.d(TAG, "error while reading from database");
+            return new PlaceResultType();
+        }
         LatLngBounds bounds = includeAll(ans);
+        //TODO move this out of loader and generate CameraUpdate later
         CameraUpdate cu = null;
         if (ans.size() > 0) {
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
         }
-        Log.d("GETPLACES", "returning " + ans.size());
-        return new ResultType(cu, ans, which, mode == BY_ID);
+        Log.d(TAG, "loaded " + ans.size() + " places from database");
+        return new PlaceResultType(cu, ans, which, mode == BY_ID);
     }
 }

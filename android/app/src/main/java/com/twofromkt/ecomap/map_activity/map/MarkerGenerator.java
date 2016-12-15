@@ -123,7 +123,6 @@ class MarkerGenerator {
         int index = boolToInt(taken);
 
         if (icons.get(index) == null) {
-            Log.d("ICON_GENERATOR", "new icon requested");
             icons.put(index, generate(taken, takenCount));
         }
         return icons.get(index);

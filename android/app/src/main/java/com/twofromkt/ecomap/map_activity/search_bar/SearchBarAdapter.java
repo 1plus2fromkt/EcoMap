@@ -9,8 +9,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 
 import java.util.HashSet;

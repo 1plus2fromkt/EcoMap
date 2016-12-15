@@ -5,8 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Pair;
 
-import com.google.android.gms.maps.model.Marker;
-import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 

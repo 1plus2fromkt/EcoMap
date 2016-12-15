@@ -8,8 +8,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
 
 class IconRenderer extends DefaultClusterRenderer<MapClusterItem> {
 

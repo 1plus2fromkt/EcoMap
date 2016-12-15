@@ -1,4 +1,4 @@
-package com.twofromkt.ecomap.PlaceTypes;
+package com.twofromkt.ecomap.place_types;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;

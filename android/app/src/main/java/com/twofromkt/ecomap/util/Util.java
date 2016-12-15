@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.place_types.Place;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

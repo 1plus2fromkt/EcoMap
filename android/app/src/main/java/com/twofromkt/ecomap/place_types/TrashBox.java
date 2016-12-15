@@ -1,13 +1,11 @@
-package com.twofromkt.ecomap.PlaceTypes;
+package com.twofromkt.ecomap.place_types;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;

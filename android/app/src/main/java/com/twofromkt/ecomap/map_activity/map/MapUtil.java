@@ -9,10 +9,10 @@ import android.util.Pair;
 import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
-import com.twofromkt.ecomap.db.GetPlaces;
-import com.twofromkt.ecomap.db.ResultType;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
+import com.twofromkt.ecomap.db.PlacesLoader;
+import com.twofromkt.ecomap.db.PlaceResultType;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
-import static com.twofromkt.ecomap.db.GetPlaces.BY_ID;
-import static com.twofromkt.ecomap.db.GetPlaces.ID;
-import static com.twofromkt.ecomap.db.GetPlaces.LITE;
-import static com.twofromkt.ecomap.db.GetPlaces.MODE;
+import static com.twofromkt.ecomap.db.PlacesLoader.BY_ID;
+import static com.twofromkt.ecomap.db.PlacesLoader.ID;
+import static com.twofromkt.ecomap.db.PlacesLoader.LITE;
+import static com.twofromkt.ecomap.db.PlacesLoader.MODE;
 import static com.twofromkt.ecomap.map_activity.MapActivity.LOADER;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
@@ -56,7 +56,7 @@ class MapUtil {
                 showMarker(x, category);
             }
         }
-        map.clusterManager.cluster();
+        map.clusterManager.cluster(); //probably check for null pointer?
         map.parentActivity.bottomSheet.notifyChange();
     }
 
@@ -87,10 +87,11 @@ class MapUtil {
                         all = false;
                     }
                 }
-                if (anyMatch)
+                if (anyMatch) {
                     return any && inBounds;
-                else
+                } else {
                     return all && inBounds;
+                }
             }
         });
     }
@@ -102,7 +103,6 @@ class MapUtil {
                 x.latitude <= max.latitude + dLat &&
                 min.longitude - dLng <= x.longitude &&
                 x.longitude <= max.longitude + dLng;
-
     }
 
     void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
@@ -137,32 +137,34 @@ class MapUtil {
         for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(num)) {
             try {
                 map.clusterManager.removeItem(m.first);
-            } catch (Exception ignored) {
-
-            }
+            } catch (Exception ignored) { }
         }
         shownMarkers.get(num).clear();
-        map.clusterManager.cluster();
+        if (map.clusterManager != null) {
+            map.clusterManager.cluster();
+        }
         map.parentActivity.bottomSheet.notifyChange();
     }
 
+    // Is called when user accepts all permissions we need
     void addLocationSearch(MapActivity act) {
         if (ActivityCompat.checkSelfPermission(act,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        map.mMap.setMyLocationEnabled(true);
-        map.mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        //TODO move the code we need to another method because now it will not be inited if used denies location
+        map.adapter.onMapReady(map.mMap);
     }
 
     void loadAllPlaces() {
         for (int i = 0; i < 1; i++) {
             allMarkers.get(i).clear();
             Bundle bundle = new Bundle();
-            Loader<ResultType> loader;
-            bundle.putInt(GetPlaces.WHICH_PLACE, i);
+            Loader<PlaceResultType> loader;
+            bundle.putInt(PlacesLoader.WHICH_PLACE, i);
             bundle.putBoolean(LITE, true);
-            bundle.putInt(MODE, GetPlaces.ALL);
+            bundle.putInt(MODE, PlacesLoader.ALL);
+            //TODO should check if loader is already running
             loader = map.parentActivity.getSupportLoaderManager()
                     .restartLoader(LOADER, bundle, map.parentActivity.adapter);
             loader.onContentChanged();
@@ -171,7 +173,7 @@ class MapUtil {
 
     void loadPlace(int id, int category) {
         Bundle bundle = new Bundle();
-        bundle.putInt(GetPlaces.WHICH_PLACE, category);
+        bundle.putInt(PlacesLoader.WHICH_PLACE, category);
         bundle.putBoolean(LITE, false);
         bundle.putInt(MODE, BY_ID);
         bundle.putInt(ID, id);

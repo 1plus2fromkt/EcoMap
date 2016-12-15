@@ -12,13 +12,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.twofromkt.ecomap.Consts;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.PlaceTypes.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-import com.twofromkt.ecomap.server.Downloader;
-
-import java.io.IOException;
+import com.twofromkt.ecomap.place_types.Place;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
@@ -107,17 +103,8 @@ public class ChooseTypePanel extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
-                    if (finalI == 2) {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Downloader.update(getContext());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }).start();
+                    if (finalI == 2) { //TODO replace it!!!
+                        parentActivity.updateDatabase();
                     }
                 }
             });
@@ -173,12 +160,15 @@ public class ChooseTypePanel extends LinearLayout {
         if (!activateMap) {
             return;
         }
+        if (!parentActivity.map.placesLoaded) {
+            parentActivity.map.loadAllPlaces();
+            return;
+        }
         if (state) {
             parentActivity.bottomSheet.show();
             parentActivity.bottomSheet.focusOnTab(index);
             if (index == Place.TRASHBOX) {
                 parentActivity.map.showTrashMarkers();
-
             } else if (index == Place.CAFE) {
                 parentActivity.map.showCafeMarkers();
             }

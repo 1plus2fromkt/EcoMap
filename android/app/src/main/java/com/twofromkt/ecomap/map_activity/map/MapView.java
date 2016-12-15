@@ -4,19 +4,20 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
-import com.twofromkt.ecomap.PlaceTypes.Place;
+import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 
@@ -43,12 +44,12 @@ public class MapView extends RelativeLayout {
     MapAdapter adapter;
     MapUtil util;
 
-    Criteria criteria = new Criteria();
-    LocationManager locationManager;
+    GoogleApiClient mGoogleClient;
     ClusterManager<MapClusterItem> clusterManager;
 
-    FloatingActionButton locationButton;
+    ImageButton locationButton;
 
+    public boolean placesLoaded;
     boolean hasCustomLocation;
     private boolean locationButtonUp;
 
@@ -63,14 +64,18 @@ public class MapView extends RelativeLayout {
     public void attach(MapActivity parentActivity, FragmentManager fragmentManager,
                        boolean retainInstance) {
         this.parentActivity = parentActivity;
-        criteria = new Criteria();
-        locationManager = (LocationManager) parentActivity.getSystemService(Context.LOCATION_SERVICE);
         mapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.setRetainInstance(retainInstance);
         adapter = new MapAdapter(this);
-        locationButton = (FloatingActionButton) findViewById(R.id.location_button);
+        locationButton = (ImageButton) findViewById(R.id.location_button);
         locationButton.setOnClickListener(adapter);
         util = new MapUtil(this);
+        mGoogleClient = new GoogleApiClient.Builder(parentActivity)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(adapter)
+                .addOnConnectionFailedListener(adapter)
+                .build();
+        mGoogleClient.connect();
         mapFragment.getMapAsync(adapter);
     }
 
@@ -126,11 +131,14 @@ public class MapView extends RelativeLayout {
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            System.out.println("permissions denied");
+            ActivityCompat.requestPermissions(parentActivity, new String[]{
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MapActivity.GPS_REQUEST);
+            Log.d("MAP", "location denied");
             return null;
         }
-        return locationManager.getLastKnownLocation(
-                locationManager.getBestProvider(criteria, false));
+        return LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
     }
 
     /**
@@ -205,5 +213,9 @@ public class MapView extends RelativeLayout {
 
     public void loadPlace(int id, int category) {
         util.loadPlace(id, category);
+    }
+
+    public void loadAllPlaces() {
+        util.loadAllPlaces();
     }
 }
