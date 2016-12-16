@@ -111,12 +111,19 @@ class RecycleParser {
     }
 
     private static String getRef(String s) {
-        while (s.contains("href")) {
-            String pref = s.substring(0, s.indexOf("<a "));
-            String suff = s.substring(s.indexOf("</a>") + 4);
-            String ref = s.substring(s.indexOf("<a "), s.indexOf("</a>") + 4);
-            ref = ref.substring(ref.indexOf("href=\"") + 6, ref.indexOf("\">"));
-            s = pref + suff + ref;
+	String t = s;
+        try {
+            while (s.contains("href")) {
+                String pref = s.substring(0, s.indexOf("<a "));
+                String suff = s.substring(s.indexOf("</a>") + 4);
+                String ref = s.substring(s.indexOf("<a "), s.indexOf("</a>") + 4);
+                ref = ref.substring(ref.indexOf("href=\"") + 6, ref.indexOf("\">"));
+                s = pref + suff + ref;
+            }
+        } catch (Exception e) {
+            System.out.println("Couldn't parse reference.");
+            e.printStackTrace();
+            s = t;
         }
         return s;
     }

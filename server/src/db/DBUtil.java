@@ -21,7 +21,12 @@ public class DBUtil {
     }
 
     static ResultSet getSelectResult(Statement st, String tableName) throws SQLException {
-        return st.executeQuery("SELECT * FROM " + tableName + " " + DBMover.tableName + ";");
+//        return st.executeQuery("SELECT * FROM " + tableName + ";");
+        return getSelectResult(st, tableName, "");
+    }
+
+    static ResultSet getSelectResult(Statement st, String tableName, String filter) throws SQLException {
+        return st.executeQuery("SELECT * FROM " + tableName + " " + filter + ";");
     }
 
     static void closeIfNeeded(Connection c) throws SQLException {

@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class RecycleHandler {
-    private static final int MAX_ID = 100, TRESHOLD = 600;
+    private static final int MAX_ID = 16000, TRESHOLD = 600;
 
     public static void updateData(Connection c) {
         int emptyPoints = 0;
@@ -25,6 +25,9 @@ public class RecycleHandler {
                 e.printStackTrace();
             } catch (IOException e) {
                 System.out.println("Couldn't connect to recycle");
+                e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("Something unexpected");
                 e.printStackTrace();
             }
             if (emptyPoints > TRESHOLD) {

@@ -103,7 +103,7 @@ public class DataUpdater {
             while (second.next()) {
                 val = "\'";
                 try (
-                        ResultSet res = getSelectResult(oldSt, tableName)
+                        ResultSet res = getSelectResult(oldSt, tableName, "WHERE id=" + second.getInt(1));
                 ) {
                     toUpdate = false;
                     res.next();
@@ -124,6 +124,7 @@ public class DataUpdater {
         }
         diff.setAutoCommit(true);
     }
+
 
     private static void addRowsToDelete(Connection old, Connection newCon, Connection diff, int cat) throws SQLException {
         String e = "";

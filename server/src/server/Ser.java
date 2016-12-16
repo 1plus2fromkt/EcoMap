@@ -85,9 +85,9 @@ public class Ser {
                         System.out.println("Up-to-date");
                         out.writeInt(UP_TO_DATE);
                     } else {
-                        Files.delete(new File(folderForClients, dbName).toPath());
+                        Files.deleteIfExists(new File(folderForClients, dbName).toPath());
                         System.out.println("New version of database");
-                        try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + dbName)) {
+                        try (Connection c = DriverManager.getConnection("jdbc:sqlite:" + folderForClients + dbName)) {
                             DataUpdater.mergeChanges(c,
                                     i, ph, curr);
                             out.writeInt(NEW_VERSION);
@@ -105,8 +105,9 @@ public class Ser {
         }
 
         private void sendFile(String fileName, DataOutputStream out) throws IOException {
-            File f = new File(fileName);
+            File f = new File(folderForClients, fileName);
             byte[] arr = new byte[1024 * 8];
+            Files.createFile(f.toPath());
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(f));
             out.writeLong(f.length());
             out.flush();

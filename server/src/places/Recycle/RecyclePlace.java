@@ -18,7 +18,7 @@ class RecyclePlace {
     int id;
     private final int NUM = TRASH_N;
     double lat, lng, rate;
-    String content_text, address, title, img_link, info = "", site = "", work_time = "", telephone = "", e_mail = "";
+    String content_text = "", address, title, img_link, info = "", site = "", work_time = "", telephone = "", e_mail = "";
     static final String[] categoryNames = {"Бумага", "Стекло", "Пластик", "Металл", "Одежда",
             "Иное", "Опасные отходы", "Батарейки", "Лампочки", "Бытовая техника", "Тетра Пак"};
     RecyclePlace(int id) {
