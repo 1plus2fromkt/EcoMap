@@ -106,7 +106,7 @@ class MapAdapter implements OnMapReadyCallback,
 //                element_map.util.searchNearCafe();
             }
         });
-        listener.addListener(map.clusterManager);
+//        listener.addListener(map.clusterManager);
         map.mMap.setOnCameraIdleListener(listener);
         map.mMap.setOnMarkerClickListener(map.clusterManager);
         map.clusterManager.setOnClusterItemClickListener(this);

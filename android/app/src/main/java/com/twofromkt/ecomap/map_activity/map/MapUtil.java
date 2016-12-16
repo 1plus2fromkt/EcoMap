@@ -49,15 +49,26 @@ class MapUtil {
     }
 
     private void showPlaces(final int category, final Predicate<Place> predicate) {
-        clearMarkers(category);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                clearMarkers(category, false);
+                for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
+                    if (predicate.apply(x.second)) {
+                        showMarker(x, category);
+                    }
+                }
+                map.parentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        map.clusterManager.cluster();
+                        map.parentActivity.bottomSheet.notifyChange();
+                    }
+                });
 
-        for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
-            if (predicate.apply(x.second)) {
-                showMarker(x, category);
             }
-        }
-        map.clusterManager.cluster(); //probably check for null pointer?
-        map.parentActivity.bottomSheet.notifyChange();
+        }).start();
+//        map.clusterManager.cluster(); //probably check for null pointer?
     }
 
     void showCafeMarkers() {
@@ -123,14 +134,14 @@ class MapUtil {
     }
 
     <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
-        clearMarkers(num);
+        clearMarkers(num, true);
         for (Place place : p) {
             addMarker(place, num);
         }
         map.parentActivity.bottomSheet.notifyChange();
     }
 
-    void clearMarkers(int num) {
+    void clearMarkers(int num, final boolean toCluster) {
         if (num == -1) {
             return;
         }
@@ -141,9 +152,15 @@ class MapUtil {
         }
         shownMarkers.get(num).clear();
         if (map.clusterManager != null) {
-            map.clusterManager.cluster();
+            map.parentActivity.runOnUiThread(new Runnable() {
+                 @Override
+                 public void run() {
+                     if (toCluster)
+                        map.clusterManager.cluster();
+                     map.parentActivity.bottomSheet.notifyChange();
+                 }
+            });
         }
-        map.parentActivity.bottomSheet.notifyChange();
     }
 
     // Is called when user accepts all permissions we need

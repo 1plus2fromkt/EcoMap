@@ -104,7 +104,7 @@ public class MapView extends RelativeLayout {
     }
 
     public void clearMarkers(int num) {
-        util.clearMarkers(num);
+        util.clearMarkers(num, true);
     }
 
     public void moveUpLocationButton() {
