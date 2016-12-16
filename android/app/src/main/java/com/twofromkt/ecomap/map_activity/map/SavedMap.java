@@ -8,11 +8,14 @@ class SavedMap extends View.BaseSavedState {
 
     private boolean locationButtonUp;
     private boolean hasCustomLocation;
+    private boolean placesLoaded;
 
-    SavedMap(Parcelable superState, boolean locationButtonUp, boolean hasCustomLocation) {
+    SavedMap(Parcelable superState, boolean locationButtonUp, boolean hasCustomLocation,
+             boolean placesLoaded) {
         super(superState);
         this.locationButtonUp = locationButtonUp;
         this.hasCustomLocation = hasCustomLocation;
+        this.placesLoaded = placesLoaded;
     }
 
     boolean getLocationButtonUp() {
@@ -21,6 +24,10 @@ class SavedMap extends View.BaseSavedState {
 
     boolean hasCustomLocation() {
         return hasCustomLocation;
+    }
+
+    boolean placesLoaded() {
+        return placesLoaded;
     }
 
     @Override

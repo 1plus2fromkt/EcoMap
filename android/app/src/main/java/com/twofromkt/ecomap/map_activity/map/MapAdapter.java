@@ -65,7 +65,6 @@ class MapAdapter implements OnMapReadyCallback,
             Toast.makeText(map.parentActivity, "Unable to find place", Toast.LENGTH_SHORT).show();
             return false;
         }
-//        map.parentActivity.bottomInfo.setPlace(p);
         map.loadPlace(p.getId(), p.getCategoryNumber());
         return true;
     }
@@ -113,7 +112,9 @@ class MapAdapter implements OnMapReadyCallback,
         map.clusterManager.setOnClusterClickListener(this);
         IconRenderer renderer = new IconRenderer(map.parentActivity, map.mMap, map.clusterManager);
         map.clusterManager.setRenderer(renderer);
-        map.util.loadAllPlaces();
+        if (!map.placesLoaded) {
+            map.util.loadAllPlaces();
+        }
     }
 
     @Override

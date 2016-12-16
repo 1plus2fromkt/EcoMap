@@ -24,7 +24,8 @@ import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
+public class
+PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     public static final int IN_BOUNDS = 0, ALL = 1, BY_ID = 2, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
             LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
@@ -35,7 +36,10 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     private int which, mode, match, id;
     private boolean[] chosen;
     private double latMinus, lngMinus, latPlus, lngPlus;
+
     private boolean lite;
+
+    private boolean isLoading, resultSuccess;
 
     public PlacesLoader(Context context, Bundle args) {
         super(context);
@@ -154,12 +158,17 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     @Override
     public void onStartLoading() {
         super.onStartLoading();
-        forceLoad();
+        if (isLoading || resultSuccess) {
+            Log.d(TAG, "request to database currently running or ended successfully");
+        } else {
+            forceLoad();
+        }
     }
 
     @Override
     public PlaceResultType loadInBackground() {
         Log.d(TAG, "started loading places from database");
+        isLoading = true;
         ArrayList<? extends Place> ans = new ArrayList<>();
         switch (which) {
             case TRASH_ID:
@@ -191,6 +200,10 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
             cu = CameraUpdateFactory.newLatLngBounds(bounds, 10); // WTF is 10?
         }
         Log.d(TAG, "loaded " + ans.size() + " places from database");
+        isLoading = false;
+        if (mode == ALL) {
+            resultSuccess = true;
+        }
         return new PlaceResultType(cu, ans, which, mode == BY_ID);
     }
 }

@@ -103,7 +103,7 @@ public class Util {
             time = s;
         }
 
-        public static class Time {
+        public static class Time implements Serializable {
             private int h, m;
             Time (int h, int m) {
                 this.h = h;

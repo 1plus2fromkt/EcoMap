@@ -1,7 +1,9 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -13,11 +15,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.twofromkt.ecomap.place_types.TrashBox;
+import com.google.android.gms.maps.model.LatLng;
 import com.twofromkt.ecomap.R;
-import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
+import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
 
@@ -45,11 +49,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Place place = data.get(position).second;
-        holder.name.setText(place.getName());
+        setHolder(holder, place);
 
-        if (!holder.typesSet) {
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parentActivity.map.focusOnMarker(data.get(position));
+            }
+        });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setHolder(ViewHolder holder, Place place) {
+        holder.name.setText(place.getName());
+        if (!holder.typesSet && place instanceof TrashBox) {
+            TrashBox trashBox = (TrashBox) place;
             for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
-                if (!(place instanceof TrashBox) || !((TrashBox) place).isOfCategory(i)) {
+                if (!trashBox.isOfCategory(i)) {
                     continue;
                 }
                 ImageView icon = new ImageView(parentActivity);
@@ -60,7 +76,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
                 } catch (NoSuchFieldException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 DisplayMetrics metrics = res.getDisplayMetrics();
                 int marginRight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, metrics);
                 layoutParams.setMargins(0, 0, marginRight, 0);
@@ -71,13 +88,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             }
             holder.typesSet = true;
         }
-
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                parentActivity.map.focusOnMarker(data.get(position));
-            }
-        });
+        holder.rating.setText("" + place.getRate());
+        //TODO call it one time and remember
+        Location currLocation = parentActivity.map.getLocation();
+        LatLng currCoords = LocationUtil.getLatLng(
+                currLocation.getLatitude(), currLocation.getLongitude());
+        String dist = (int) LocationUtil.distanceLatLng(currCoords,
+                LocationUtil.getLatLng(place.getLocation())) + "м";
+        holder.distance.setText(dist);
     }
 
     @Override
@@ -94,6 +112,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         final TextView name;
         final LinearLayout iconsLayout;
         final View container;
+        final TextView rating;
+        final TextView distance;
         boolean typesSet;
 
         ViewHolder(View itemView) {
@@ -101,6 +121,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             container = itemView;
             this.name = (TextView) itemView.findViewById(R.id.list_item_name);
             this.iconsLayout = (LinearLayout) itemView.findViewById(R.id.list_item_icons_layout);
+            rating = (TextView) itemView.findViewById(R.id.list_item_rating);
+            distance = (TextView) itemView.findViewById(R.id.list_item_distance);
         }
     }
 }

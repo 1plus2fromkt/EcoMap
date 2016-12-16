@@ -6,22 +6,22 @@ import com.twofromkt.ecomap.place_types.Place;
 import java.util.ArrayList;
 
 public class PlaceResultType {
-    public CameraUpdate cu;
+    public CameraUpdate cameraUpdate;
     public ArrayList<? extends Place> res;
     public int number;
     public boolean searchById;
-    public boolean loadSucces;
+    public boolean loadSuccess;
 
-    PlaceResultType(CameraUpdate cu, ArrayList<? extends Place> res, int number,
+    PlaceResultType(CameraUpdate cameraUpdate, ArrayList<? extends Place> res, int number,
                     boolean searchById) {
-        this.cu = cu;
+        this.cameraUpdate = cameraUpdate;
         this.res = res;
         this.number = number;
         this.searchById = searchById;
-        loadSucces = true;
+        loadSuccess = true;
     }
 
     PlaceResultType() {
-        loadSucces = false;
+        loadSuccess = false;
     }
 }

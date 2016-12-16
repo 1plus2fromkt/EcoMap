@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.map_activity.map.MapUtil;
 import com.twofromkt.ecomap.place_types.Place;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
@@ -144,15 +145,21 @@ public class ChooseTypePanel extends LinearLayout {
         }
     }
 
-    protected /**
+    public /**
      * Set a checkbox state. In case to just change the state without interacting with
-     * other components call with activateMap = false
+     * other components call with activateMap = false.
+     * If place are not loaded yet (due to an error or because method wasn't called),
+     * starts loading and returns.
      *
      * @param index index of checkbox to be chosen
      * @param state true if checkbox should be chosen, false otherwise
      * @param activateMap true if the method should change element_map to show new objects
      */
     void setChosen(int index, boolean state, boolean activateMap) {
+        if (index == 1) {
+            System.out.println(MapUtil.allMarkers.get(0).size() + " " +
+                    MapUtil.shownMarkers.get(0).size());
+        }
         chosenTypes[index] = state;
         typeButtons[index].setImageBitmap(BitmapFactory.decodeResource(
                 getResources(),
@@ -160,13 +167,13 @@ public class ChooseTypePanel extends LinearLayout {
         if (!activateMap) {
             return;
         }
-        if (!parentActivity.map.placesLoaded) {
-            parentActivity.map.loadAllPlaces();
-            return;
-        }
         if (state) {
             parentActivity.bottomSheet.show();
             parentActivity.bottomSheet.focusOnTab(index);
+            if (!parentActivity.map.placesLoaded) {
+                parentActivity.map.loadAllPlaces(); //TODO call setChosen after loading
+                return;
+            }
             if (index == Place.TRASHBOX) {
                 parentActivity.map.showTrashMarkers();
             } else if (index == Place.CAFE) {

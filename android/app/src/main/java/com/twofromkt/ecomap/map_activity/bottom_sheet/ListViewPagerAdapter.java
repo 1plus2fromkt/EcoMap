@@ -19,7 +19,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
     final static String[] tabNames = new String[]{"Мусор", "Кафе", "Прочее"};
 
     ListViewPagerAdapter(FragmentManager manager,
-                                ArrayList <ArrayList<Pair<MapClusterItem, ? extends Place>>> a,
+                                ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> a,
                                 MapActivity act) {
         super(manager);
         tabs = new OneList[CATEGORIES_NUMBER];
@@ -29,11 +29,15 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public void notifyUpdate() {
+    void notifyUpdate() {
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             tabs[i].adapter.notifyDataSetChanged();
         }
     }
+
+//    void resetTrashList(MapActivity act, ArrayList<Pair<MapClusterItem, ? extends Place>> data) {
+//        tabs[0].adapter = new ListAdapter(data, act);
+//    }
 
     @Override
     public Fragment getItem(int position) {

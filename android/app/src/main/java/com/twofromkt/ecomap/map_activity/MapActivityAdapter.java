@@ -70,13 +70,20 @@ class MapActivityAdapter implements
     @Override
     public void onLoadFinished(Loader<PlaceResultType> loader,
                                PlaceResultType data) {
-        if (data.loadSucces) {
+        act.searchBar.hideProgressBar();
+        if (data.loadSuccess) {
             act.map.placesLoaded = true;
-            int t = data.number;
-            if (!data.searchById) {
-                act.map.addMarkers(data.res, data.cu, t);
-            } else {
+            int cat = data.number;
+            if (data.searchById) {
+                data.res.get(0).lite = false;
                 act.bottomInfo.setPlace(data.res.get(0));
+            } else {
+                act.map.addMarkers(data.res, data.cameraUpdate, cat);
+                // if cat was chosen, but places were not loaded at the moment, so
+                // loadAllPlaces was called, and now it has finished:
+                if (act.typePanel.isChosen(cat)) {
+                    act.typePanel.setChosen(cat, true, true);
+                }
             }
         } else {
             act.updateDatabase();

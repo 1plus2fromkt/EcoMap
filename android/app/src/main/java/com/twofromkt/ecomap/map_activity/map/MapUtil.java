@@ -14,8 +14,10 @@ import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.db.PlacesLoader;
 import com.twofromkt.ecomap.db.PlaceResultType;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
@@ -28,12 +30,14 @@ import static com.twofromkt.ecomap.db.PlacesLoader.MODE;
 import static com.twofromkt.ecomap.map_activity.MapActivity.LOADER;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 
-class MapUtil {
+public class MapUtil {
 
     private MapView map;
+    private PlaceShower shower;
+    private Thread showerThread;
 
-    static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> allMarkers,
-                                                                            shownMarkers;
+    public static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> allMarkers,
+            shownMarkers;
 
     static {
         allMarkers = new ArrayList<>();
@@ -48,27 +52,55 @@ class MapUtil {
         this.map = map;
     }
 
-    private void showPlaces(final int category, final Predicate<Place> predicate) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                clearMarkers(category, false);
-                for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
-                    if (predicate.apply(x.second)) {
-                        showMarker(x, category);
-                    }
-                }
-                map.parentActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        map.clusterManager.cluster();
-                        map.parentActivity.bottomSheet.notifyChange();
-                    }
-                });
+    private class PlaceShower implements Runnable {
+        boolean stop;
+        private int category;
+        private Predicate<Place> predicate;
 
+        PlaceShower(int category, Predicate<Place> predicate) {
+            this.category = category;
+            this.predicate = predicate;
+        }
+
+        @Override
+        public void run() {
+            for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(category)) {
+                try {
+                    map.clusterManager.removeItem(m.first);
+                } catch (Exception ignored) {
+                }
+                if (stop) {
+                    return;
+                }
             }
-        }).start();
-//        map.clusterManager.cluster(); //probably check for null pointer?
+            shownMarkers.get(category).clear();
+            for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
+                if (predicate.apply(x.second)) {
+                    showMarker(x, category);
+                }
+                if (stop) {
+                    return;
+                }
+            }
+            map.parentActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    map.clusterManager.cluster();
+                    map.parentActivity.bottomSheet.notifyChange();
+                }
+            });
+
+        }
+    }
+
+    private void showPlaces(final int category, final Predicate<Place> predicate) {
+        //TODO replace that
+        if (shower != null && showerThread.isAlive()) {
+            shower.stop = true;
+        }
+        shower = new PlaceShower(category, predicate);
+        showerThread = new Thread(shower);
+        showerThread.start();
     }
 
     void showCafeMarkers() {
@@ -80,6 +112,11 @@ class MapUtil {
         });
     }
 
+    /**
+     * Show trash markers which are inside (or near) the visible rectangle.
+     *
+     * @param anyMatch show places that match chosen types exactly or just in one of types
+     */
     void showTrashMarkers(final boolean anyMatch) {
         final LatLng min = map.getMap().getProjection().getVisibleRegion().latLngBounds.southwest,
                 max = map.getMap().getProjection().getVisibleRegion().latLngBounds.northeast;
@@ -116,11 +153,17 @@ class MapUtil {
                 x.longitude <= max.longitude + dLng;
     }
 
-    void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
+    void focusOnMarker(Pair<MapClusterItem, ? extends Place> value) {
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
-        map.parentActivity.bottomInfo.addInfo(a.second.getName(), a.second.getClass().getName());
-//        moveMap(act.mMap, fromLatLngZoom(a.second.location.val1, a.second.location.val2, MAPZOOM));
+        Place place = value.second;
+        if (place.lite) {
+            map.loadPlace(place.getId(), place.getCategoryNumber());
+        } else {
+            map.parentActivity.bottomInfo.setPlace(place);
+        }
+//        map.moveMap(LocationUtil.fromLatLngZoom(LocationUtil.getLatLng(place.getLocation()),
+//                MapView.MAPZOOM));
     }
 
     private void showMarker(Pair<MapClusterItem, ? extends Place> p, int category) {
@@ -128,12 +171,26 @@ class MapUtil {
         shownMarkers.get(category).add(p);
     }
 
+    /**
+     * Add place to the list without showing it
+     *
+     * @param place
+     * @param type
+     */
     void addMarker(Place place, int type) {
         MapClusterItem clusterItem = new MapClusterItem(place);
         allMarkers.get(type).add(new Pair<>(clusterItem, place));
     }
 
-    <T extends Place> void addMarkers(ArrayList<T> p, CameraUpdate cu, int num) {
+    /**
+     * Add all markers from the list, not showing them
+     *
+     * @param p
+     * @param cu
+     * @param num
+     * @param <T>
+     */
+    <T extends Place> void addMarkers(List<T> p, CameraUpdate cu, int num) {
         clearMarkers(num, true);
         for (Place place : p) {
             addMarker(place, num);
@@ -141,22 +198,30 @@ class MapUtil {
         map.parentActivity.bottomSheet.notifyChange();
     }
 
-    void clearMarkers(int num, final boolean toCluster) {
-        if (num == -1) {
+    /**
+     * Remove all markers of a specific category from list and from cluster manager
+     *
+     * @param cat
+     * @param toCluster
+     */
+    void clearMarkers(int cat, final boolean toCluster) {
+        if (cat == -1) {
             return;
         }
-        for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(num)) {
+        for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(cat)) {
             try {
                 map.clusterManager.removeItem(m.first);
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
-        shownMarkers.get(num).clear();
+        shownMarkers.get(cat).clear();
         if (map.clusterManager != null) {
             map.parentActivity.runOnUiThread(new Runnable() {
                  @Override
                  public void run() {
-                     if (toCluster)
-                        map.clusterManager.cluster();
+                     if (toCluster) {
+                         map.clusterManager.cluster();
+                     }
                      map.parentActivity.bottomSheet.notifyChange();
                  }
             });
@@ -174,6 +239,7 @@ class MapUtil {
     }
 
     void loadAllPlaces() {
+        map.parentActivity.searchBar.showProgressBar();
         for (int i = 0; i < 1; i++) {
             allMarkers.get(i).clear();
             Bundle bundle = new Bundle();

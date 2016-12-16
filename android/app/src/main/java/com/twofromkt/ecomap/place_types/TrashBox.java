@@ -15,8 +15,8 @@ public class TrashBox extends Place implements Serializable {
 
     private boolean[] category;
 
-    public TrashBox(Cursor c, boolean lite) {
-        super(c, lite);
+    public TrashBox(Cursor c, boolean isFullyLoaded) {
+        super(c, isFullyLoaded);
         category = new boolean[TRASH_TYPES_NUMBER];
         String[] arr = c.getString(CONTENT).replace(", ", ",").split(",");
         for (String s : arr) {
@@ -24,14 +24,14 @@ public class TrashBox extends Place implements Serializable {
             if (catIndex != -1) {
                 category[Category.numFromName(s)] = true;
             } else {
-                Log.d("TrashBoxInit", "String " + s + " is not a known category!");
+                Log.d("TRASH_BOX_INIT", "String " + s + " is not a known category!");
             }
         }
     }
 
     public TrashBox(String name, LatLng location, double rate, String information, Timetable workTime,
                     String imgLink, Set<Category> cat, String website) {
-        super(name, location, rate, information, workTime, imgLink, website);
+        super(name, location, rate, information, workTime, imgLink, website, true);
         category = new boolean[TRASH_TYPES_NUMBER];
         for (Category currCat : cat) {
             category[currCat.n] = true;

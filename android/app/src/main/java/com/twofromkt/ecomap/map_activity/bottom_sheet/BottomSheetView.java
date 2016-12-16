@@ -74,7 +74,8 @@ public class BottomSheetView extends RelativeLayout {
 
     private void setListeners() {
         bottomList.setBottomSheetCallback(adapter);
-        bottomListView.setOnTouchListener(adapter);
+        collapsedPart.setOnTouchListener(adapter);
+        collapsedPart.setOnClickListener(adapter);
     }
 
     public void focusOnTab(int i) {
@@ -84,6 +85,7 @@ public class BottomSheetView extends RelativeLayout {
 
     public void notifyChange() {
         listPagerAdapter.notifyUpdate();
+//        listPagerAdapter.resetTrashList(parentActivity, MapView.getShownMarkers().get(0));
     }
 
     public boolean[] getTrashCategories() {
@@ -98,9 +100,17 @@ public class BottomSheetView extends RelativeLayout {
         bottomList.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
+    //TODO that should be removed
     public void show() {
-        if (bottomList.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+        if (isHidden()) {
             collapse();
+        }
+    }
+
+    public void expand() {
+        if (!isExpanded()) {
+            bottomList.setHideable(false);
+            bottomList.setState(ViewPagerBottomSheetBehavior.STATE_EXPANDED);
         }
     }
 

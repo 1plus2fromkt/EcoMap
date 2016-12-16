@@ -42,7 +42,7 @@ public class MapView extends RelativeLayout {
     CameraPosition startPos;
     SupportMapFragment mapFragment;
     MapAdapter adapter;
-    MapUtil util;
+    public MapUtil util;
 
     GoogleApiClient mGoogleClient;
     ClusterManager<MapClusterItem> clusterManager;
@@ -192,7 +192,7 @@ public class MapView extends RelativeLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
         Parcelable superSaved = super.onSaveInstanceState();
-        return new SavedMap(superSaved, locationButtonUp, hasCustomLocation);
+        return new SavedMap(superSaved, locationButtonUp, hasCustomLocation, placesLoaded);
     }
 
     @Override
@@ -205,17 +205,28 @@ public class MapView extends RelativeLayout {
             moveUpLocationButton();
         }
         hasCustomLocation = savedMap.hasCustomLocation();
+        placesLoaded = savedMap.placesLoaded();
     }
 
     public void onClusterUpdate() {
         clusterManager.cluster();
     }
 
+    /**
+     * Starts loader to read full data about the place from database.
+     * When load finishes, map will focus on that place.
+     *
+     * @param id id of place to load
+     * @param category number of category if the place
+     */
     public void loadPlace(int id, int category) {
         util.loadPlace(id, category);
     }
 
     public void loadAllPlaces() {
+        if (placesLoaded) {
+            return;
+        }
         util.loadAllPlaces();
     }
 }

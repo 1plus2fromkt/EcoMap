@@ -2,26 +2,58 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/list_item_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#333333"
-        android:paddingRight="14dp"
-        android:paddingLeft="10dp"
-        android:paddingTop="12dp"
-        android:textSize="20sp"/>
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:id="@+id/list_item_icons_layout"
+        android:id="@+id/list_item_main_info_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_info_icons_height"
-        android:layout_marginTop="7dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="7dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/list_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="14dp"
+            android:paddingTop="12dp"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:id="@+id/list_item_icons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_info_icons_height"
+            android:layout_marginBottom="7dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/list_item_secondary_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="3">
+
+        <TextView
+            android:id="@+id/list_item_rating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="5dp" />
+
+        <TextView
+            android:id="@+id/list_item_distance"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"/>
 
     </LinearLayout>
 

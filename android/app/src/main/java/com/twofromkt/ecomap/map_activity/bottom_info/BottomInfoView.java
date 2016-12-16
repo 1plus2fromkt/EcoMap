@@ -94,10 +94,6 @@ public class BottomInfoView extends LinearLayout {
         bottomInfo.setBottomSheetCallback(adapter);
     }
 
-    public void addInfo(String name, String category_name) {
-        this.name.setText(name);
-    }
-
     public void collapse() {
         bottomInfo.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
@@ -143,6 +139,9 @@ public class BottomInfoView extends LinearLayout {
 
     private void showTimetable(Place place) {
         Util.Timetable workTime = place.getWorkTime();
+        if (workTime == null) {
+            return;
+        }
         if (!workTime.checkTimetables()) {
             dayOfWeek[0].setText(workTime.getTable()[0].getTime());
             clearTexts();

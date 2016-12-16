@@ -2,13 +2,14 @@ package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 
 class BottomSheetAdapter extends ViewPagerBottomSheetBehavior.BottomSheetCallback
-        implements View.OnTouchListener {
+        implements View.OnTouchListener, View.OnClickListener {
 
     private BottomSheetView sheet;
     private boolean isCategory;
@@ -27,9 +28,15 @@ class BottomSheetAdapter extends ViewPagerBottomSheetBehavior.BottomSheetCallbac
             sheet.listLayout.setAlpha(0);
             sheet.listLayout.setVisibility(isCategory ? View.INVISIBLE : View.VISIBLE);
             sheet.categoriesLayout.setVisibility(isCategory ? View.VISIBLE : View.INVISIBLE);
-            return true;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == sheet.collapsedPart) {
+            sheet.expand();
+        }
     }
 
     @Override

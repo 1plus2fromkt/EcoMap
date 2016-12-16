@@ -18,7 +18,6 @@ public abstract class Place implements Serializable {
     public static final int ID = 0, LAT_DB = 1, LNG_DB = 2, RATE = 3, TITLE = 4, CONTENT = 5,
             ADDRESS = 6, IMG = 7, INFO = 8, WORK_TIME = 9, SITE = 10, TEL = 11, EMAIL = 12;
 
-
     @NonNull
     private Pair<Double, Double> location;
     private int id;
@@ -32,24 +31,33 @@ public abstract class Place implements Serializable {
     private String imgLink;
     private String information;
 
+    /**
+     * Shows if all data or only the most important data is loaded
+     */
+    public boolean lite;
+
     Place(@NonNull String name, LatLng location, double rate, String information, Timetable workTime,
-          String imgLink, String website) {
+          String imgLink, String website, boolean lite) {
         this.name = name;
         this.location = latLngToPair(location);
-        if (workTime != null)
+        if (workTime != null) {
             this.workTime = new Timetable(workTime);
+        }
         this.imgLink = imgLink;
         this.rate = rate;
         this.website = website;
         this.information = information;
+        this.lite = lite;
     }
 
     Place(Cursor cursor, boolean lite) {
         this.id = cursor.getInt(ID);
         location = new Pair<>(cursor.getDouble(LAT_DB), cursor.getDouble(LNG_DB));
         name = cursor.getString(TITLE);
-        if (lite)
+        this.lite = lite;
+        if (lite) {
             return;
+        }
         address = cursor.getString(ADDRESS);
         rate = cursor.getDouble(RATE);
         website = cursor.getString(SITE);

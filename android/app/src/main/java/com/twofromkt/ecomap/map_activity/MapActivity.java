@@ -106,7 +106,6 @@ public class MapActivity extends FragmentActivity
 
     public void updateDatabase() {
         searchBar.showProgressBar();
-        Log.d(TAG, "starting to update database");
         //TODO check if that loader is already running
         getSupportLoaderManager().initLoader(DATABASE_LOADER_ID, null, this);
     }
