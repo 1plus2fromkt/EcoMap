@@ -35,10 +35,14 @@
             android:inputType="text"
             android:textSize="15sp" />
 
-        <!--<ImageButton-->
-            <!--android:id="@+id/empty_search"-->
-            <!--style="@style/expandButton"-->
-            <!--android:src="@drawable/ic_collapse_00010" />-->
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="6dp"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_bar" />
 
     </LinearLayout>
 

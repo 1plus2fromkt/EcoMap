@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
+import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 

@@ -31,8 +31,9 @@ public class DBAdapter {
                 new File(c.getFilesDir(), diffPath + "diff" + num + ".db"), null);
              SQLiteDatabase curr = SQLiteDatabase.openOrCreateDatabase(
                      new File(c.getFilesDir(), dbPath + FILE_NAMES[num] + ".db"), null)) {
-            if (isEmpty(diff))
+            if (isEmpty(diff)) {
                 return;
+            }
             curr.execSQL(schemas[num]);
             curr.beginTransactionNonExclusive();
             try (Cursor all = diff.rawQuery("SELECT * FROM " + tableName + ";", null)) {

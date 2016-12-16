@@ -4,7 +4,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.bottom_info.BottomInfoView;
@@ -12,10 +16,13 @@ import com.twofromkt.ecomap.map_activity.bottom_sheet.BottomSheetView;
 import com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
+import com.twofromkt.ecomap.server.DBLoader;
+import com.twofromkt.ecomap.server.ServerResultType;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
-public class MapActivity extends FragmentActivity {
+public class MapActivity extends FragmentActivity
+        implements LoaderManager.LoaderCallbacks<ServerResultType> {
 
 //    NavigationView nv;
 
@@ -29,7 +36,9 @@ public class MapActivity extends FragmentActivity {
     public BottomSheetView bottomSheet;
     public ChooseTypePanel typePanel;
 
-    public static final int GPS_REQUEST = 111, LOADER = 42;
+    public static final int GPS_REQUEST = 111, LOADER = 42, DATABASE_LOADER_ID = 1984;
+
+    private static final String TAG = "MAP_ACTIVITY";
 
     @Override
     protected void onStart() {
@@ -95,6 +104,13 @@ public class MapActivity extends FragmentActivity {
         return false;
     }
 
+    public void updateDatabase() {
+        searchBar.showProgressBar();
+        Log.d(TAG, "starting to update database");
+        //TODO check if that loader is already running
+        getSupportLoaderManager().initLoader(DATABASE_LOADER_ID, null, this);
+    }
+
     @Override
     public void onBackPressed() {
         if (bottomInfo.isExpanded()) {
@@ -111,4 +127,26 @@ public class MapActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public Loader<ServerResultType> onCreateLoader(int id, Bundle args) {
+        return new DBLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ServerResultType> loader, ServerResultType data) {
+        Log.d(TAG, "database download finished");
+        searchBar.hideProgressBar();
+        String message;
+        if (data.resultSuccess()) {
+            message = "Database updated";
+        } else {
+            message = "Database update failed";
+        }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ServerResultType> loader) {
+
+    }
 }

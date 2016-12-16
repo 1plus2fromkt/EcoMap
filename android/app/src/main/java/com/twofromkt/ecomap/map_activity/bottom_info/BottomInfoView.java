@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.twofromkt.ecomap.PlaceTypes.Place;
-import com.twofromkt.ecomap.PlaceTypes.TrashBox;
+import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.Util;

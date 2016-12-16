@@ -22,27 +22,37 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class Downloader {
     public static ArrayList<Pair<Double, Double>> data;
 
-    private static final String versionFileName = "version.txt";
+    private static final String VERSION_FILE_NAME = "version.txt";
+    private static final String SERVER_IP = "37.46.133.69";
 
-    public static void update(Context context) throws IOException {
-        Pair<ArrayList<Boolean>, ArrayList<Integer>> toUpdate = download(context);
+    public static ServerResultType update(Context context) {
+        Pair<ArrayList<Boolean>, ArrayList<Integer>> toUpdate;
+        try {
+            toUpdate = download(context);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ServerResultType(false);
+        }
+
         for (int i = 0; i < toUpdate.val1.size(); i++) {
-            if (toUpdate.val1.get(i))
+            if (toUpdate.val1.get(i)) {
                 DBAdapter.replace(i, context);
+            }
         }
         updateVersionFile(toUpdate.val2, context);
+        return new ServerResultType(true);
     }
 
-    private static Pair<ArrayList<Boolean>, ArrayList<Integer> > download(Context context) throws IOException {
-        Log.d("downloader", "starting download");
-        String server = "37.46.133.69";
-        Socket socket = new Socket(server, 4444); // TODO: catch exception and print message about no internet
+    private static Pair<ArrayList<Boolean>, ArrayList<Integer>> download(Context context) throws IOException {
+        Log.d("DOWNLOADER", "starting download");
+        Socket socket = new Socket(SERVER_IP, 4444);
         socket.setTcpNoDelay(true);
         DataInputStream in = new DataInputStream(socket.getInputStream());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -87,7 +97,7 @@ public class Downloader {
     }
 
     private static ArrayList<Integer> getVersions(Context context) throws IOException {
-        File ver = new File(context.getFilesDir(), versionFileName);
+        File ver = new File(context.getFilesDir(), VERSION_FILE_NAME);
         if (!ver.exists()) {
             return new ArrayList<>();
         }
@@ -108,7 +118,7 @@ public class Downloader {
 
     private static void updateVersionFile(ArrayList<Integer> prevVersions,
                                           Context context) {
-        File ver = new File(context.getFilesDir(), versionFileName);
+        File ver = new File(context.getFilesDir(), VERSION_FILE_NAME);
         if (ver.exists())
             ver.delete();
         try {
@@ -118,10 +128,11 @@ public class Downloader {
         }
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(ver))) {
             for (int i = 0; i < prevVersions.size(); i++) {
-                if (prevVersions.size() <= i)
+                if (prevVersions.size() <= i) {
                     out.writeInt(1);
-                else
+                } else {
                     out.writeInt(prevVersions.get(i));
+                }
             }
             out.flush();
         } catch (IOException e) {
