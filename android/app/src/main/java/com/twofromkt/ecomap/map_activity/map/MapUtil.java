@@ -162,8 +162,8 @@ public class MapUtil {
         } else {
             map.parentActivity.bottomInfo.setPlace(place);
         }
-//        map.moveMap(LocationUtil.fromLatLngZoom(LocationUtil.getLatLng(place.getLocation()),
-//                MapView.MAPZOOM));
+        map.moveMap(LocationUtil.fromLatLngZoom(LocationUtil.getLatLng(place.getLocation()),
+                MapView.MAPZOOM));
     }
 
     private void showMarker(Pair<MapClusterItem, ? extends Place> p, int category) {
