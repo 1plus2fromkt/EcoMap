@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -20,6 +21,7 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.Util;
 
+import static biz.laenger.android.vpbs.R.id.scrollView;
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 public class BottomInfoView extends LinearLayout {
@@ -30,7 +32,7 @@ public class BottomInfoView extends LinearLayout {
                                             "Пятница", "Суббота", "Воскресенье"};
     BottomSheetBehavior bottomInfo;
     TextView name, information, address;
-    View bottomInfoView;
+    NestedScrollView bottomInfoView;
     MapActivity parentActivity;
 
     Place currPlace;
@@ -48,7 +50,7 @@ public class BottomInfoView extends LinearLayout {
 
     public void attach(MapActivity parentActivity) {
         this.parentActivity = parentActivity;
-        bottomInfoView = findViewById(R.id.bottom_info_scroll_view);
+        bottomInfoView = (NestedScrollView) findViewById(R.id.bottom_info_scroll_view);
         bottomInfo = BottomSheetBehavior.from(bottomInfoView);
         name = (TextView) findViewById(R.id.bottom_info_name_text);
         address = (TextView) findViewById(R.id.bottom_info_address_text);

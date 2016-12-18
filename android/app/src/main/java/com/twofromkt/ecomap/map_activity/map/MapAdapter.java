@@ -17,13 +17,16 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;

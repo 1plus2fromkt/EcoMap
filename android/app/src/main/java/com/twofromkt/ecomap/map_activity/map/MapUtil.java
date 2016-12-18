@@ -17,6 +17,7 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
@@ -64,7 +65,9 @@ public class MapUtil {
 
         @Override
         public void run() {
-            for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(category)) {
+            // we should not use iterators to prevent concurrent modifications
+            for (int i = 0; i < shownMarkers.get(category).size(); i++) {
+                Pair<MapClusterItem, ? extends Place> m = shownMarkers.get(category).get(i);
                 try {
                     map.clusterManager.removeItem(m.first);
                 } catch (Exception ignored) {
@@ -74,7 +77,8 @@ public class MapUtil {
                 }
             }
             shownMarkers.get(category).clear();
-            for (Pair<MapClusterItem, ? extends Place> x : allMarkers.get(category)) {
+            for (int i = 0; i < allMarkers.get(category).size(); i++) {
+                Pair<MapClusterItem, ? extends Place> x = allMarkers.get(category).get(i);
                 if (predicate.apply(x.second)) {
                     showMarker(x, category);
                 }
@@ -195,6 +199,15 @@ public class MapUtil {
         for (Place place : p) {
             addMarker(place, num);
         }
+        String info = "testtesttest\n";
+        for (int i = 0; i < 7; i++) {
+            info = info + info;
+        }
+        HashSet<TrashBox.Category> cat = new HashSet<>();
+        cat.add(TrashBox.Category.BATTERY);
+        Place longtest = new TrashBox("longtest", new LatLng(0, 1), 0., info, null, null, cat, null);
+        Pair<MapClusterItem, ? extends Place> t = new Pair<>(new MapClusterItem(longtest), longtest);
+        allMarkers.get(0).add(t);
         map.parentActivity.bottomSheet.notifyChange();
     }
 
