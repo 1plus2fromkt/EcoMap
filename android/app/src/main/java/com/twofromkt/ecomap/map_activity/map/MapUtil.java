@@ -199,15 +199,6 @@ public class MapUtil {
         for (Place place : p) {
             addMarker(place, num);
         }
-        String info = "testtesttest\n";
-        for (int i = 0; i < 7; i++) {
-            info = info + info;
-        }
-        HashSet<TrashBox.Category> cat = new HashSet<>();
-        cat.add(TrashBox.Category.BATTERY);
-        Place longtest = new TrashBox("longtest", new LatLng(0, 1), 0., info, null, null, cat, null);
-        Pair<MapClusterItem, ? extends Place> t = new Pair<>(new MapClusterItem(longtest), longtest);
-        allMarkers.get(0).add(t);
         map.parentActivity.bottomSheet.notifyChange();
     }
 
