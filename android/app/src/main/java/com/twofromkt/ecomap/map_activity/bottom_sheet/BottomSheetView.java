@@ -15,7 +15,11 @@ import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 
+import java.util.Arrays;
+
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
+
+import static com.twofromkt.ecomap.map_activity.map.MapUtil.shownMarkers;
 
 public class BottomSheetView extends RelativeLayout {
 
@@ -83,6 +87,9 @@ public class BottomSheetView extends RelativeLayout {
         settViewPager.setCurrentItem(i);
     }
 
+    /**
+     * Please sort data before notifying about its change, it is not possible to sort it in UI
+     */
     public void notifyChange() {
         listPagerAdapter.notifyUpdate();
 //        listPagerAdapter.resetTrashList(parentActivity, MapView.getShownMarkers().get(0));

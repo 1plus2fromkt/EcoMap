@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.Loader;
@@ -15,8 +16,13 @@ import com.twofromkt.ecomap.db.PlacesLoader;
 import com.twofromkt.ecomap.db.PlaceResultType;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
+import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -30,6 +36,7 @@ import static com.twofromkt.ecomap.db.PlacesLoader.LITE;
 import static com.twofromkt.ecomap.db.PlacesLoader.MODE;
 import static com.twofromkt.ecomap.map_activity.MapActivity.LOADER;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
+import static com.twofromkt.ecomap.util.Util.PlaceWithCoord;
 
 public class MapUtil {
 
@@ -37,15 +44,15 @@ public class MapUtil {
     private PlaceShower shower;
     private Thread showerThread;
 
-    public static volatile ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> allMarkers,
+    public static volatile ArrayList<ArrayList<PlaceWithCoord>> allMarkers,
             shownMarkers;
 
     static {
         allMarkers = new ArrayList<>();
         shownMarkers = new ArrayList<>();
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            allMarkers.add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
-            shownMarkers.add(new ArrayList<Pair<MapClusterItem, ? extends Place>>());
+            allMarkers.add(new ArrayList<PlaceWithCoord>());
+            shownMarkers.add(new ArrayList<PlaceWithCoord>());
         }
     }
 
@@ -67,9 +74,9 @@ public class MapUtil {
         public void run() {
             // we should not use iterators to prevent concurrent modifications
             for (int i = 0; i < shownMarkers.get(category).size(); i++) {
-                Pair<MapClusterItem, ? extends Place> m = shownMarkers.get(category).get(i);
+                PlaceWithCoord m = shownMarkers.get(category).get(i);
                 try {
-                    map.clusterManager.removeItem(m.first);
+                    map.clusterManager.removeItem(m.coordinates);
                 } catch (Exception ignored) {
                 }
                 if (stop) {
@@ -78,14 +85,34 @@ public class MapUtil {
             }
             shownMarkers.get(category).clear();
             for (int i = 0; i < allMarkers.get(category).size(); i++) {
-                Pair<MapClusterItem, ? extends Place> x = allMarkers.get(category).get(i);
-                if (predicate.apply(x.second)) {
+                PlaceWithCoord x = allMarkers.get(category).get(i);
+                if (predicate.apply(x.place)) {
                     showMarker(x, category);
                 }
                 if (stop) {
                     return;
                 }
             }
+            Location currLocation = map.getLocation();
+            final LatLng currCoords = LocationUtil.getLatLng(
+                    currLocation.getLatitude(), currLocation.getLongitude());
+            Collections.sort(shownMarkers.get(category), new Comparator<PlaceWithCoord>() {
+                @Override
+                public int compare(PlaceWithCoord o1, PlaceWithCoord o2) {
+
+                    int dist1 = (int) LocationUtil.distanceLatLng(currCoords,
+                            LocationUtil.getLatLng(o1.place.getLocation())),
+                    dist2 = (int) LocationUtil.distanceLatLng(currCoords,
+                            LocationUtil.getLatLng(o2.place.getLocation()));
+                    if (dist1 < dist2) {
+                        return -1;
+                    } else if (dist1 == dist2) {
+                        return 0;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
             map.parentActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -157,10 +184,10 @@ public class MapUtil {
                 x.longitude <= max.longitude + dLng;
     }
 
-    void focusOnMarker(Pair<MapClusterItem, ? extends Place> value) {
+    void focusOnMarker(PlaceWithCoord value) {
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
-        Place place = value.second;
+        Place place = value.place;
         if (place.lite) {
             map.loadPlace(place.getId(), place.getCategoryNumber());
         } else {
@@ -170,8 +197,8 @@ public class MapUtil {
                 MapView.MAPZOOM));
     }
 
-    private void showMarker(Pair<MapClusterItem, ? extends Place> p, int category) {
-        map.clusterManager.addItem(p.first);
+    private void showMarker(PlaceWithCoord p, int category) {
+        map.clusterManager.addItem(p.coordinates);
         shownMarkers.get(category).add(p);
     }
 
@@ -183,7 +210,7 @@ public class MapUtil {
      */
     void addMarker(Place place, int type) {
         MapClusterItem clusterItem = new MapClusterItem(place);
-        allMarkers.get(type).add(new Pair<>(clusterItem, place));
+        allMarkers.get(type).add(new PlaceWithCoord(place, clusterItem));
     }
 
     /**
@@ -199,7 +226,6 @@ public class MapUtil {
         for (Place place : p) {
             addMarker(place, num);
         }
-        map.parentActivity.bottomSheet.notifyChange();
     }
 
     /**
@@ -212,9 +238,9 @@ public class MapUtil {
         if (cat == -1) {
             return;
         }
-        for (Pair<MapClusterItem, ? extends Place> m : shownMarkers.get(cat)) {
+        for (PlaceWithCoord m : shownMarkers.get(cat)) {
             try {
-                map.clusterManager.removeItem(m.first);
+                map.clusterManager.removeItem(m.coordinates);
             } catch (Exception ignored) {
             }
         }

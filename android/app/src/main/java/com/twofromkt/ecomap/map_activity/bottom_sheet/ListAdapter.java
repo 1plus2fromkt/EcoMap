@@ -22,6 +22,7 @@ import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.util.LocationUtil;
+import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
 
@@ -30,10 +31,10 @@ import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private ArrayList<Pair<MapClusterItem, ? extends Place>> data;
+    private ArrayList<Util.PlaceWithCoord> data;
     final MapActivity parentActivity;
 
-    ListAdapter(ArrayList<Pair<MapClusterItem, ? extends Place>> data, MapActivity parentActivity) {
+    ListAdapter(ArrayList<Util.PlaceWithCoord> data, MapActivity parentActivity) {
         this.data = data;
         this.parentActivity = parentActivity;
         setHasStableIds(true);
@@ -48,7 +49,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Place place = data.get(position).second;
+        Place place = data.get(position).place;
         setHolder(holder, place);
 
         holder.container.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +63,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @SuppressLint("SetTextI18n")
     private void setHolder(ViewHolder holder, Place place) {
         holder.name.setText(place.getName());
-        if (!holder.typesSet && place instanceof TrashBox) {
+        holder.iconsLayout.removeAllViews();
+        if (place instanceof TrashBox) {
             TrashBox trashBox = (TrashBox) place;
             for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
                 if (!trashBox.isOfCategory(i)) {

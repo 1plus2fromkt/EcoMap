@@ -28,6 +28,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,7 @@ public class MapView extends RelativeLayout {
         util.showTrashMarkers(true);
     }
 
-    public void focusOnMarker(Pair<MapClusterItem, ? extends Place> a) {
+    public void focusOnMarker(Util.PlaceWithCoord a) {
         util.focusOnMarker(a);
     }
 
@@ -181,11 +182,11 @@ public class MapView extends RelativeLayout {
         util.addLocationSearch(parentActivity);
     }
 
-    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getAllMarkers() {
+    public static ArrayList<ArrayList<Util.PlaceWithCoord>> getAllMarkers() {
         return MapUtil.allMarkers;
     }
 
-    public static ArrayList<ArrayList<Pair<MapClusterItem, ? extends Place>>> getShownMarkers() {
+    public static ArrayList<ArrayList<Util.PlaceWithCoord>> getShownMarkers() {
         return MapUtil.shownMarkers;
     }
 

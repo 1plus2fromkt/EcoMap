@@ -1,10 +1,12 @@
 package com.twofromkt.ecomap.util;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 import com.twofromkt.ecomap.place_types.Place;
 
 import java.io.IOException;
@@ -14,6 +16,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Util {
+
+    public static class PlaceWithCoord{
+        public MapClusterItem coordinates;
+        public Place place;
+
+        public PlaceWithCoord(Place place, MapClusterItem clusterItem) {
+            this.place = place;
+            this.coordinates = clusterItem;
+        }
+
+
+        public boolean equals(Object o) {
+            return (o instanceof PlaceWithCoord && equals((PlaceWithCoord) o));
+        }
+
+        public boolean equals (PlaceWithCoord o) {
+            return coordinates.equals(o.coordinates) && place.equals(o.place);
+        }
+    }
 
     public static class Timetable implements Serializable {
         private static final String prefix = "0 ";

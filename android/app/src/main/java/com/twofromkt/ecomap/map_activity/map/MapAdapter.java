@@ -24,6 +24,7 @@ import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.util.LocationUtil;
+import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -56,10 +57,10 @@ class MapAdapter implements OnMapReadyCallback,
         map.parentActivity.bottomSheet.hide();
         map.parentActivity.bottomInfo.collapse();
         Place p = null;
-        for (ArrayList<Pair<MapClusterItem, ? extends Place>> ac : MapView.getAllMarkers()) {
-            for (Pair<MapClusterItem, ? extends Place> x : ac) {
-                if (x.first.equals(clusterItem)) {
-                    p = x.second;
+        for (ArrayList<Util.PlaceWithCoord> ac : MapView.getAllMarkers()) {
+            for (Util.PlaceWithCoord x : ac) {
+                if (x.coordinates.equals(clusterItem)) {
+                    p = x.place;
                     break;
                 }
             }
