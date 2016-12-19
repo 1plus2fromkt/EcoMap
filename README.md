@@ -1,19 +1,18 @@
-EcoMap is an android app with map to make eco-friendly lifestyle easier. 
+## EcoMap -- EcoLogical lifestyle
 
-Minimal plan:
-* Vegetarian cafes
-* Garbage collection points
-* Accounts for users to rate cafes and leave reviews and for moderators to add new places and edit old ones
+EcoMap is an android app with map to make eco-friendly lifestyle easier. In several taps you can find a lot of garbage collection points for different types of trash. All things that you leave here will be recycle. They say that 5 recycled batteries save a little hedgehog!
 
-Likely plan:
+[Latest build](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dT256MGVYNzNxdXM) (19.12.16)
+
+Features:
+* Map with garbage collection points
+* Settings to clarify what kind of trash we want to recycle
+* Information about each of the points
+* Everyday database updates
+
+We are now working with recyclemap.ru, and data from tripadvisor.ru and openstreetmap.ru is going to be added as soon as possible
+
+Coming:
+* Find vegetarian cafes as well
 * Schedule of ecology connected events
 * Bonus program for eco lifestyle (like discounts in cafes for garbage collection)
-* Collaboration with other ecology connected organizations (recyclemap, rsbor etc.)
-
-Version history:
-
-0.0.2. GUI is buggy but working, server side in development
-
-0.0.1. Some VERY basic functionality
-
-0.0. Mock. Nothing works
