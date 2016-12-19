@@ -1,6 +1,6 @@
-## EcoMap -- EcoLogical lifestyle
+## EcoMap - EcoLogical lifestyle
 
-EcoMap is an android app with map to make eco-friendly lifestyle easier. In several taps you can find a lot of garbage collection points for different types of trash. All things that you leave here will be recycle. They say that 5 recycled batteries save a little hedgehog!
+EcoMap is an android app with map to make eco-friendly lifestyle easier. In several taps you can find a lot of garbage collection points for different types of trash. All garbage that you leave here will be recycled. They say that 5 recycled batteries save a little hedgehog!
 
 [Latest build](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dT256MGVYNzNxdXM) (19.12.16)
 
