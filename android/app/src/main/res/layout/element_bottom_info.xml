@@ -36,18 +36,18 @@
                 <TextView
                     android:id="@+id/bottom_info_name_text"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="3dp"
                     android:layout_toRightOf="@+id/bottom_info_type_icon"
                     android:text="test text"
-                    android:textSize="20sp" />
+                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:id="@+id/bottom_info_trash_icons_layout"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/bottom_info_icons_height"
                     android:layout_below="@+id/bottom_info_name_text"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="6dp"
                     android:layout_toRightOf="@+id/bottom_info_type_icon"
                     android:orientation="horizontal">
 
@@ -160,9 +160,11 @@
                         android:layout_height="20dp"
                         android:layout_marginStart="15dp"
                         android:src="@mipmap/bottom_info_timetable_icon" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
                         android:orientation="vertical"
                         android:layout_toEndOf="@id/bottom_info_timetable_icon">
                         <include

@@ -3,15 +3,16 @@ package com.twofromkt.ecomap.place_types;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.telephony.PhoneNumberUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.twofromkt.ecomap.data_struct.Pair;
-
-import static com.twofromkt.ecomap.util.LocationUtil.latLngToPair;
-import static com.twofromkt.ecomap.util.Util.*;
+import com.twofromkt.ecomap.util.TextUtil;
 
 import java.io.Serializable;
+
+import static com.twofromkt.ecomap.util.LocationUtil.latLngToPair;
+import static com.twofromkt.ecomap.util.Util.Period;
+import static com.twofromkt.ecomap.util.Util.Timetable;
 
 public abstract class Place implements Serializable {
 
@@ -64,16 +65,12 @@ public abstract class Place implements Serializable {
         address = cursor.getString(ADDRESS);
         rate = cursor.getDouble(RATE);
         website = cursor.getString(SITE);
-        if (website.equals("")) {
-            website = null;
-        }
+        website = TextUtil.formatLink(website);
         information = cursor.getString(INFO);
         imgLink = cursor.getString(IMG);
         workTime = new Timetable(cursor.getString(WORK_TIME));
         phone = cursor.getString(TEL);
-        if (phone.equals("")) {
-            phone = null;
-        }
+        phone = TextUtil.formatPhone(phone);
     }
 
     protected Place() {

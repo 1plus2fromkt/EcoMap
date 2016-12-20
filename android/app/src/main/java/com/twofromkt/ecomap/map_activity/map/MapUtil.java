@@ -260,7 +260,7 @@ public class MapUtil {
                 android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        //TODO move the code we need to another method because now it will not be inited if used denies location
+        //TODO move the code we need to another method because now it will not be inited if user denies location
         map.adapter.onMapReady(map.mMap);
     }
 
