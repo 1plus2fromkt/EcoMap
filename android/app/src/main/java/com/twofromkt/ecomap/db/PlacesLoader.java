@@ -83,17 +83,18 @@ PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     /**
      * Read places from database
      *
-     * @param filter filter for database queries
+     * @param filter   filter for database queries
      * @param category type of places to read
      * @param context
-     * @param fac factory to create places
-     * @param <T> type of places
+     * @param fac      factory to create places
+     * @param <T>      type of places
      * @return ArrayList of Place if place were read successfully, null otherwise
      */
     private <T extends Place> ArrayList<T> getPlaces(String filter, int category,
                                                      Context context, PlaceFactory<T> fac) {
         ArrayList<T> ans = new ArrayList<>();
-        String order = " ORDER BY rate ASC ", limit = " LIMIT "; //TODO: CHANGE rate TO SOMETHING CLEVER
+        //TODO: CHANGE rate TO SOMETHING CLEVER
+        String order = " ORDER BY rate ASC ", limit = " LIMIT ";
         try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
              Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " " +

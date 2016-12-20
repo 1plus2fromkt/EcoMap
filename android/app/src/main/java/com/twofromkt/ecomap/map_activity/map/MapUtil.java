@@ -5,25 +5,21 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.Loader;
-import android.util.Pair;
 
 import com.android.internal.util.Predicate;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.db.PlaceResultType;
+import com.twofromkt.ecomap.db.PlacesLoader;
+import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
-import com.twofromkt.ecomap.db.PlacesLoader;
-import com.twofromkt.ecomap.db.PlaceResultType;
-import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.LocationUtil;
-import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 import static com.twofromkt.ecomap.Consts.CAFE_ID;
@@ -269,6 +265,7 @@ public class MapUtil {
     }
 
     void loadAllPlaces() {
+        map.parentActivity.searchBar.setProgressBarColor(SearchBarView.PROGRESS_BAR_BLUE);
         map.parentActivity.searchBar.showProgressBar();
         for (int i = 0; i < 1; i++) {
             allMarkers.get(i).clear();

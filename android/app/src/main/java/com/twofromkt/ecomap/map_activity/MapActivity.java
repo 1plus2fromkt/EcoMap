@@ -36,7 +36,8 @@ public class MapActivity extends FragmentActivity
     public BottomSheetView bottomSheet;
     public ChooseTypePanel typePanel;
 
-    public static final int GPS_REQUEST = 111, LOADER = 42, DATABASE_LOADER_ID = 1984;
+    public static final int GPS_REQUEST = 111, PHONE_REQUEST = 222, OPEN_LINK_REQUEST = 333,
+            LOADER = 42, DATABASE_LOADER_ID = 1984;
 
     private static final String TAG = "MAP_ACTIVITY";
 
@@ -82,6 +83,10 @@ public class MapActivity extends FragmentActivity
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        //TODO change it to something more clever
+        if (savedInstanceState == null) {
+            updateDatabase();
+        }
     }
 
     @Override
@@ -92,19 +97,19 @@ public class MapActivity extends FragmentActivity
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     map.addLocationSearch();
                 }
+                break;
+            case PHONE_REQUEST:
+                //TODO remember and do the thing we wanted to do before asking
+                Toast.makeText(this, "Calling permissions granted", Toast.LENGTH_SHORT).show();
+                break;
+            case OPEN_LINK_REQUEST:
+                //TODO remember and do the thing we wanted to do before asking
+                Toast.makeText(this, "Opening links permissions granted", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private boolean checkMarkers() {
-        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            if (MapView.getAllMarkers().get(i).size() > 0) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void updateDatabase() {
+        searchBar.setProgressBarColor(SearchBarView.PROGRESS_BAR_GREEN);
         searchBar.showProgressBar();
         //TODO check if that loader is already running
         getSupportLoaderManager().initLoader(DATABASE_LOADER_ID, null, this);

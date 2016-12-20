@@ -1,19 +1,29 @@
 package com.twofromkt.ecomap.map_activity.bottom_info;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.telephony.PhoneNumberUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
@@ -29,7 +39,7 @@ public class BottomInfoView extends LinearLayout {
 
     private static final int DAYS_IN_WEEK = 7;
     private static final String[] DAYS_OF_WEEK = {"Понедельник", "Вторник", "Среда", "Четверг",
-                                            "Пятница", "Суббота", "Воскресенье"};
+            "Пятница", "Суббота", "Воскресенье"};
     BottomSheetBehavior bottomInfo;
     TextView name, information, address;
     NestedScrollView bottomInfoView;
@@ -39,6 +49,7 @@ public class BottomInfoView extends LinearLayout {
     TextView[] timetable, dayOfWeek;
     ImageView[] trashTypesIcons;
     LinearLayout trashTypesIconsLayout;
+    Button callButton, routeButton, siteButton;
 
     private BottomInfoAdapter adapter;
 
@@ -58,6 +69,9 @@ public class BottomInfoView extends LinearLayout {
         adapter = new BottomInfoAdapter(this);
         trashTypesIcons = new ImageView[TRASH_TYPES_NUMBER];
         trashTypesIconsLayout = (LinearLayout) findViewById(R.id.bottom_info_trash_icons_layout);
+        callButton = (Button) findViewById(R.id.bottom_info_call_button);
+        routeButton = (Button) findViewById(R.id.bottom_info_route_button);
+        siteButton = (Button) findViewById(R.id.bottom_info_site_button);
         timetable = new TextView[DAYS_IN_WEEK];
         dayOfWeek = new TextView[DAYS_IN_WEEK];
         for (int i = 0; i < DAYS_IN_WEEK; i++) {
@@ -94,6 +108,47 @@ public class BottomInfoView extends LinearLayout {
 
     private void setListeners() {
         bottomInfo.setBottomSheetCallback(adapter);
+        callButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currPlace == null) {
+                    return;
+                }
+                if (!PhoneNumberUtils.isGlobalPhoneNumber(currPlace.getPhone())) {
+                    Toast.makeText(parentActivity, currPlace.getPhone() + " -- сюда нельзя позвонить",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String uri = "tel:" + currPlace.getPhone();
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse(uri));
+                if (ActivityCompat.checkSelfPermission(parentActivity,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    Log.d("BOTTOM_INFO", "phone calls are not permitted");
+                    ActivityCompat.requestPermissions(parentActivity,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            MapActivity.PHONE_REQUEST);
+                    return;
+                }
+                parentActivity.startActivity(intent);
+            }
+        });
+        siteButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currPlace == null) {
+                    return;
+                }
+                if (!URLUtil.isValidUrl(currPlace.getWebsite())) {
+                    Toast.makeText(parentActivity, currPlace.getWebsite() + " -- нет такого адреса",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(currPlace.getWebsite()));
+                parentActivity.startActivity(intent);
+            }
+        });
     }
 
     public void collapse() {
@@ -127,6 +182,8 @@ public class BottomInfoView extends LinearLayout {
         information.setText(place.getInformation());
         showCategories((TrashBox) place);
         showTimetable(place);
+        callButton.setVisibility(place.getPhone() == null ? GONE : VISIBLE);
+        siteButton.setVisibility(place.getWebsite() == null ? GONE : VISIBLE);
     }
 
     private void showCategories(TrashBox trashBox) {
@@ -139,9 +196,11 @@ public class BottomInfoView extends LinearLayout {
         }
     }
 
+    //TODO hide icon if timetable is not available
     private void showTimetable(Place place) {
         Util.Timetable workTime = place.getWorkTime();
         if (workTime == null) {
+
             return;
         }
         if (!workTime.checkTimetables()) {

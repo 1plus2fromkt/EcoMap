@@ -17,22 +17,25 @@
         <ImageButton
             android:id="@+id/type_button1"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="58dp"
             style="@style/checkbox_image_style"
-            android:src="@mipmap/trashbox_type" />
+            android:src="@mipmap/trashbox_icon" />
 
         <ImageButton
             android:id="@+id/type_button2"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="58dp"
             style="@style/checkbox_image_style"
             android:src="@mipmap/cafes_icon" />
+            <!--android:layout_centerHorizontal="true"-->
 
         <ImageButton
             android:id="@+id/type_button3"
             android:layout_alignParentRight="true"
             android:layout_marginRight="30dp"
             style="@style/checkbox_image_style"
-            android:src="@mipmap/other_icon" />
+            android:src="@mipmap/other_icon"
+            android:visibility="gone"/>
 
 
     </RelativeLayout>

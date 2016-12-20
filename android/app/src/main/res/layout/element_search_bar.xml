@@ -41,8 +41,8 @@
             android:layout_height="35dp"
             android:layout_gravity="center"
             android:layout_marginEnd="6dp"
-            android:indeterminate="true"
-            android:indeterminateDrawable="@drawable/progress_bar" />
+            android:indeterminate="true" />
+        <!--android:indeterminateDrawable="@drawable/progress_bar_green"-->
 
     </LinearLayout>
 

@@ -71,6 +71,7 @@ public class MapView extends RelativeLayout {
         locationButton = (ImageButton) findViewById(R.id.location_button);
         locationButton.setOnClickListener(adapter);
         util = new MapUtil(this);
+        MarkerGenerator.init(getResources().getDisplayMetrics());
         mGoogleClient = new GoogleApiClient.Builder(parentActivity)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(adapter)

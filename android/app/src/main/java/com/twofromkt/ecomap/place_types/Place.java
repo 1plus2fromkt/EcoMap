@@ -3,6 +3,7 @@ package com.twofromkt.ecomap.place_types;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.telephony.PhoneNumberUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.twofromkt.ecomap.data_struct.Pair;
@@ -30,6 +31,7 @@ public abstract class Place implements Serializable {
     @Nullable
     private String imgLink;
     private String information;
+    private String phone;
 
     /**
      * Shows if all data or only the most important data is loaded
@@ -37,7 +39,7 @@ public abstract class Place implements Serializable {
     public boolean lite;
 
     Place(@NonNull String name, LatLng location, double rate, String information, Timetable workTime,
-          String imgLink, String website, boolean lite) {
+          String imgLink, String website, String phone, boolean lite) {
         this.name = name;
         this.location = latLngToPair(location);
         if (workTime != null) {
@@ -47,6 +49,7 @@ public abstract class Place implements Serializable {
         this.rate = rate;
         this.website = website;
         this.information = information;
+        this.phone = phone;
         this.lite = lite;
     }
 
@@ -61,9 +64,16 @@ public abstract class Place implements Serializable {
         address = cursor.getString(ADDRESS);
         rate = cursor.getDouble(RATE);
         website = cursor.getString(SITE);
+        if (website.equals("")) {
+            website = null;
+        }
         information = cursor.getString(INFO);
         imgLink = cursor.getString(IMG);
         workTime = new Timetable(cursor.getString(WORK_TIME));
+        phone = cursor.getString(TEL);
+        if (phone.equals("")) {
+            phone = null;
+        }
     }
 
     protected Place() {
@@ -117,6 +127,10 @@ public abstract class Place implements Serializable {
 
     public String getInformation() {
         return information;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public Pair<Double, Double> getLocation() {

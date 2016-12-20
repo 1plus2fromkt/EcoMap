@@ -8,10 +8,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
+import com.twofromkt.ecomap.util.LocationUtil;
 
 import java.util.HashSet;
 
@@ -32,12 +35,9 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
                 Toast.makeText(bar.parentActivity, "Address not found", Toast.LENGTH_LONG).show();
                 return false;
             }
-            bar.parentActivity.map.addMarker(new TrashBox(
-                    "Place that I found",
-                    new LatLng(address.getLatitude(), address.getLongitude()), 1.,
-                    "That place is very awesome and I need to make that string long to test the text view",
-                    null, "", new HashSet<TrashBox.Category>(), ""), Place.TRASHBOX);
             MapActivityUtil.closeKeyboard(bar.parentActivity);
+            bar.parentActivity.map.moveMap(LocationUtil.fromLatLngZoom(
+                    address.getLatitude(), address.getLongitude(), MapView.MAPZOOM));
         }
         return true;
     }

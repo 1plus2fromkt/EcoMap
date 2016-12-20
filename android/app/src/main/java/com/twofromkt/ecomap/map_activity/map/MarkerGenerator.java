@@ -4,19 +4,30 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 
 class MarkerGenerator {
 
     private static int CATEGORIES_NUMBER = 11;
     private static Paint[] CATEGORIES_COLORS;
     private static Paint MAIN_COLOR, CENTER_FILL_COLOR;
+    private static int widthInDip = 25;
     private static int width, height, offset, stickWidth;
     private static SparseArray<Bitmap> icons;
 
+    /**
+     * Default width value in px in case if init was not called
+     */
+    private static final int DEFAULT_WIDTH = 50;
+
+    private static DisplayMetrics metrics;
+
     static {
-        recount(50);
+        recount(widthInDip);
+
         icons = new SparseArray<>();
         CATEGORIES_COLORS = new Paint[CATEGORIES_NUMBER];
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
@@ -83,8 +94,19 @@ class MarkerGenerator {
         return image;
     }
 
-    private static void recount(int width) {
-        MarkerGenerator.width = width;
+    /**
+     * Takes widths in dip and recounts all params in px
+     *
+     * @param widthInDip width in dip
+     */
+    private static void recount(int widthInDip) {
+        MarkerGenerator.widthInDip = widthInDip;
+        if (metrics == null) {
+            MarkerGenerator.width = DEFAULT_WIDTH;
+        } else {
+            MarkerGenerator.width = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, widthInDip, metrics);
+        }
         height = (int) (width * 1.5);
         offset = (int) (width * 0.04);
         stickWidth = (int) (width * 0.1);
@@ -103,8 +125,23 @@ class MarkerGenerator {
         return result;
     }
 
-    public static void setWidth(int width) {
+    /**
+     * Sets width of markers to a given value in dip
+     *
+     * @param width width in dip
+     */
+    static void setWidth(int width) {
         recount(width);
+    }
+
+    /**
+     * This should be called in order to resize markers properly according to device's screen
+     *
+     * @param metrics DisplayMetrics of current screen
+     */
+    static void init(DisplayMetrics metrics) {
+        MarkerGenerator.metrics = metrics;
+        setWidth(widthInDip);
     }
 
     static Bitmap getIcon(boolean[] taken) {

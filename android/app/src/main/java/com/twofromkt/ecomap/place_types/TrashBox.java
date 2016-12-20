@@ -15,10 +15,10 @@ public class TrashBox extends Place implements Serializable {
 
     private boolean[] category;
 
-    public TrashBox(Cursor c, boolean isFullyLoaded) {
-        super(c, isFullyLoaded);
+    public TrashBox(Cursor cursor, boolean lite) {
+        super(cursor, lite);
         category = new boolean[TRASH_TYPES_NUMBER];
-        String[] arr = c.getString(CONTENT).replace(", ", ",").split(",");
+        String[] arr = cursor.getString(CONTENT).replace(", ", ",").split(",");
         for (String s : arr) {
             int catIndex = Category.numFromName(s);
             if (catIndex != -1) {
@@ -30,8 +30,8 @@ public class TrashBox extends Place implements Serializable {
     }
 
     public TrashBox(String name, LatLng location, double rate, String information, Timetable workTime,
-                    String imgLink, Set<Category> cat, String website) {
-        super(name, location, rate, information, workTime, imgLink, website, true);
+                    String imgLink, Set<Category> cat, String website, String phone) {
+        super(name, location, rate, information, workTime, imgLink, website, phone, true);
         category = new boolean[TRASH_TYPES_NUMBER];
         for (Category currCat : cat) {
             category[currCat.n] = true;
@@ -86,7 +86,7 @@ public class TrashBox extends Place implements Serializable {
         return o instanceof TrashBox && equals((TrashBox) o);
     }
 
-    public boolean equals(TrashBox t) {
+    boolean equals(TrashBox t) {
         for (int i = 0; i < category.length; i++) {
             if (category[i] != t.category[i]) {
                 return false;

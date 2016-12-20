@@ -2,6 +2,7 @@ package com.twofromkt.ecomap.map_activity.search_bar;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.Button;
@@ -22,6 +23,13 @@ public class SearchBarView extends LinearLayout {
 
     boolean progressBarShown;
 
+    @IntDef({PROGRESS_BAR_GREEN, PROGRESS_BAR_BLUE})
+    public @interface ProgressBarColor {
+    }
+
+    public static final int PROGRESS_BAR_GREEN = R.drawable.progress_bar_green;
+    public static final int PROGRESS_BAR_BLUE = R.drawable.progress_bar_blue;
+
     private SearchBarAdapter adapter;
 
     public SearchBarView(Context context, AttributeSet attrs) {
@@ -38,6 +46,7 @@ public class SearchBarView extends LinearLayout {
         searchBox = (LinearLayout) findViewById(R.id.search_box);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(GONE);
+        progressBar.setIndeterminateDrawable(getResources().getDrawable(R.drawable.progress_bar_green));
 
         this.parentActivity = parentActivity;
 
@@ -58,6 +67,10 @@ public class SearchBarView extends LinearLayout {
     public void hideProgressBar() {
         progressBarShown = false;
         progressBar.setVisibility(GONE);
+    }
+
+    public void setProgressBarColor(@ProgressBarColor int color) {
+        progressBar.setIndeterminateDrawable(getResources().getDrawable(color));
     }
 
     @Override

@@ -31,7 +31,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="20dp"
-                    android:src="@mipmap/trashbox_type" />
+                    android:src="@mipmap/trashbox_icon" />
 
                 <TextView
                     android:id="@+id/bottom_info_name_text"
@@ -68,6 +68,7 @@
                     android:orientation="horizontal">
 
                     <Button
+                        android:id="@+id/bottom_info_call_button"
                         android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -75,6 +76,7 @@
                         android:textSize="12dp" />
 
                     <Button
+                        android:id="@+id/bottom_info_route_button"
                         android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -82,6 +84,7 @@
                         android:textSize="12dp" />
 
                     <Button
+                        android:id="@+id/bottom_info_site_button"
                         android:layout_width="100dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
