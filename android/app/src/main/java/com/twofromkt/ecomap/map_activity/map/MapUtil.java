@@ -40,24 +40,12 @@ public class MapUtil {
     private PlaceShower shower;
     private Thread showerThread;
 
-    public static volatile ArrayList<ArrayList<PlaceWithCoord>> allMarkers,
-            shownMarkers;
-
-    static {
-        allMarkers = new ArrayList<>();
-        shownMarkers = new ArrayList<>();
-        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            allMarkers.add(new ArrayList<PlaceWithCoord>());
-            shownMarkers.add(new ArrayList<PlaceWithCoord>());
-        }
-    }
-
     MapUtil(MapView map) {
         this.map = map;
     }
 
     private class PlaceShower implements Runnable {
-        boolean stop;
+        private boolean stop = false;
         private int category;
         private Predicate<Place> predicate;
 
@@ -66,11 +54,15 @@ public class MapUtil {
             this.predicate = predicate;
         }
 
+        void stop() {
+            stop = true;
+        }
+
         @Override
         public void run() {
             // we should not use iterators to prevent concurrent modifications
-            for (int i = 0; i < shownMarkers.get(category).size(); i++) {
-                PlaceWithCoord m = shownMarkers.get(category).get(i);
+            for (int i = 0; i < PlacesHolder.getInstance().getShown(category).size(); i++) {
+                PlaceWithCoord m = PlacesHolder.getInstance().getShown(category).get(i);
                 try {
                     map.clusterManager.removeItem(m.coordinates);
                 } catch (Exception ignored) {
@@ -79,9 +71,9 @@ public class MapUtil {
                     return;
                 }
             }
-            shownMarkers.get(category).clear();
-            for (int i = 0; i < allMarkers.get(category).size(); i++) {
-                PlaceWithCoord x = allMarkers.get(category).get(i);
+            PlacesHolder.getInstance().getShown(category).clear();
+            for (int i = 0; i < PlacesHolder.getInstance().getAll(category).size(); i++) {
+                PlaceWithCoord x = PlacesHolder.getInstance().getAll(category).get(i);
                 if (predicate.apply(x.place)) {
                     showMarker(x, category);
                 }
@@ -92,7 +84,7 @@ public class MapUtil {
             Location currLocation = map.getLocation();
             final LatLng currCoords = LocationUtil.getLatLng(
                     currLocation.getLatitude(), currLocation.getLongitude());
-            Collections.sort(shownMarkers.get(category), new Comparator<PlaceWithCoord>() {
+            Collections.sort(PlacesHolder.getInstance().getShown(category), new Comparator<PlaceWithCoord>() {
                 @Override
                 public int compare(PlaceWithCoord o1, PlaceWithCoord o2) {
 
@@ -113,7 +105,8 @@ public class MapUtil {
                 @Override
                 public void run() {
                     map.clusterManager.cluster();
-                    map.parentActivity.bottomSheet.notifyChange();
+                    map.parentActivity.bottomSheet
+                            .updateList(category, PlacesHolder.getInstance().getShown(category));
                 }
             });
 
@@ -123,7 +116,7 @@ public class MapUtil {
     private void showPlaces(final int category, final Predicate<Place> predicate) {
         //TODO replace that
         if (shower != null && showerThread.isAlive()) {
-            shower.stop = true;
+            shower.stop();
         }
         shower = new PlaceShower(category, predicate);
         showerThread = new Thread(shower);
@@ -195,7 +188,7 @@ public class MapUtil {
 
     private void showMarker(PlaceWithCoord p, int category) {
         map.clusterManager.addItem(p.coordinates);
-        shownMarkers.get(category).add(p);
+        PlacesHolder.getInstance().getShown(category).add(p);
     }
 
     /**
@@ -206,7 +199,7 @@ public class MapUtil {
      */
     void addMarker(Place place, int type) {
         MapClusterItem clusterItem = new MapClusterItem(place);
-        allMarkers.get(type).add(new PlaceWithCoord(place, clusterItem));
+        PlacesHolder.getInstance().getAll(type).add(new PlaceWithCoord(place, clusterItem));
     }
 
     /**
@@ -227,20 +220,20 @@ public class MapUtil {
     /**
      * Remove all markers of a specific category from list and from cluster manager
      *
-     * @param cat
+     * @param category
      * @param toCluster
      */
-    void clearMarkers(int cat, final boolean toCluster) {
-        if (cat == -1) {
+    void clearMarkers(final int category, final boolean toCluster) {
+        if (category == -1) {
             return;
         }
-        for (PlaceWithCoord m : shownMarkers.get(cat)) {
+        for (PlaceWithCoord m : PlacesHolder.getInstance().getShown(category)) {
             try {
                 map.clusterManager.removeItem(m.coordinates);
             } catch (Exception ignored) {
             }
         }
-        shownMarkers.get(cat).clear();
+        PlacesHolder.getInstance().getShown(category).clear();
         if (map.clusterManager != null) {
             map.parentActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -248,7 +241,8 @@ public class MapUtil {
                     if (toCluster) {
                         map.clusterManager.cluster();
                     }
-                    map.parentActivity.bottomSheet.notifyChange();
+                    map.parentActivity.bottomSheet
+                            .updateList(category, PlacesHolder.getInstance().getShown(category));
                 }
             });
         }
@@ -268,7 +262,7 @@ public class MapUtil {
         map.parentActivity.searchBar.setProgressBarColor(SearchBarView.PROGRESS_BAR_BLUE);
         map.parentActivity.searchBar.showProgressBar();
         for (int i = 0; i < 1; i++) {
-            allMarkers.get(i).clear();
+            PlacesHolder.getInstance().getAll(i).clear();
             Bundle bundle = new Bundle();
             Loader<PlaceResultType> loader;
             bundle.putInt(PlacesLoader.WHICH_PLACE, i);

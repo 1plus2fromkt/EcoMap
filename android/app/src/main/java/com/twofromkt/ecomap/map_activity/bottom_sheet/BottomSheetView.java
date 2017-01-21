@@ -14,12 +14,11 @@ import android.widget.RelativeLayout;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
+import com.twofromkt.ecomap.util.Util;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
-
-import static com.twofromkt.ecomap.map_activity.map.MapUtil.shownMarkers;
 
 public class BottomSheetView extends RelativeLayout {
 
@@ -88,11 +87,14 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     /**
-     * Please sort data before notifying about its change, it is not possible to sort it in UI
+     * Updates the list in the tab number index with newData.
+     * Note that newData can be passed by reference because it is
+     * being copied inside.
+     * @param index Index of tab we need to update
+     * @param newData New data to update with
      */
-    public void notifyChange() {
-        listPagerAdapter.notifyUpdate();
-//        listPagerAdapter.resetTrashList(parentActivity, MapView.getShownMarkers().get(0));
+    public void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
+        listPagerAdapter.updateList(index, newData);
     }
 
     public boolean[] getTrashCategories() {

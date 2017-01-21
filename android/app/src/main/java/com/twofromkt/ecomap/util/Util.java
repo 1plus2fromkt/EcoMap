@@ -112,8 +112,7 @@ public class Util {
         }
 
         public String getTimeString() {
-            return open.getTimeString() +
-                    "-" + close.getTimeString();
+            return open.getTimeString() + "-" + close.getTimeString();
         }
 
         public boolean isItTimetable() {

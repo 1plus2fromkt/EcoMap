@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.support.annotation.MainThread;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -29,15 +30,22 @@ import java.util.ArrayList;
 import static android.view.View.VISIBLE;
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
+class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private ArrayList<Util.PlaceWithCoord> data;
+    private final  ArrayList<Util.PlaceWithCoord> data = new ArrayList<>();
     final MapActivity parentActivity;
 
     ListAdapter(ArrayList<Util.PlaceWithCoord> data, MapActivity parentActivity) {
-        this.data = data;
+        updateData(data);
         this.parentActivity = parentActivity;
         setHasStableIds(true);
+    }
+
+    @MainThread
+    void updateData(ArrayList<Util.PlaceWithCoord> newData) {
+        data.clear();
+        data.addAll(newData);
+        notifyDataSetChanged();
     }
 
     @Override

@@ -8,9 +8,6 @@ import com.twofromkt.ecomap.db.PlaceResultType;
 
 public class LoaderAdapter implements LoaderManager.LoaderCallbacks<PlaceResultType> {
 
-
-
-
     @Override
     public Loader<PlaceResultType> onCreateLoader(int id, Bundle args) {
         return null;

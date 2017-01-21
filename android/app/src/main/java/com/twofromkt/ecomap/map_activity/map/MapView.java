@@ -201,11 +201,19 @@ public class MapView extends RelativeLayout {
     }
 
     public static ArrayList<ArrayList<Util.PlaceWithCoord>> getAllMarkers() {
-        return MapUtil.allMarkers;
+        return PlacesHolder.getInstance().getAll();
     }
 
     public static ArrayList<ArrayList<Util.PlaceWithCoord>> getShownMarkers() {
-        return MapUtil.shownMarkers;
+        return PlacesHolder.getInstance().getShown();
+    }
+
+    public static ArrayList<Util.PlaceWithCoord> getAllMarkers(int category) {
+        return PlacesHolder.getInstance().getAll(category);
+    }
+
+    public static ArrayList<Util.PlaceWithCoord> getShownMarkers(int category) {
+        return PlacesHolder.getInstance().getShown(category);
     }
 
     @Override

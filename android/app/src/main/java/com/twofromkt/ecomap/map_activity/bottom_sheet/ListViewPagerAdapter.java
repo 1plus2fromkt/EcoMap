@@ -30,15 +30,22 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    void notifyUpdate() {
-        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            tabs[i].adapter.notifyDataSetChanged();
-        }
-    }
-
-//    void resetTrashList(MapActivity act, ArrayList<Pair<MapClusterItem, ? extends Place>> data) {
-//        tabs[0].adapter = new ListAdapter(data, act);
+//    void notifyUpdate() {
+//        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+//            tabs[i].adapter.notifyDataSetChanged();
+//        }
 //    }
+
+    /**
+     * Updates the list in the tab number index with newData.
+     * Note that newData can be passed by reference because it is
+     * being copied inside ListAdapter
+     * @param index index of tab we need to update
+     * @param newData New data to update with
+     */
+    void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
+        tabs[index].adapter.updateData(newData);
+    }
 
     @Override
     public Fragment getItem(int position) {

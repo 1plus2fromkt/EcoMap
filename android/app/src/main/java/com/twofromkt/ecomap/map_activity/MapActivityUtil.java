@@ -6,8 +6,6 @@ import android.view.inputmethod.InputMethodManager;
 
 public class MapActivityUtil {
 
-//    public static boolean isAnimating = false;
-
     public static void closeKeyboard(MapActivity act) {
         View view = act.getCurrentFocus();
         if (view != null) {

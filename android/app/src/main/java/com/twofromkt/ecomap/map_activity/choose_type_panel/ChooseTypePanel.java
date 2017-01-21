@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-import com.twofromkt.ecomap.map_activity.map.MapUtil;
+import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.place_types.Place;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
@@ -306,10 +306,6 @@ public class ChooseTypePanel extends LinearLayout {
      * @param activateMap true if the method should change element_map to show new objects
      */
     public void setChosen(int index, boolean state, boolean activateMap) {
-        if (index == 1) {
-            System.out.println(MapUtil.allMarkers.get(0).size() + " " +
-                    MapUtil.shownMarkers.get(0).size());
-        }
         chosenTypes[index] = state;
         typeButtons[index].setImageBitmap(BitmapFactory.decodeResource(
                 getResources(),
