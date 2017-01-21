@@ -1,13 +1,16 @@
 package com.twofromkt.ecomap.map_activity.choose_type_panel;
 
-import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -19,84 +22,132 @@ import com.twofromkt.ecomap.place_types.Place;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
+/**
+ * This element extends LinearLayout. This is static on the screen.
+ * It holds a RelativeLayout which is not static and can be animated or dragged
+ * from OPENED state to CLOSED state.
+ * <p>
+ * Now the internal RelativeLayout contains three buttons and cannot be accessed.
+ * This will be changed. TODO
+ * <p>
+ * On both sides of the element there are Side views. The left one is animated
+ * when state of the element is changed. Now panel can only slide from right to left.
+ * This will be changed. TODO
+ */
 public class ChooseTypePanel extends LinearLayout {
 
     MapActivity parentActivity;
-    RelativeLayout panel;
+    LinearLayout panelLayout;
+    RelativeLayout holderLayout;
     ImageButton[] typeButtons;
-    ImageButton openButton;
+    Side leftSide, rightSide;
 
-    boolean animating, showing;
+    ValueAnimator animator;
+
+    boolean animating, showing, sliding;
     boolean[] chosenTypes;
     float panelOffset;
+    /**
+     * The coordinate of the touch performed on the panel. Needed for sliding
+     */
+    float slidingOffset;
+    float sideWidth;
 
-    final private static int[] imageIds = {R.mipmap.trashbox_icon, R.mipmap.cafes_icon, R.mipmap.other_icon};
-    final private static int[] imageIdsChosen = {R.mipmap.trashbox_icon_selected,
+    /**
+     * Offset from the right side in OPENED state in dip.
+     * This should probably be changeable
+     */
+    static final private float OFFSET_RIGHT = 10;
+    /**
+     * Offset from the left side in px. This is set by external layout
+     * so it cannot be changed and should be initialized by OnGlobalLayoutListener
+     */
+    static private float OFFSET_LEFT;
+    /**
+     * Full animation duration in ms.
+     * This should probably be changeable
+     */
+    static final private long ANIMATION_DURATION = 2000;
+
+    static final private int[] IMAGE_IDS = {
+            R.mipmap.trashbox_icon, R.mipmap.cafes_icon, R.mipmap.other_icon};
+    static final private int[] IMAGE_IDS_CHOSEN = {R.mipmap.trashbox_icon_selected,
             R.mipmap.cafes_icon_selected, R.mipmap.other_icon_chosen};
 
     public ChooseTypePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.element_choose_type_panel, this);
+        holderLayout = (RelativeLayout) findViewById(R.id.choose_type_panel_holder);
+        panelLayout = (LinearLayout) findViewById(R.id.choose_type_panel);
+
+        leftSide = new Side(context);
+        rightSide = new Side(context);
+        holderLayout.addView(leftSide);
+        holderLayout.addView(rightSide);
+
+        // need this to set element's sizes properly
+        // we get panelLayout height and y because for some reasons this.height includes margin
+        leftSide.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                leftSide.setSize(holderLayout.getHeight());
+                leftSide.setX(0);
+                leftSide.transform(1);
+                leftSide.invalidate();
+                leftSide.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
+        rightSide.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                rightSide.setSize(holderLayout.getHeight());
+                rightSide.setX(holderLayout.getWidth()
+                        - (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, OFFSET_RIGHT,
+                        getResources().getDisplayMetrics()));
+                rightSide.transform(1);
+                rightSide.invalidate();
+                rightSide.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
+        holderLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                panelLayout.setVisibility(VISIBLE);
+                // side width is always half of it's height
+                sideWidth = holderLayout.getHeight() / 2;
+                holderLayout.setX(getWidth() - sideWidth);
+                OFFSET_LEFT = getX();
+
+                ViewGroup.LayoutParams params = holderLayout.getLayoutParams();
+                // this should probably be changed to something more clever
+                // but I don't know how :(
+                // now it is element width + width of side - right offset
+                params.width = getWidth() + (int) sideWidth
+                        - (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, OFFSET_RIGHT,
+                        getResources().getDisplayMetrics());
+                holderLayout.setLayoutParams(params);
+                holderLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
     }
 
     public void attach(MapActivity parentActivity) {
         this.parentActivity = parentActivity;
-        panel = (RelativeLayout) findViewById(R.id.choose_type_panel);
-        openButton = (ImageButton) findViewById(R.id.show_choose_type_panel);
         typeButtons = new ImageButton[CATEGORIES_NUMBER];
         chosenTypes = new boolean[CATEGORIES_NUMBER];
         typeButtons[0] = (ImageButton) findViewById(R.id.type_button1);
         typeButtons[1] = (ImageButton) findViewById(R.id.type_button2);
         typeButtons[2] = (ImageButton) findViewById(R.id.type_button3);
+        leftSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_left));
+        rightSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_right));
         animating = showing = false;
-        panel.setVisibility(INVISIBLE);
+        panelLayout.setVisibility(INVISIBLE);
 
         setListeners();
     }
 
     private void setListeners() {
-        openButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (animating) return;
-                if (panel.getVisibility() == INVISIBLE) {
-                    panelOffset = panel.getX();
-                    panel.setX(-panel.getWidth());
-                    panel.setVisibility(VISIBLE);
-                }
-                ViewPropertyAnimator animator = panel.animate();
-                animator.setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        animating = true;
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        animating = false;
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                });
-                int duration = 400;
-                animator.setDuration(duration);
-                ViewPropertyAnimator buttonAnimator = openButton.animate();
-                buttonAnimator.setDuration(duration);
-                animator.xBy((showing ? -1 : 1) * (panel.getWidth() + panelOffset));
-                buttonAnimator.rotationBy((showing ? 1 : -1) * 90);
-                showing = !showing;
-            }
-        });
-
         for (int i = 0; i < 3; i++) {
             final int index = i;
             final int finalI = i;
@@ -104,17 +155,117 @@ public class ChooseTypePanel extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
-                    if (finalI == 2) { //TODO replace it!!!
+                    if (finalI == 2) { //TODO replace it
                         parentActivity.updateDatabase();
                     }
                 }
             });
         }
+
+        holderLayout.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                stopAnimation();
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    float x = event.getRawX() - slidingOffset - OFFSET_LEFT;
+                    float len = getWidth();
+                    // we don't want panel move to the left side of the screen or
+                    // to be hidden on the right side
+                    if (x >= getNeededX(PanelState.OPENED) && x <= getNeededX(PanelState.CLOSED)) {
+                        holderLayout.setX(x);
+                    } else {
+                        slidingOffset = event.getX();
+                    }
+                    leftSide.transform(x / len); //TODO this does not work correctly on the right side
+                } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    sliding = true;
+                    slidingOffset = event.getX();
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    sliding = false;
+                    showing = !showing;
+                    if (showing) {
+                        animateState(ANIMATION_DURATION, PanelState.OPENED);
+                    } else {
+                        animateState(ANIMATION_DURATION, PanelState.CLOSED);
+                    }
+                    return true;
+                }
+                leftSide.setX(getSideOffset(SideType.LEFT));
+                leftSide.invalidate();
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Animate panel to slide to the specified state
+     *
+     * @param duration Length of full animation (from one side to another) in ms
+     * @param state    Final state for the animation
+     */
+    private void animateState(long duration, PanelState state) {
+        if (animating) {
+            animator.cancel();
+            animating = false;
+        }
+        float currentX = holderLayout.getX();
+        float endX = getNeededX(state);
+        animator = ValueAnimator.ofFloat(currentX, endX);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float state = (float) animation.getAnimatedValue();
+                holderLayout.setX(state);
+                leftSide.setX(getSideOffset(SideType.LEFT));
+            }
+        });
+        animator.setDuration(duration);
+        animator.start();
+        leftSide.animateState(duration, state);
+        animating = true;
+    }
+
+    private void stopAnimation() {
+        if (animating) {
+            animator.cancel();
+            leftSide.stopAnimation();
+            animating = false;
+        }
+    }
+
+    /**
+     * Get offset for the side bar
+     *
+     * @param type left or right, 0 for left, 1 for right
+     */
+    private float getSideOffset(SideType type) {
+        if (type == SideType.LEFT) {
+            return sideWidth - leftSide.getActualWidth();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Calculate x coordinate of the holder layout we want in the given state
+     *
+     * @param state Wanted state
+     * @return Wanted x coordinate in pixels
+     */
+    private float getNeededX(PanelState state) {
+        switch (state) {
+            case OPENED:
+                return -sideWidth;
+            case CLOSED:
+                return getWidth() - sideWidth;
+            default:
+                return 0;
+        }
     }
 
     public void hide() {
         if (showing) {
-            openButton.callOnClick();
+            //TODO
         }
     }
 
@@ -135,9 +286,8 @@ public class ChooseTypePanel extends LinearLayout {
         panelOffset = savedPanel.getPanelOffset();
         showing = savedPanel.getShowing();
         if (showing) {
-            panel.setX(0);
-            panel.setVisibility(VISIBLE);
-            openButton.setRotation(-90);
+            setX(0);
+            panelLayout.setVisibility(VISIBLE);
         }
         chosenTypes = savedPanel.getChosenTypes();
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
@@ -145,17 +295,17 @@ public class ChooseTypePanel extends LinearLayout {
         }
     }
 
-    public /**
+    /**
      * Set a checkbox state. In case to just change the state without interacting with
      * other components call with activateMap = false.
      * If place are not loaded yet (due to an error or because method wasn't called),
      * starts loading and returns.
      *
-     * @param index index of checkbox to be chosen
-     * @param state true if checkbox should be chosen, false otherwise
+     * @param index       index of checkbox to be chosen
+     * @param state       true if checkbox should be chosen, false otherwise
      * @param activateMap true if the method should change element_map to show new objects
      */
-    void setChosen(int index, boolean state, boolean activateMap) {
+    public void setChosen(int index, boolean state, boolean activateMap) {
         if (index == 1) {
             System.out.println(MapUtil.allMarkers.get(0).size() + " " +
                     MapUtil.shownMarkers.get(0).size());
@@ -163,7 +313,7 @@ public class ChooseTypePanel extends LinearLayout {
         chosenTypes[index] = state;
         typeButtons[index].setImageBitmap(BitmapFactory.decodeResource(
                 getResources(),
-                chosenTypes[index] ? imageIdsChosen[index] : imageIds[index]));
+                chosenTypes[index] ? IMAGE_IDS_CHOSEN[index] : IMAGE_IDS[index]));
         if (!activateMap) {
             return;
         }
@@ -200,4 +350,11 @@ public class ChooseTypePanel extends LinearLayout {
         return chosenTypes[i];
     }
 
+    protected enum PanelState {
+        OPENED, CLOSED
+    }
+
+    private enum SideType {
+        LEFT, RIGHT
+    }
 }

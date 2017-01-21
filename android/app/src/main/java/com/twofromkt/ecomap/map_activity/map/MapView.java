@@ -15,6 +15,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,6 +29,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.util.LocationUtil;
 import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
@@ -55,6 +57,15 @@ public class MapView extends RelativeLayout {
     private boolean locationButtonUp;
 
     public static final float MAPZOOM = 14;
+    //TODO replace this somehow
+    static Location DEFAULT_LOCATION;
+
+    static {
+        // spb coords
+        DEFAULT_LOCATION = new Location("");
+        DEFAULT_LOCATION.setLatitude(59.93863);
+        DEFAULT_LOCATION.setLongitude(30.31413);
+    }
 
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -126,7 +137,7 @@ public class MapView extends RelativeLayout {
     /**
      * Find the last location where the device was noticed
      *
-     * @return last known location
+     * @return last known location or default location if last known is unavaliable
      */
     public Location getLocation() {
         if (ActivityCompat.checkSelfPermission(parentActivity, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -138,9 +149,15 @@ public class MapView extends RelativeLayout {
                     android.Manifest.permission.ACCESS_COARSE_LOCATION},
                     MapActivity.GPS_REQUEST);
             Log.d("MAP", "location denied");
-            return null;
+            return DEFAULT_LOCATION;
         }
-        return LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
+        Location currLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
+        if (currLocation == null) {
+            Log.d("MAP_VIEW", "не получается узнать местоположение");
+            return DEFAULT_LOCATION;
+        } else {
+            return currLocation;
+        }
     }
 
     /**

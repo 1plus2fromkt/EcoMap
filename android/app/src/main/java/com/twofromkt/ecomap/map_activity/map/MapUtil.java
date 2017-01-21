@@ -98,8 +98,8 @@ public class MapUtil {
 
                     int dist1 = (int) LocationUtil.distanceLatLng(currCoords,
                             LocationUtil.getLatLng(o1.place.getLocation())),
-                    dist2 = (int) LocationUtil.distanceLatLng(currCoords,
-                            LocationUtil.getLatLng(o2.place.getLocation()));
+                            dist2 = (int) LocationUtil.distanceLatLng(currCoords,
+                                    LocationUtil.getLatLng(o2.place.getLocation()));
                     if (dist1 < dist2) {
                         return -1;
                     } else if (dist1 == dist2) {
@@ -243,13 +243,13 @@ public class MapUtil {
         shownMarkers.get(cat).clear();
         if (map.clusterManager != null) {
             map.parentActivity.runOnUiThread(new Runnable() {
-                 @Override
-                 public void run() {
-                     if (toCluster) {
-                         map.clusterManager.cluster();
-                     }
-                     map.parentActivity.bottomSheet.notifyChange();
-                 }
+                @Override
+                public void run() {
+                    if (toCluster) {
+                        map.clusterManager.cluster();
+                    }
+                    map.parentActivity.bottomSheet.notifyChange();
+                }
             });
         }
     }

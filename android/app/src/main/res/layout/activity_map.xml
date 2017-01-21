@@ -27,7 +27,9 @@
         <com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel
             android:id="@+id/choose_type"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="60dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginLeft="10dp">
 
         </com.twofromkt.ecomap.map_activity.choose_type_panel.ChooseTypePanel>
 
