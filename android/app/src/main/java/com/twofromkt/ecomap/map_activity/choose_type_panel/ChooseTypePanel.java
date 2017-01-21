@@ -45,6 +45,14 @@ public class ChooseTypePanel extends LinearLayout {
     ValueAnimator animator;
 
     boolean animating, showing, sliding;
+    /**
+     * This is needed to determine where to slide when user releases finger.
+     */
+    float lastX;
+    /**
+     * 0 for left, 1 for right
+     */
+    int direction;
     boolean[] chosenTypes;
     float panelOffset;
     /**
@@ -67,7 +75,7 @@ public class ChooseTypePanel extends LinearLayout {
      * Full animation duration in ms.
      * This should probably be changeable
      */
-    static final private long ANIMATION_DURATION = 2000;
+    static final private long ANIMATION_DURATION = 200;
 
     static final private int[] IMAGE_IDS = {
             R.mipmap.trashbox_icon, R.mipmap.cafes_icon, R.mipmap.other_icon};
@@ -168,6 +176,7 @@ public class ChooseTypePanel extends LinearLayout {
                 stopAnimation();
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     float x = event.getRawX() - slidingOffset - OFFSET_LEFT;
+//                    float len = getWidth() - sideWidth;
                     float len = getWidth();
                     // we don't want panel move to the left side of the screen or
                     // to be hidden on the right side
@@ -176,13 +185,16 @@ public class ChooseTypePanel extends LinearLayout {
                     } else {
                         slidingOffset = event.getX();
                     }
-                    leftSide.transform(x / len); //TODO this does not work correctly on the right side
+                    leftSide.transform((x + sideWidth) / len);
+                    direction = event.getRawX() < lastX ? 0 : 1;
+                    lastX = event.getRawX();
                 } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     sliding = true;
                     slidingOffset = event.getX();
+                    direction = showing ? 1 : 0;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     sliding = false;
-                    showing = !showing;
+                    showing = direction == 0; // sliding left
                     if (showing) {
                         animateState(ANIMATION_DURATION, PanelState.OPENED);
                     } else {
@@ -219,6 +231,8 @@ public class ChooseTypePanel extends LinearLayout {
                 leftSide.setX(getSideOffset(SideType.LEFT));
             }
         });
+        float partOfWidth = Math.abs(getNeededX(state) - currentX) / holderLayout.getWidth();
+        duration *= partOfWidth;
         animator.setDuration(duration);
         animator.start();
         leftSide.animateState(duration, state);
