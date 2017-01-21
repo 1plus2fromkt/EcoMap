@@ -5,6 +5,7 @@ EcoMap is an android app with map to make eco-friendly lifestyle easier. In seve
 Latest builds
 * [20.12.16](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dZllsUjgxNnhSYjA)
 * [19.12.16](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dT256MGVYNzNxdXM)
+* [21.01.17](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dd2xscU15WUM3djg)
 
 Features:
 * Map with garbage collection points
