@@ -87,18 +87,21 @@ public class MapUtil {
             Collections.sort(PlacesHolder.getInstance().getShown(category), new Comparator<PlaceWithCoord>() {
                 @Override
                 public int compare(PlaceWithCoord o1, PlaceWithCoord o2) {
-
-                    int dist1 = (int) LocationUtil.distanceLatLng(currCoords,
-                            LocationUtil.getLatLng(o1.place.getLocation())),
-                            dist2 = (int) LocationUtil.distanceLatLng(currCoords,
-                                    LocationUtil.getLatLng(o2.place.getLocation()));
-                    if (dist1 < dist2) {
-                        return -1;
-                    } else if (dist1 == dist2) {
-                        return 0;
-                    } else {
-                        return 1;
+                    // TODO understand why this happens
+                    if (o1 == null || o2 == null) {
+                        if (o1 == null && o2 == null) {
+                            return 0;
+                        } else if (o1 == null) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
                     }
+                    int dist1 = (int) LocationUtil.distanceLatLng(currCoords,
+                            LocationUtil.getLatLng(o1.place.getLocation()));
+                    int dist2 = (int) LocationUtil.distanceLatLng(currCoords,
+                                    LocationUtil.getLatLng(o2.place.getLocation()));
+                    return Integer.compare(dist1, dist2);
                 }
             });
             map.parentActivity.runOnUiThread(new Runnable() {
@@ -186,9 +189,9 @@ public class MapUtil {
                 MapView.MAPZOOM));
     }
 
-    private void showMarker(PlaceWithCoord p, int category) {
+    private void showMarker(PlaceWithCoord p, int type) {
         map.clusterManager.addItem(p.coordinates);
-        PlacesHolder.getInstance().getShown(category).add(p);
+        PlacesHolder.getInstance().getShown(type).add(p);
     }
 
     /**
