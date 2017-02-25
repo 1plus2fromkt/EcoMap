@@ -23,9 +23,10 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
                          ArrayList<ArrayList<Util.PlaceWithCoord>> a,
                          MapActivity act) {
         super(manager);
+        int CATEGORIES_NUMBER = 3;
         tabs = new OneList[CATEGORIES_NUMBER];
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-            tabs[i] = new OneList();
+//            tabs[i] = new OneList();
             tabs[i].adapter = new ListAdapter(a.get(i), act);
         }
     }
@@ -49,12 +50,14 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return tabs[position];
+//        return tabs[position];
+        return null;
     }
 
     @Override
     public int getCount() {
-        return tabNames.length;
+//        return tabNames.length;
+        return 1;
     }
 
     @Override

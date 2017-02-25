@@ -1,19 +1,77 @@
-package places.Recycle;
+package com.ecomap.server.parser;
 
+import com.ecomap.server.util.Logger;
+import com.ecomap.server.util.NetUtil;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static places.Recycle.RecyclePlace.categoryNames;
-import static places.Recycle.RecyclePlace.getPageInfo;
+import java.util.List;
+import java.util.Scanner;
 
 class RecycleParser {
 
-    static boolean readInfoRecycle(RecyclePlace place) throws IOException {
-        ArrayList<String> page = getPageInfo(place.id);
+    private static final int DEFAULT_MAX_ID = 16000, DEFAULT_THRESHOLD = 600;
+
+    private static String CONFIG_FILENAME = "config/iters.conf";
+
+    private static int MAX_ID, THRESHOLD;
+
+    public static List<Place> loadPlaces() {
+        readConfig();
+        List<Place> result = new ArrayList<>();
+        int emptyIds = 0;
+        for (int i = 1; i < MAX_ID; i++) {
+            try {
+                RecyclePlace place = loadRecyclePlace(i);
+                if (place == null) {
+                    emptyIds++;
+                } else {
+                    emptyIds = 0;
+                    result.add(place);
+                }
+            } catch (IOException e) {
+                Logger.err("Couldn't connect to recycle");
+                e.printStackTrace();
+            } catch (Exception e) {
+                Logger.err("Something unexpected");
+                e.printStackTrace();
+            }
+            if (emptyIds > THRESHOLD) {
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    private static void readConfig() {
+        try {
+            Scanner in = new Scanner(new File(CONFIG_FILENAME));
+            MAX_ID = in.nextInt();
+            THRESHOLD = in.nextInt();
+        } catch (FileNotFoundException e) {
+            Logger.err("Can not read recycle handler config files");
+            MAX_ID = DEFAULT_MAX_ID;
+            THRESHOLD = DEFAULT_THRESHOLD;
+        }
+    }
+
+    /**
+     * Parse recycle place with particular id
+     *
+     * @param id Id of wanted recycle place
+     * @return Parsed recycle place or null if it does not exist
+     * @throws IOException
+     */
+    private static RecyclePlace loadRecyclePlace(int id) throws IOException {
+        RecyclePlace place = new RecyclePlace(id);
+        List<String> page = getRecyclePage(id);
         String t;
         for (int i = 0; i < page.size(); i++) {
             String s = page.get(i);
-            if(s.contains("point_head")) {
+            if (s.contains("point_head")) {
                 i += 2;
                 s = page.get(i);
                 t = s.substring(s.indexOf("<span>") + 6);
@@ -21,7 +79,7 @@ class RecycleParser {
             } else if (s.contains("data-lat=")) {
                 t = s.substring(s.indexOf("lat=\"") + 5);
                 if (t.charAt(0) == '\"')
-                    return false;
+                    return null;
                 place.lat = Double.parseDouble(t.substring(0, t.indexOf("\"")));
                 t = s.substring(s.indexOf("lng=\"") + 5);
                 place.lng = Double.parseDouble(t.substring(0, t.indexOf("\"")));
@@ -45,15 +103,16 @@ class RecycleParser {
             } else if (s.contains("point_reiting_val")) {
                 t = s.substring(s.indexOf("\">") + 2);
                 place.rate = Double.parseDouble(t.substring(0, t.indexOf("</")));
-            } else if(s.contains("=\"trash_type")) {
+            } else if (s.contains("=\"trash_type")) {
                 place.content_text = "";
-                for (String x : categoryNames) {
+                for (String x : RecyclePlace.categoryNames) {
                     if (s.contains(x)) {
                         place.content_text += x + ", ";
                     }
                 }
-                if (s.length() >= 2)
+                if (s.length() >= 2) {
                     place.content_text = place.content_text.substring(0, place.content_text.length() - 2);
+                }
             } else if (s.contains(">Общая информация</a>")) {
                 i += 3;
                 s = page.get(i);
@@ -75,9 +134,13 @@ class RecycleParser {
             } else if (s.contains(">Круглосуточно<")) {
                 place.work_time = "0 Круглосуточно";
             }
-
         }
-        return true;
+        return place;
+    }
+
+    private static List<String> getRecyclePage(int id) throws IOException {
+        String url = "http://recyclemap.ru/index.php?task=infopoint&pointid=" + id + "&tmpl=component#";
+        return NetUtil.readPage(url);
     }
 
     private static void getTime(String s, RecyclePlace place) {
@@ -111,7 +174,7 @@ class RecycleParser {
     }
 
     private static String getRef(String s) {
-	String t = s;
+        String t = s;
         try {
             while (s.contains("href")) {
                 String pref = s.substring(0, s.indexOf("<a "));
@@ -121,8 +184,7 @@ class RecycleParser {
                 s = pref + suff + ref;
             }
         } catch (Exception e) {
-            System.out.println("Couldn't parse reference.");
-            e.printStackTrace();
+            Logger.log("Couldn't parse reference.");
             s = t;
         }
         return s;

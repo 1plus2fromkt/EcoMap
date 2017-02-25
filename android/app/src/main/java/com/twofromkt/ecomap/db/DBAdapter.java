@@ -27,10 +27,12 @@ public class DBAdapter {
         initSchema();
         new File(c.getFilesDir(), dbPath).mkdir();
         new File(c.getFilesDir(), diffPath).mkdir();
-        try (SQLiteDatabase diff = SQLiteDatabase.openOrCreateDatabase(
-                new File(c.getFilesDir(), diffPath + "diff" + num + ".db"), null);
-             SQLiteDatabase curr = SQLiteDatabase.openOrCreateDatabase(
-                     new File(c.getFilesDir(), dbPath + FILE_NAMES[num] + ".db"), null)) {
+        try (
+                SQLiteDatabase diff = SQLiteDatabase.openOrCreateDatabase(
+                        new File(c.getFilesDir(), diffPath + "diff" + num + ".db"), null);
+                SQLiteDatabase curr = SQLiteDatabase.openOrCreateDatabase(
+                        new File(c.getFilesDir(), dbPath + FILE_NAMES[num] + ".db"), null)
+        ) {
             if (isEmpty(diff)) {
                 return;
             }
@@ -91,8 +93,9 @@ public class DBAdapter {
 
     private static String getInsertScheme(int number, String s, boolean replace) {
         String sch = (replace ? "REPLACE" : "INSERT") + " INTO " + tableName + " (";
-        for (int i = 0; i < tabNames[number].length; i++)
+        for (int i = 0; i < tabNames[number].length; i++) {
             sch += tabNames[number][i] + ((i == tabNames[number].length - 1) ? ")" : ", ");
+        }
         sch += " VALUES (\'" + s + ");";
         return sch;
     }

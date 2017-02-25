@@ -45,9 +45,9 @@ class BottomSheetAdapter extends ViewPagerBottomSheetBehavior.BottomSheetCallbac
             sheet.listLayout.setVisibility(View.INVISIBLE);
             sheet.categoriesLayout.setVisibility(View.INVISIBLE);
         }
-        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-            sheet.listViewPager.requestFocus();
-        }
+//        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+//            sheet.listViewPager.requestFocus();
+//        }
     }
 
     @Override

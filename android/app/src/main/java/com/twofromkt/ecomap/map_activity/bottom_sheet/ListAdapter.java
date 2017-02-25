@@ -32,7 +32,7 @@ import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
-    private final  ArrayList<Util.PlaceWithCoord> data = new ArrayList<>();
+    private final ArrayList<Util.PlaceWithCoord> data = new ArrayList<>();
     final MapActivity parentActivity;
 
     ListAdapter(ArrayList<Util.PlaceWithCoord> data, MapActivity parentActivity) {

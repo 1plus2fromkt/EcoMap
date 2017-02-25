@@ -41,6 +41,8 @@ public class MapActivity extends FragmentActivity
 
     private static final String TAG = "MAP_ACTIVITY";
 
+    private static boolean updated;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -51,6 +53,9 @@ public class MapActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initFields();
+        if (!updated) {
+            updateDatabase();
+        }
     }
 
     private void initFields() {
@@ -83,10 +88,6 @@ public class MapActivity extends FragmentActivity
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        //TODO change it to something more clever
-        if (savedInstanceState == null) {
-            updateDatabase();
-        }
     }
 
     @Override
@@ -138,11 +139,12 @@ public class MapActivity extends FragmentActivity
 
     @Override
     public void onLoadFinished(Loader<ServerResultType> loader, ServerResultType data) {
-        Log.d(TAG, "database download finished");
+        Log.d(TAG, "Database download finished");
         searchBar.hideProgressBar();
         String message;
         if (data.resultSuccess()) {
             message = "Database updated";
+            updated = true;
         } else {
             message = "Database update failed";
         }

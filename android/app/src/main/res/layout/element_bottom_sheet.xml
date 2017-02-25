@@ -65,20 +65,28 @@
                 android:id="@+id/list_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary" />
+                android:background="@color/colorMainGreen" />
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/list_tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/list_toolbar"
-                app:tabGravity="fill" />
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/list_viewpager"
-                android:layout_width="match_parent"
+            <com.twofromkt.ecomap.map_activity.bottom_sheet.OneList
+                android:id="@+id/list_list"
                 android:layout_height="match_parent"
-                android:layout_below="@id/list_tabs" />
+                android:layout_width="match_parent"
+                android:layout_below="@id/list_toolbar"/>
+
+            <!--<android.support.design.widget.TabLayout-->
+                <!--android:id="@+id/list_tabs"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@id/list_toolbar"-->
+                <!--app:tabGravity="fill" />-->
+
+            <!--<android.support.v4.view.ViewPager-->
+                <!--android:id="@+id/list_viewpager"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_below="@id/list_toolbar" />-->
+
+            <!--android:layout_below="@id/list_tabs"-->
 
 
         </RelativeLayout>
@@ -94,7 +102,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary" />
+                android:background="@color/colorMainGreen" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/sett_tabs"

@@ -4,11 +4,13 @@ import android.content.Context;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
@@ -23,10 +25,13 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 public class BottomSheetView extends RelativeLayout {
 
     ViewPagerBottomSheetBehavior bottomList;
+//    ViewPager /* listViewPager, */ settViewPager;
     ViewPager listViewPager, settViewPager;
-    TabLayout listTabLayout, settTabLayout;
+    TabLayout /* listTabLayout, */ settTabLayout;
+//    TabLayout listTabLayout, settTabLayout;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
+    OneList fragmentList;
 
     RelativeLayout categoriesLayout;
     RelativeLayout listLayout;
@@ -57,16 +62,22 @@ public class BottomSheetView extends RelativeLayout {
         bottomListView = findViewById(R.id.bottom_list);
         bottomList = ViewPagerBottomSheetBehavior.from(bottomListView);
 
-        listPagerAdapter =
-                new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
+        fragmentList = (OneList) findViewById(R.id.list_list);
+        fragmentList.adapter = new ListAdapter(MapView.getShownMarkers().get(0), parentActivity);
+        fragmentList.attach(this);
+
+//        listPagerAdapter =
+//                new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
+//        listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
+//        listViewPager.setAdapter(listPagerAdapter);
+
+//        listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
+//        listTabLayout.setupWithViewPager(listViewPager);
+
         settPagerAdapter = new SettViewPagerAdapter(fragmentManager, parentActivity);
 
-        listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
         settViewPager = (ViewPager) findViewById(R.id.sett_viewpager);
-        listViewPager.setAdapter(listPagerAdapter);
         settViewPager.setAdapter(settPagerAdapter);
-        listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
-        listTabLayout.setupWithViewPager(listViewPager);
         settTabLayout = (TabLayout) findViewById(R.id.sett_tabs);
         settTabLayout.setupWithViewPager(settViewPager);
 
@@ -82,7 +93,7 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public void focusOnTab(int i) {
-        listViewPager.setCurrentItem(i);
+//        listViewPager.setCurrentItem(i);
         settViewPager.setCurrentItem(i);
     }
 
@@ -94,7 +105,8 @@ public class BottomSheetView extends RelativeLayout {
      * @param newData New data to update with
      */
     public void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
-        listPagerAdapter.updateList(index, newData);
+//        listPagerAdapter.updateList(index, newData);
+        fragmentList.adapter.updateData(newData);
     }
 
     public boolean[] getTrashCategories() {

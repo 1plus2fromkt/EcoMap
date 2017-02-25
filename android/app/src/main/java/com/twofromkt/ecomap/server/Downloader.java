@@ -2,6 +2,7 @@ package com.twofromkt.ecomap.server;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,18 +22,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-public class Downloader {
+class Downloader {
     public static ArrayList<Pair<Double, Double>> data;
 
     private static final String VERSION_FILE_NAME = "version.txt";
     private static final String SERVER_IP = "37.46.133.69";
 
-    public static ServerResultType update(Context context) {
+    private static final int CAT_NUM = 2; // TODO REMOVE THIS PLEASE THIS IS VERY BAD
+
+    private static final String TAG = "DOWNLOADER";
+
+    private static final int NEW_VERSION = 1, UP_TO_DATE = 0, END_OF_INPUT = -1, WRONG_FORMAT = -2,
+            TOO_LARGE_VERSION = -3;
+
+    static ServerResultType update(Context context) {
         Pair<ArrayList<Boolean>, ArrayList<Integer>> toUpdate;
         try {
             toUpdate = download(context);
@@ -50,56 +59,123 @@ public class Downloader {
         return new ServerResultType(true);
     }
 
-    private static Pair<ArrayList<Boolean>, ArrayList<Integer>> download(Context context) throws IOException {
-        Log.d("DOWNLOADER", "starting download");
+    private static Pair<ArrayList<Boolean>, ArrayList<Integer>> download(Context context)
+            throws IOException {
+        Log.d(TAG, "Connecting to server");
         Socket socket = new Socket(SERVER_IP, 4444);
         socket.setTcpNoDelay(true);
         DataInputStream in = new DataInputStream(socket.getInputStream());
         DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        ArrayList<Integer> versions = getVersions(context);
-        for (int i : versions)
-            out.writeInt(i);
-        out.writeInt(-1);
-        out.flush();
-        int i = 0, version;
+
+        sendClientInfo(out, context);
+
+        int i = 0;
+        int result;
         new File(context.getFilesDir(), DBAdapter.getDiffPath()).mkdir();
         ArrayList<Boolean> ans = new ArrayList<>();
         ArrayList<Integer> currVers = new ArrayList<>();
-        while ((version = in.readInt()) != -1) {
-            File f = new File(context.getFilesDir(), DBAdapter.getDiffPath() + "diff" + i + ".db");
-            f.createNewFile();
-            if (version == 1) {
-                try (FileOutputStream fileOut = new FileOutputStream(f)) {
-                    currVers.add(in.readInt());
-                    long fileSize = in.readLong();
-                    byte[] buffer = new byte[1024 * 8];
-                    int cnt;
-                    while (fileSize > 0 && (cnt = in.read(buffer, 0, (int) Math.min(buffer.length, fileSize))) != -1) {
-                        fileOut.write(buffer, 0, cnt);
-                        fileSize -= cnt;
-                    }
-                    fileOut.close();
-                    ans.add(true);
-                }
-            }
-            else if (version == 0) {
+        ArrayList<Integer> versions = getVersions(context);
+        while ((result = in.readInt()) != -1) {
+            File diffFile = new File(context.getFilesDir(), DBAdapter.getDiffPath() + "diff" + i + ".db");
+            diffFile.createNewFile();
+            if (result == NEW_VERSION) {
+                currVers.add(in.readInt());
+                readFile(in, diffFile);
+                ans.add(true);
+            } else if (result == UP_TO_DATE) {
                 currVers.add(versions.get(i));
                 ans.add(false);
-            } else if (version < 0) {
+            } else if (result < 0) {
                 currVers.add(versions.get(i));
                 ans.add(false);
-                System.err.println("ALERT! Error answer " + version);
+                System.err.println("ALERT! Error answer " + result);
             }
             i++;
         }
-        Log.d("downloader", "finished download");
+        Log.d(TAG, "Finished download");
         return new Pair<>(ans, currVers);
+    }
+
+    private static boolean readFile(DataInputStream in, File dest) {
+        try (FileOutputStream fileOut = new FileOutputStream(dest)) {
+            long fileSize = in.readLong();
+            byte[] buffer = new byte[1024 * 8];
+            int cnt;
+            while (fileSize > 0
+                    && (cnt = in.read(buffer, 0, (int) Math.min(buffer.length, fileSize))) != -1) {
+                fileOut.write(buffer, 0, cnt);
+                fileSize -= cnt;
+            }
+            fileOut.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static void sendClientInfo(DataOutputStream out, Context context) throws IOException {
+        String clientInfo = getClientInfoJson(context);
+        out.writeUTF(clientInfo);
+        out.flush();
+    }
+
+    /**
+     * Get json string representing this client.
+     * Contains info about database versions and client app version.
+     * NOTE: when changing this consider changing server side too!
+     *
+     * @param context Current context
+     * @return Json string with info about client
+     * @throws IOException
+     */
+    private static String getClientInfoJson(Context context) throws IOException {
+        StringWriter sw = new StringWriter();
+        JsonWriter writer = new JsonWriter(sw);
+        writer.beginObject();
+        writer.name("versions");
+        writer.beginArray();
+
+        ArrayList<Integer> versions = getVersions(context);
+        for (int i : versions) {
+            writer.value(i);
+        }
+
+        writer.endArray();
+        writer.name("appVersion");
+        writer.value(0);
+        writer.endObject();
+        return sw.toString();
+    }
+
+    /**
+     * Check if version file exists, create write 0s if not
+     *
+     * @param context
+     */
+    private static void initVersionFile(Context context) {
+        File ver = new File(context.getFilesDir(), VERSION_FILE_NAME);
+        if (!ver.exists()) {
+            try {
+                ver.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(ver))) {
+            for (int i = 0; i < CAT_NUM; i++) {
+                out.writeInt(0);
+            }
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static ArrayList<Integer> getVersions(Context context) throws IOException {
         File ver = new File(context.getFilesDir(), VERSION_FILE_NAME);
         if (!ver.exists()) {
-            return new ArrayList<>();
+            initVersionFile(context);
         }
         ArrayList<Integer> ans = new ArrayList<>();
         try (DataInputStream in = new DataInputStream(new FileInputStream(ver))) {
@@ -116,8 +192,7 @@ public class Downloader {
         return ans;
     }
 
-    private static void updateVersionFile(ArrayList<Integer> prevVersions,
-                                          Context context) {
+    private static void updateVersionFile(ArrayList<Integer> prevVersions, Context context) {
         File ver = new File(context.getFilesDir(), VERSION_FILE_NAME);
         if (ver.exists())
             ver.delete();
