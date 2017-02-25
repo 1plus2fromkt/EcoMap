@@ -8,6 +8,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.twofromkt.ecomap.data_struct.Pair;
 import com.twofromkt.ecomap.util.TextUtil;
 
+import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
+import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
+import static com.twofromkt.ecomap.util.LocationUtil.latLngToPair;
+import static com.twofromkt.ecomap.util.Util.*;
+
 import java.io.Serializable;
 
 import static com.twofromkt.ecomap.util.LocationUtil.latLngToPair;
@@ -80,6 +85,11 @@ public abstract class Place implements Serializable {
         workTime = null;
         imgLink = "";
         information = "";
+    }
+
+    public Place(Place e) {
+        this(e.getName(), getLatLng(e.getLocation()), e.getRate(), e.getInformation(), e.getWorkTime(),
+                e.getImgLink(), e.getWebsite(), e.getPhone(), true);
     }
 
     boolean isOpened(Period.Time t, int dayOfWeek) {

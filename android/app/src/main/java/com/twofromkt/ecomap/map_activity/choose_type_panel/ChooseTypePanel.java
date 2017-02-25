@@ -20,6 +20,8 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
 import com.twofromkt.ecomap.place_types.Place;
 
+import java.lang.reflect.Field;
+
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
 
 /**
@@ -144,19 +146,24 @@ public class ChooseTypePanel extends LinearLayout {
         this.parentActivity = parentActivity;
         typeButtons = new ImageButton[CATEGORIES_NUMBER];
         chosenTypes = new boolean[CATEGORIES_NUMBER];
-        typeButtons[0] = (ImageButton) findViewById(R.id.type_button1);
-        typeButtons[1] = (ImageButton) findViewById(R.id.type_button2);
-        typeButtons[2] = (ImageButton) findViewById(R.id.type_button3);
-        leftSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_left));
-        rightSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_right));
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+            try {
+                typeButtons[i] = (ImageButton) findViewById((Integer)
+                        R.id.class.getField("type_button" + (i + 1)).get(null));
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
         animating = showing = false;
         panelLayout.setVisibility(INVISIBLE);
 
         setListeners();
     }
 
+
+
     private void setListeners() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             final int index = i;
             final int finalI = i;
             typeButtons[i].setOnClickListener(new OnClickListener() {
@@ -166,6 +173,7 @@ public class ChooseTypePanel extends LinearLayout {
                     if (finalI == 2) { //TODO replace it
                         parentActivity.updateDatabase();
                     }
+                    parentActivity.bottomSheet.setNewListPagerAdapter();
                 }
             });
         }
