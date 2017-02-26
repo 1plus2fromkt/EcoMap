@@ -1,5 +1,6 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
+import android.support.annotation.MainThread;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +44,21 @@ class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Ecomobile e = data.get(position);
-        holder.address.setText(data.get(position).getAddress());
-        holder.date.setText(data.get(position).getPeriod());
+        holder.address.setText(e.getAddress());
+        holder.date.setText(e.getPeriod());
     }
 
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    @MainThread
+    void updateData(ArrayList<Util.PlaceWithCoord> newData) {
+        data.clear();
+        for (Util.PlaceWithCoord p : newData)
+            data.add(((Ecomobile) p.place));
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

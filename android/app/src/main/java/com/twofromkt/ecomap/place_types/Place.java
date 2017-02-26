@@ -159,4 +159,8 @@ public abstract class Place implements Serializable {
     protected void setCategoryNumber(int x) {
         categoryNumber = x;
     }
+
+    protected void setAddress(String address) {
+        this.address = address;
+    }
 }

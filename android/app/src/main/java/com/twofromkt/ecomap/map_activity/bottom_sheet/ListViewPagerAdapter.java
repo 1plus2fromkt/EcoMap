@@ -10,11 +10,15 @@ import android.util.Log;
 import com.twofromkt.ecomap.DividerItemDecorator;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
+import com.twofromkt.ecomap.place_types.Ecomobile;
 import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
+import static com.twofromkt.ecomap.Consts.ECOMOBILE_ID;
+import static com.twofromkt.ecomap.Consts.TRASH_ID;
 
 class ListViewPagerAdapter extends FragmentPagerAdapter {
 
@@ -38,7 +42,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
         // NOT GOOD CODE
         tabs[0].adapter = new ListAdapter(a.get(0), act);
         // TODO Uncomment the string below, with added Ecomobiles
-        // tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
+         tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
 
 //        }
     }
@@ -67,7 +71,10 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
      * @param newData New data to update with
      */
     void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
-        ((ListAdapter) tabs[index].adapter).updateData(newData);
+        if (index == TRASH_ID)
+            ((ListAdapter) tabs[index].adapter).updateData(newData);
+        else if (index == ECOMOBILE_ID)
+            ((TimeTableAdapter) tabs[index].adapter).updateData(newData);
     }
 
     @Override

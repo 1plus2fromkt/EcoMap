@@ -84,7 +84,7 @@ public class Util {
         }
     }
 
-    public static class Period implements Serializable {
+    public static class Period implements Serializable, Comparable<Period> {
         private Time open, close;
         private String time = "";
         private boolean isTimetable;
@@ -97,6 +97,12 @@ public class Util {
                 open = new Time(arr[0]);
                 close = new Time(arr[1]);
             }
+        }
+
+        public Period(String s) {
+            String[] a = s.split("[-]"), b = a[0].split("[.]"), c = a[1].split("[.]");
+            open = new Time(Integer.parseInt(b[0]), Integer.parseInt(b[1]));
+            close = new Time(Integer.parseInt(c[0]), Integer.parseInt(b[1]));
         }
 
         public Time getOpen() {
@@ -123,7 +129,12 @@ public class Util {
             time = s;
         }
 
-        public static class Time implements Serializable {
+        @Override
+        public int compareTo(Period o) {
+            return open.compareTo(o.open);
+        }
+
+        public static class Time implements Serializable, Comparable<Time> {
             private int h, m;
             Time (int h, int m) {
                 this.h = h;
@@ -155,6 +166,12 @@ public class Util {
                 return String.format("%02d", h) + ":" + String.format("%02d", m);
             }
 
+            @Override
+            public int compareTo(Time o) {
+                if (h != o.h)
+                    return h - o.h;
+                return m - o.m;
+            }
         }
     }
 

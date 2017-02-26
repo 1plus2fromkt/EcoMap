@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.twofromkt.ecomap.place_types.Cafe;
+import com.twofromkt.ecomap.place_types.Ecomobile;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 
@@ -79,6 +80,14 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
         }
     }
 
+    private static class EcomobileFactory implements  PlaceFactory<Ecomobile> {
+
+        @Override
+        public Ecomobile init(Cursor c, boolean lite) {
+            return new Ecomobile(c);
+        }
+    }
+
     /**
      * Read places from database
      *
@@ -114,11 +123,11 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     }
 
     // Returns null in case of error!
-    private ArrayList<Cafe> getEcomobiles(final LatLng x_minus, final LatLng x_plus, Context context) {
+    private ArrayList<Ecomobile> getEcomobiles(final LatLng x_minus, final LatLng x_plus, Context context) {
         String filter = "";
 //        if (mode == IN_BOUNDS)
 //            filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
-        return getPlaces(filter, ECOMOBILE_ID, context, new CafeFactory());
+        return getPlaces(filter, ECOMOBILE_ID, context, new EcomobileFactory());
     }
 
     // Returns null in case of error!
