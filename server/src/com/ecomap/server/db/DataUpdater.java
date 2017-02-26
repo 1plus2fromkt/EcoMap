@@ -27,7 +27,7 @@ public class DataUpdater {
 
     private static int[] versions;
 
-    public static final Source[] SOURCES = {Source.RECYCLE};
+    public static final Source[] SOURCES = {Source.RECYCLE, Source.ECOMOBILE};
 
     static final int CAT_NUMBER = SOURCES.length;
 
@@ -42,9 +42,10 @@ public class DataUpdater {
             prepareFiles(model);
             initConnections(model);
             update(source, tempConn);
-            commitChanges();
             closeConnections();
+            Logger.log(source + " updated");
         }
+        commitChanges();
 
         Logger.log("--- data updated ---");
     }

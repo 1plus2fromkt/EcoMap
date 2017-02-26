@@ -184,7 +184,7 @@ class RecycleParser {
                 s = pref + suff + ref;
             }
         } catch (Exception e) {
-            Logger.log("Couldn't parse reference.");
+//            Logger.log("Couldn't parse reference.");
             s = t;
         }
         return s;

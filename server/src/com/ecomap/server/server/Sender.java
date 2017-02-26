@@ -39,8 +39,17 @@ class Sender implements Runnable {
             ClientInfo info = readClientInfo(in);
             readVersions();
             Logger.log("Sending databases to client " + id);
-            for (Source source : DataUpdater.SOURCES) {
-                updateClientData(source, info, out);
+            for (String s : info.requestedDatabases) {
+                switch (s) {
+                    case "RECYCLE":
+                        updateClientData(Source.RECYCLE, info, out);
+                        continue;
+                    case "ECOMOBILE":
+                        updateClientData(Source.ECOMOBILE, info, out);
+                        continue;
+                    default:
+                        Logger.err("Error: unknown source type " + s + "requested");
+                }
             }
             out.writeInt(END_OF_INPUT);
         } catch (IOException e) {
@@ -67,7 +76,7 @@ class Sender implements Runnable {
     private void updateClientData(Source source, ClientInfo info, DataOutputStream out) throws IOException {
         DataModel model = DataModel.read(source);
         int currVer = currVersions.get(model.id);
-        int phoneVer = info.get(model.id);
+        int phoneVer = info.getVersion(model.id);
         if (phoneVer == 0) {
             Logger.log("First version of " + source + " database sent to client " + id);
             out.writeInt(NEW_VERSION);
@@ -120,9 +129,10 @@ class Sender implements Runnable {
 
     private static class ClientInfo {
         List<Integer> versions;
+        List<String> requestedDatabases;
         int appVersion;
 
-        int get(int index) {
+        int getVersion(int index) {
             return versions.get(index);
         }
     }

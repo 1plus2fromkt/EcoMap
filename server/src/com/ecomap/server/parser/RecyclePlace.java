@@ -26,7 +26,7 @@ class RecyclePlace extends Place {
 
     @Override
     public void writeToDB(Connection destConn) {
-        String sep = "', '";
+        String sep = "\', \'";
         try (Statement st = destConn.createStatement()) {
             prepareStringsForSQL();
             String log = "\'" + id + sep + lat + sep + lng + sep + rate + sep +

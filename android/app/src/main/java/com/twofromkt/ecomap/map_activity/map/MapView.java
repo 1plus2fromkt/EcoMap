@@ -96,8 +96,8 @@ public class MapView extends RelativeLayout {
         return mMap;
     }
 
-    public void showCafeMarkers() {
-        util.showCafeMarkers();
+    public void showEcomobileMarkers() {
+        util.showEcomobileMarkers();
     }
 
     public void showTrashMarkers() {

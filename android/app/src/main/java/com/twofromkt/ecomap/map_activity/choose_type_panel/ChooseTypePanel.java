@@ -154,6 +154,8 @@ public class ChooseTypePanel extends LinearLayout {
                 e.printStackTrace();
             }
         }
+        leftSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_left));
+        rightSide.setImage(BitmapFactory.decodeResource(getResources(), R.mipmap.choose_panel_arrow_right));
         animating = showing = false;
         panelLayout.setVisibility(INVISIBLE);
 
@@ -344,8 +346,8 @@ public class ChooseTypePanel extends LinearLayout {
             }
             if (index == Place.TRASHBOX) {
                 parentActivity.map.showTrashMarkers();
-            } else if (index == Place.CAFE) {
-                parentActivity.map.showCafeMarkers();
+            } else if (index == Place.ECOMOBILE) {
+                parentActivity.map.showEcomobileMarkers();
             }
         } else {
             parentActivity.map.clearMarkers(index);

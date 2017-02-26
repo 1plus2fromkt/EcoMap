@@ -19,13 +19,12 @@ import com.twofromkt.ecomap.place_types.TrashBox;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.twofromkt.ecomap.Consts.CAFE_ID;
+import static com.twofromkt.ecomap.Consts.ECOMOBILE_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.getLatLng;
 import static com.twofromkt.ecomap.util.Util.*;
 
-public class
-PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
+public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     public static final int IN_BOUNDS = 0, ALL = 1, BY_ID = 2, ONE_MATCH = 0, ALL_MATCH = 1;
     public static final String WHICH_PLACE = "WHICH", CHOSEN = "CHOSEN",
             LAT_MINUS = "LATMINUS", LNG_MINUS = "LNGMINUS", MODE = "MODE",
@@ -115,11 +114,11 @@ PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
     }
 
     // Returns null in case of error!
-    private ArrayList<Cafe> getCafes(final LatLng x_minus, final LatLng x_plus, Context context) {
+    private ArrayList<Cafe> getEcomobiles(final LatLng x_minus, final LatLng x_plus, Context context) {
         String filter = "";
 //        if (mode == IN_BOUNDS)
 //            filter = sqlCoordBounds(x_minus, x_plus, CAFE_ID);
-        return getPlaces(filter, CAFE_ID, context, new CafeFactory());
+        return getPlaces(filter, ECOMOBILE_ID, context, new CafeFactory());
     }
 
     // Returns null in case of error!
@@ -180,9 +179,9 @@ PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
                     ans = getPlaceById(which, getContext(), new TrashFactory());
                 }
                 break;
-            case CAFE_ID:
+            case ECOMOBILE_ID:
                 if (mode == IN_BOUNDS || mode == ALL) {
-                    ans = getCafes(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
+                    ans = getEcomobiles(getLatLng(latMinus, lngMinus), getLatLng(latPlus, lngPlus),
                             getContext());
                 } else {
                     ans = getPlaceById(which, getContext(), new CafeFactory());

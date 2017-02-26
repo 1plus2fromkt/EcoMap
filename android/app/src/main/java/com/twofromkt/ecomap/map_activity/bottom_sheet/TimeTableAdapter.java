@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder>{
+class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder> {
 
     MapActivity parentActivity;
     private List<Ecomobile> data;
@@ -26,7 +26,7 @@ public class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.View
         data = new ArrayList<>();
         //TODO: this can't be done in UI
         for (Util.PlaceWithCoord ec : e) {
-            for (Ecomobile d : ((Ecomobile)ec.place).split()) {
+            for (Ecomobile d : ((Ecomobile) ec.place).split()) {
                 data.add(d);
             }
         }
@@ -55,9 +55,9 @@ public class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.View
     class ViewHolder extends RecyclerView.ViewHolder {
 
         View container;
-        public TextView address, date;
+        TextView address, date;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             container = itemView;
             address = (TextView) container.findViewById(R.id.timetable_address);

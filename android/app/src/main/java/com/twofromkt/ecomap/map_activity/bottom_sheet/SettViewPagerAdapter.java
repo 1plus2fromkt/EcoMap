@@ -29,7 +29,7 @@ class SettViewPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case Place.TRASHBOX:
                 return trashSett;
-            case Place.CAFE:
+            case Place.ECOMOBILE: // TODO we do not need ecomobile settings right?
                 return cafeSett;
             case Place.OTHER:
                 return otherSett;

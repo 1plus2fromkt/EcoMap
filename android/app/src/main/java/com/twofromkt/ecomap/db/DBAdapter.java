@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.twofromkt.ecomap.Consts;
 
@@ -15,12 +16,19 @@ public class DBAdapter {
 
     private static String[] schemas = new String[CATEGORIES_NUMBER];
     static final String dbPath = "db/", diffPath = "diff/", tableName = "Info";
-    private static final String[][] tabNames = {{"id", "lat", "lng", "rate", "title", "content_text",
-            "address", "img_link", "info", "work_time", "site", "telephone", "e_mail"}, {"id"}, {"id"}};
-    private static final String[][] tabTypes =
-            {{"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
-                    , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"}, {"INT PRIMARY KEY"}, {"INT PRIMARY KEY"}};
-    private static final int[] TAB_N = {tabNames[TRASH_ID].length, tabNames[CAFE_ID].length,
+    private static final String[][] tabNames = {
+            {"id", "lat", "lng", "rate", "title", "content_text", "address", "img_link", "info",
+                    "work_time", "site", "telephone", "e_mail"},
+            {"address", "district", "timetable"},
+            {"id"}};
+    private static final String[][] tabTypes = {
+            {"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
+                    , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"},
+            {"TEXT PRIMARY KEY", "TEXT", "TEXT"},
+            {"INT PRIMARY KEY"}};
+    private static final int[] TAB_N = {
+            tabNames[TRASH_ID].length,
+            tabNames[ECOMOBILE_ID].length,
             tabNames[OTHER_ID].length};
 
     public static void replace(int num, Context c) {
@@ -41,16 +49,37 @@ public class DBAdapter {
             try (Cursor all = diff.rawQuery("SELECT * FROM " + tableName + ";", null)) {
                 if (!all.moveToFirst())
                     return;
+                if (num == 0) { // recycle
+                    Log.d("REPLACE", "replace recycle");
+                } else {
+                    Log.d("REPLACE", "replace ecomap");
+                }
+                int cnt = 0;
                 do {
-                    int id = all.getInt(0);
-                    boolean toDelete = all.getString(all.getColumnCount() - 1).contains("DELETE");
-                    if (toDelete) {
-                        curr.execSQL("DELETE FROM " + tableName + " WHERE id=" + id);
-                        continue;
+                    cnt++;
+                    // TODO please change this to normal code
+                    if (num == 0) { // recycle
+                        int id = all.getInt(0);
+                        boolean toDelete = all.getString(all.getColumnCount() - 1).contains("DELETE");
+                        if (toDelete) {
+                            curr.execSQL("DELETE FROM " + tableName + " WHERE id=" + id);
+                            continue;
+                        }
+                        String val = collectAllColumns(all, num);
+                        curr.execSQL(getInsertScheme(num, val, true));
+                    } else if (num == 1) { // ecomobile
+                        String address = all.getString(0);
+                        boolean toDelete = all.getString(all.getColumnCount() - 1).contains("DELETE");
+                        if (toDelete) {
+                            curr.execSQL("DELETE FROM " + tableName + " WHERE address=" + address);
+                            continue;
+                        }
+                        String val = collectAllColumns(all, num);
+                        Log.d("REPLACE", val);
+                        curr.execSQL(getInsertScheme(num, val, true));
                     }
-                    String val = collectAllColumns(all, num);
-                    curr.execSQL(getInsertScheme(num, val, true));
                 } while (all.moveToNext());
+                Log.d("REPLACE", "replace cursor did " + cnt + " iterations");
             }
             curr.setTransactionSuccessful();
             curr.endTransaction();

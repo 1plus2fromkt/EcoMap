@@ -78,6 +78,7 @@ class Downloader {
         while ((result = in.readInt()) != -1) {
             File diffFile = new File(context.getFilesDir(), DBAdapter.getDiffPath() + "diff" + i + ".db");
             diffFile.createNewFile();
+            Log.d(TAG, "Getting database " + i + " from server");
             if (result == NEW_VERSION) {
                 currVers.add(in.readInt());
                 readFile(in, diffFile);
@@ -107,6 +108,7 @@ class Downloader {
                 fileSize -= cnt;
             }
             fileOut.close();
+            Log.d(TAG, dest.getName() + ": " + dest.length() + " bytes");
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,6 +143,11 @@ class Downloader {
             writer.value(i);
         }
 
+        writer.endArray();
+        writer.name("requestedDatabases");
+        writer.beginArray();
+        writer.value("RECYCLE"); // CHANGE THIS WHEN OTHER DB REQUESTED
+        writer.value("ECOMOBILE");
         writer.endArray();
         writer.name("appVersion");
         writer.value(0);

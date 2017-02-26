@@ -20,6 +20,6 @@ public class Cafe extends Place implements Serializable {
                 String webSite, String phone, String menuLink, String imgLink) {
         super(name, location, rate, information, workTime, imgLink, webSite, phone, true);
         this.menuLink = menuLink;
-        setCategoryNumber(CAFE);
+        setCategoryNumber(ECOMOBILE);
     }
 }

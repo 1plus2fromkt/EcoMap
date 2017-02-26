@@ -64,6 +64,8 @@ class EcomobileParser {
             String address = trimTags.apply(page.get(p++));
             String date = trimTags.apply(page.get(p).substring(0, page.get(p).indexOf("><") + 1));
             String time = trimTags.apply(page.get(p).substring(page.get(p).indexOf("><") + 1));
+            district = district.replaceAll("[\'\"]", "");
+            address = address.replaceAll("[\'\"]", "");
 
             result.add(new EcomobilePlace(district, address, date, time));
 

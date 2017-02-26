@@ -14,31 +14,32 @@ import java.util.List;
 
 class EcomobilePlace extends Place {
 
-    String district;
+//    int id;
     String address;
+    String district;
     List<EcomobileParser.DateTime> timetable;
 
     EcomobilePlace(String district, String address, String date, String time) {
-        this.district = district;
+//        this.id = id;
         this.address = address;
+        this.district = district;
         timetable = new ArrayList<>();
         timetable.add(new EcomobileParser.DateTime(date, time));
     }
 
     @Override
     public void writeToDB(Connection destConn) {
-        String sep = "', '";
+        String sep = "\', \'";
         try (Statement st = destConn.createStatement()) {
-//            prepareStringsForSQL();
             String timetableString = "";
             for (EcomobileParser.DateTime dt : timetable) {
                 timetableString += dt + " | ";
             }
-            String log = "\'" + district + sep + address + sep + timetableString + "\'";
-            String schema = DBUtil.getInsertSchema(DataModel.read(Source.RECYCLE), log, false);
+            String log = "\'" + address + sep + district + sep + timetableString + "\'";
+            String schema = DBUtil.getInsertSchema(DataModel.read(Source.ECOMOBILE), log, false);
             st.execute(schema);
         } catch (SQLException e) {
-            Logger.err("Can not write place to database");
+            Logger.err("Can not write place " + this + " to database");
             e.printStackTrace();
         }
     }

@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.twofromkt.ecomap.Consts.CAFE_ID;
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
+import static com.twofromkt.ecomap.Consts.ECOMOBILE_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 import static com.twofromkt.ecomap.db.PlacesLoader.BY_ID;
@@ -126,8 +126,8 @@ public class MapUtil {
         showerThread.start();
     }
 
-    void showCafeMarkers() {
-        showPlaces(CAFE_ID, new Predicate<Place>() {
+    void showEcomobileMarkers() {
+        showPlaces(ECOMOBILE_ID, new Predicate<Place>() {
             @Override
             public boolean apply(Place place) {
                 return true;
