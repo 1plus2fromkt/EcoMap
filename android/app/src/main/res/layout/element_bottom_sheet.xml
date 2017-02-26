@@ -84,7 +84,7 @@
                 android:id="@+id/list_viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/list_toolbar" />
+                android:layout_below="@id/list_tabs" />
 
 
 

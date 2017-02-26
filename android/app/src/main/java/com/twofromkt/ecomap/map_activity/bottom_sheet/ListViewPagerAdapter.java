@@ -3,17 +3,18 @@ package com.twofromkt.ecomap.map_activity.bottom_sheet;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.util.Pair;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
-import com.twofromkt.ecomap.place_types.Place;
+import com.twofromkt.ecomap.DividerItemDecorator;
+import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-import com.twofromkt.ecomap.map_activity.map.MapClusterItem;
 import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
 
 import static com.twofromkt.ecomap.Consts.CATEGORIES_NUMBER;
-import static com.twofromkt.ecomap.Consts.TRASH_ID;
 
 class ListViewPagerAdapter extends FragmentPagerAdapter {
 
@@ -28,16 +29,16 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
 
 //        if (act.typePanel != null && act.typePanel.isChosen(TRASH_ID)) {
         //TODO ^ uncomment this if
-            tabNames = trashTabNames;
+        tabNames = trashTabNames;
 
-            tabs = new OneList[tabNames.length];
-            for (int i = 0; i < tabNames.length; i++) {
-                tabs[i] = new OneList();
-            }
-            // NOT GOOD CODE
-            tabs[0].adapter = new ListAdapter(a.get(0), act);
+        tabs = new OneList[tabNames.length];
+        for (int i = 0; i < tabNames.length; i++) {
+            tabs[i] = new OneList();
+        }
+        // NOT GOOD CODE
+        tabs[0].adapter = new ListAdapter(a.get(0), act);
         // TODO Uncomment the string below, with added Ecomobiles
-            // tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
+        // tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
 
 //        }
     }
@@ -48,15 +49,25 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
 //        }
 //    }
 
+    void reset(BottomSheetView par) {
+        tabs[0].recycler = (RecyclerView) par.findViewById(R.id.search_list);
+        tabs[0].recycler.setHasFixedSize(true);
+        tabs[0].recycler.setAdapter(tabs[0].adapter);
+        LinearLayoutManager llm = new LinearLayoutManager(par.parentActivity);
+        tabs[0].recycler.setLayoutManager(llm);
+        tabs[0].recycler.addItemDecoration(new DividerItemDecorator(par.getContext()));
+    }
+
     /**
      * Updates the list in the tab number index with newData.
      * Note that newData can be passed by reference because it is
      * being copied inside ListAdapter
-     * @param index index of tab we need to update
+     *
+     * @param index   index of tab we need to update
      * @param newData New data to update with
      */
     void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
-        ((ListAdapter)tabs[index].adapter).updateData(newData);
+        ((ListAdapter) tabs[index].adapter).updateData(newData);
     }
 
     @Override

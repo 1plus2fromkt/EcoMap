@@ -5,6 +5,7 @@ import com.ecomap.server.util.Logger;
 
 import java.sql.*;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.ecomap.server.db.DataUpdater.TABLE_NAME;
 
@@ -67,8 +68,9 @@ public class DBUtil {
      * @return DiffResult with result of operation
      * @throws SQLException
      */
+    @SuppressWarnings("Duplicates")
     private static DiffResult getDifference(Connection oldConn, Connection newConn,
-                                    Connection diffConn, DataModel model) throws SQLException {
+                                            Connection diffConn, DataModel model) throws SQLException {
         diffConn.setAutoCommit(false);
         DiffResult result = new DiffResult();
         try (
@@ -80,9 +82,26 @@ public class DBUtil {
             String val;
             while (newRes.next()) {
                 val = "\'";
+                // TODO fuck fuck fuck remove it
+                Function<ResultSet, String> getFilter = rs -> {
+                    if (model.id == 0) { // recycle
+                        try {
+                            return "WHERE id=" + rs.getInt(1);
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
+                    } else { // ecomobile
+                        try {
+                            return "WHERE address=\'" + rs.getString(1) + "\'";
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    return "";
+                };
                 try (
                         ResultSet oldRes = getSelectResult(oldSt, TABLE_NAME,
-                                "WHERE id=" + newRes.getInt(1))
+                                getFilter.apply(newRes))
                 ) {
                     boolean toUpdate = false;
                     oldRes.next();
@@ -112,6 +131,7 @@ public class DBUtil {
         return result;
     }
 
+    @SuppressWarnings("Duplicates")
     private static void addRowsToDelete(Connection oldConn, Connection newConn, Connection diffConn,
                                         DataModel model, DiffResult diffResult) throws SQLException {
         String e = "";
@@ -125,9 +145,26 @@ public class DBUtil {
                 ResultSet oldRes = getSelectResult(oldSt)
         ) {
             while (oldRes.next()) {
+                // TODO fuck fuck fuck remove it
+                Function<ResultSet, String> getFilter = rs -> {
+                    if (model.id == 0) { // recycle
+                        try {
+                            return "WHERE id=" + rs.getInt(1);
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
+                    } else { // ecomobile
+                        try {
+                            return "WHERE address=\'" + rs.getString(1) + "\'";
+                        } catch (SQLException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    return "";
+                };
                 try (
                         ResultSet result = getSelectResult(newSt, TABLE_NAME,
-                                "WHERE id=" + oldRes.getInt(1))
+                                getFilter.apply(oldRes))
                 ) {
                     if (!result.next()) {
                         diffSt.execute(DBUtil.getInsertSchema(model,
@@ -161,6 +198,7 @@ public class DBUtil {
             getDifference(prevConn, newConn, destConn, model);
         } catch (SQLException e) {
             Logger.err("Can not merge changes");
+            e.printStackTrace();
         }
     }
 

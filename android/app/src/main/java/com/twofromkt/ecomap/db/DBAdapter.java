@@ -49,14 +49,14 @@ public class DBAdapter {
             try (Cursor all = diff.rawQuery("SELECT * FROM " + tableName + ";", null)) {
                 if (!all.moveToFirst())
                     return;
-                if (num == 0) { // recycle
-                    Log.d("REPLACE", "replace recycle");
-                } else {
-                    Log.d("REPLACE", "replace ecomap");
-                }
-                int cnt = 0;
+//                if (num == 0) { // recycle
+//                    Log.d("REPLACE", "replace recycle");
+//                } else {
+//                    Log.d("REPLACE", "replace ecomap");
+//                }
+//                int cnt = 0;
                 do {
-                    cnt++;
+//                    cnt++;
                     // TODO please change this to normal code
                     if (num == 0) { // recycle
                         int id = all.getInt(0);
@@ -79,7 +79,7 @@ public class DBAdapter {
                         curr.execSQL(getInsertScheme(num, val, true));
                     }
                 } while (all.moveToNext());
-                Log.d("REPLACE", "replace cursor did " + cnt + " iterations");
+//                Log.d("REPLACE", "replace cursor did " + cnt + " iterations");
             }
             curr.setTransactionSuccessful();
             curr.endTransaction();

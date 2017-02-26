@@ -8,8 +8,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -31,7 +33,7 @@ public class BottomSheetView extends RelativeLayout {
     TabLayout listTabLayout, settTabLayout;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
-    OneList fragmentList;
+//    OneList fragmentList;
 
     RelativeLayout categoriesLayout;
     RelativeLayout listLayout;
@@ -105,6 +107,7 @@ public class BottomSheetView extends RelativeLayout {
      * @param newData New data to update with
      */
     public void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
+//        Log.d("BOTTOM_SHEET", "update list called, index = " + index);
         listPagerAdapter.updateList(index, newData);
     }
 
@@ -175,9 +178,7 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public void setNewListPagerAdapter() {
-        listPagerAdapter =
-                new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
-        listViewPager.setAdapter(listPagerAdapter);
+        listPagerAdapter.reset(this);
     }
 
     public boolean isChecked(int i) {
