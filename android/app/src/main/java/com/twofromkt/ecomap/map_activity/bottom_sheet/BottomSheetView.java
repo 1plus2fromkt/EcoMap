@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.map.MapView;
+import com.twofromkt.ecomap.util.CustomViewPager;
 import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
@@ -23,7 +24,8 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 public class BottomSheetView extends RelativeLayout {
 
     ViewPagerBottomSheetBehavior bottomList;
-    ViewPager listViewPager, settViewPager;
+    CustomViewPager listViewPager;
+    ViewPager settViewPager;
     TabLayout listTabLayout, settTabLayout;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
@@ -63,7 +65,7 @@ public class BottomSheetView extends RelativeLayout {
 
         listPagerAdapter =
                 new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
-        listViewPager = (ViewPager) findViewById(R.id.list_viewpager);
+        listViewPager = (CustomViewPager) findViewById(R.id.list_viewpager);
         listViewPager.setAdapter(listPagerAdapter);
 
         listTabLayout = (TabLayout) findViewById(R.id.list_tabs);

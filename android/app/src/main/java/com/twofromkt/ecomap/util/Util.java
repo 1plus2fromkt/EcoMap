@@ -1,8 +1,11 @@
 package com.twofromkt.ecomap.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -16,6 +19,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Util {
+
+
 
     public static class PlaceWithCoord {
         public MapClusterItem coordinates;

@@ -343,6 +343,7 @@ public class ChooseTypePanel extends LinearLayout {
         if (state) {
             parentActivity.bottomSheet.show();
             parentActivity.bottomSheet.focusOnTab(index);
+            parentActivity.bottomInfo.hide();
             if (!parentActivity.map.placesLoaded) {
                 parentActivity.map.loadAllPlaces(); //TODO call setChosen after loading
                 return;

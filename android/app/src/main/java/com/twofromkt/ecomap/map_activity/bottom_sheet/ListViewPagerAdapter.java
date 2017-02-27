@@ -42,7 +42,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
         // NOT GOOD CODE
         tabs[0].adapter = new ListAdapter(a.get(0), act);
         // TODO Uncomment the string below, with added Ecomobiles
-         tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
+        tabs[1].adapter = new TimeTableAdapter(a.get(1), act);
 
 //        }
     }
@@ -67,7 +67,7 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
     void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
         if (index == TRASH_ID) {
             ((ListAdapter) tabs[index].adapter).updateData(newData);
-        } else if (index == ECOMOBILE_ID) {
+        } if (index == ECOMOBILE_ID) {
             ((TimeTableAdapter) tabs[index].adapter).updateData(newData);
         }
     }
