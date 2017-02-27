@@ -6,9 +6,11 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
@@ -25,10 +27,10 @@ public class BottomSheetView extends RelativeLayout {
 
     ViewPagerBottomSheetBehavior bottomList;
     CustomViewPager listViewPager;
-    ViewPager settViewPager;
-    TabLayout listTabLayout, settTabLayout;
+    TrashSett settViewPager;
+    TabLayout listTabLayout; //settTabLayout;
     ListViewPagerAdapter listPagerAdapter;
-    SettViewPagerAdapter settPagerAdapter;
+//    SettViewPagerAdapter settPagerAdapter;
 
     RelativeLayout categoriesLayout;
     RelativeLayout listLayout;
@@ -71,14 +73,12 @@ public class BottomSheetView extends RelativeLayout {
         listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
         listTabLayout.setupWithViewPager(listViewPager);
 
-        settPagerAdapter = new SettViewPagerAdapter(fragmentManager, parentActivity);
+//        settPagerAdapter = new SettViewPagerAdapter(fragmentManager, parentActivity);
 
-        settViewPager = (ViewPager) findViewById(R.id.sett_viewpager);
-        settViewPager.setAdapter(settPagerAdapter);
-        settTabLayout = (TabLayout) findViewById(R.id.sett_tabs);
-        settTabLayout.setupWithViewPager(settViewPager);
+        settViewPager = (TrashSett) findViewById(R.id.sett_viewpager);
+        settViewPager.attach(parentActivity);
 
-        settTabLayout.setVisibility(GONE);
+//        settTabLayout.setVisibility(GONE);
         listTabLayout.setVisibility(GONE);
 
         categoriesLayout = (RelativeLayout) findViewById(R.id.categories_layout);
@@ -109,9 +109,9 @@ public class BottomSheetView extends RelativeLayout {
         listPagerAdapter.updateList(index, newData);
     }
 
-    public boolean[] getTrashCategories() {
-        return settPagerAdapter.trashSett.chosen;
-    }
+//    public boolean[] getTrashCategories() {
+//        return settPagerAdapter.trashSett.chosen;
+//    }
 
     public void collapse() {
         if (isHidden()) {
@@ -180,6 +180,7 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public boolean isChecked(int i) {
-        return settPagerAdapter.trashSett.chosen[i];
+//        return settPagerAdapter.trashSett.chosen[i];
+        return true;
     }
 }
