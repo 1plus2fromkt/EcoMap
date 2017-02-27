@@ -4,15 +4,11 @@ import android.content.Context;
 import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
@@ -27,13 +23,10 @@ import biz.laenger.android.vpbs.ViewPagerBottomSheetBehavior;
 public class BottomSheetView extends RelativeLayout {
 
     ViewPagerBottomSheetBehavior bottomList;
-//    ViewPager /* listViewPager, */ settViewPager;
     ViewPager listViewPager, settViewPager;
-//    TabLayout /* listTabLayout, */ settTabLayout;
     TabLayout listTabLayout, settTabLayout;
     ListViewPagerAdapter listPagerAdapter;
     SettViewPagerAdapter settPagerAdapter;
-//    OneList fragmentList;
 
     RelativeLayout categoriesLayout;
     RelativeLayout listLayout;
@@ -83,6 +76,9 @@ public class BottomSheetView extends RelativeLayout {
         settTabLayout = (TabLayout) findViewById(R.id.sett_tabs);
         settTabLayout.setupWithViewPager(settViewPager);
 
+        settTabLayout.setVisibility(GONE);
+        listTabLayout.setVisibility(GONE);
+
         categoriesLayout = (RelativeLayout) findViewById(R.id.categories_layout);
         collapsedPart = (RelativeLayout) findViewById(R.id.collapsed_part);
         listLayout = (RelativeLayout) findViewById(R.id.list_layout);
@@ -95,8 +91,8 @@ public class BottomSheetView extends RelativeLayout {
     }
 
     public void focusOnTab(int i) {
-//        listViewPager.setCurrentItem(i);
-        settViewPager.setCurrentItem(i);
+        listViewPager.setCurrentItem(i);
+//        settViewPager.setCurrentItem(i);
     }
 
     /**

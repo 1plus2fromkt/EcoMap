@@ -47,19 +47,13 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
 //        }
     }
 
-//    void notifyUpdate() {
-//        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
-//            tabs[i].adapter.notifyDataSetChanged();
-//        }
-//    }
-
     void reset(BottomSheetView par) {
-        tabs[0].recycler = (RecyclerView) par.findViewById(R.id.search_list);
-        tabs[0].recycler.setHasFixedSize(true);
-        tabs[0].recycler.setAdapter(tabs[0].adapter);
-        LinearLayoutManager llm = new LinearLayoutManager(par.parentActivity);
-        tabs[0].recycler.setLayoutManager(llm);
-        tabs[0].recycler.addItemDecoration(new DividerItemDecorator(par.getContext()));
+//        tabs[0].recycler = (RecyclerView) par.findViewById(R.id.search_list);
+//        tabs[0].recycler.setHasFixedSize(true);
+//        tabs[0].recycler.setAdapter(tabs[0].adapter);
+//        LinearLayoutManager llm = new LinearLayoutManager(par.parentActivity);
+//        tabs[0].recycler.setLayoutManager(llm);
+//        tabs[0].recycler.addItemDecoration(new DividerItemDecorator(par.getContext()));
     }
 
     /**
@@ -71,10 +65,11 @@ class ListViewPagerAdapter extends FragmentPagerAdapter {
      * @param newData New data to update with
      */
     void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
-        if (index == TRASH_ID)
+        if (index == TRASH_ID) {
             ((ListAdapter) tabs[index].adapter).updateData(newData);
-        else if (index == ECOMOBILE_ID)
+        } else if (index == ECOMOBILE_ID) {
             ((TimeTableAdapter) tabs[index].adapter).updateData(newData);
+        }
     }
 
     @Override

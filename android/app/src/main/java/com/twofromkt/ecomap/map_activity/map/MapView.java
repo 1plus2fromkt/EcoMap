@@ -171,7 +171,7 @@ public class MapView extends RelativeLayout {
         Geocoder gc = new Geocoder(parentActivity);
         List<Address> addresses;
         try {
-            addresses = gc.getFromLocationName(request, 50);
+            addresses = gc.getFromLocationName(request, 3);
         } catch (Exception e) {
             return null;
         }
@@ -243,11 +243,11 @@ public class MapView extends RelativeLayout {
      * Starts loader to read full data about the place from database.
      * When load finishes, map will focus on that place.
      *
-     * @param id id of place to load
+     * @param place id of place to load
      * @param category number of category if the place
      */
-    public void loadPlace(int id, int category) {
-        util.loadPlace(id, category);
+    public void loadPlace(Place place, int category) {
+        util.loadPlace(place, category);
     }
 
     public void loadAllPlaces() {

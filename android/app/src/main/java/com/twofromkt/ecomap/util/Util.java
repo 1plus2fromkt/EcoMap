@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class Util {
 
-    public static class PlaceWithCoord{
+    public static class PlaceWithCoord {
         public MapClusterItem coordinates;
         public Place place;
 
@@ -31,7 +31,7 @@ public class Util {
             return (o instanceof PlaceWithCoord && equals((PlaceWithCoord) o));
         }
 
-        public boolean equals (PlaceWithCoord o) {
+        public boolean equals(PlaceWithCoord o) {
             return coordinates.equals(o.coordinates) && place.equals(o.place);
         }
     }
@@ -39,16 +39,17 @@ public class Util {
     public static class Timetable implements Serializable {
         private static final String prefix = "0 ";
         private static final int DAYS_IN_WEEK = 7;
-        private  Period[] table;
-        public Timetable (Timetable rhs) {
+        private Period[] table;
+
+        public Timetable(Timetable rhs) {
             System.arraycopy(rhs.table, 0, table, 0, table.length);
         }
 
-        public Timetable (String s) {
+        public Timetable(String s) {
             table = new Period[DAYS_IN_WEEK];
             if (s.startsWith(prefix)) {
                 table[0] = new Period(s.substring(prefix.length()), false);
-            } else if(s.equals("")) {
+            } else if (s.equals("")) {
                 table[0] = new Period(s, false);
             } else {
                 try {
@@ -88,7 +89,8 @@ public class Util {
         private Time open, close;
         private String time = "";
         private boolean isTimetable;
-        Period (String s, boolean isTimetable){
+
+        Period(String s, boolean isTimetable) {
             this.isTimetable = isTimetable;
             if (!isTimetable) {
                 time = s;
@@ -102,7 +104,7 @@ public class Util {
         public Period(String s) {
             String[] a = s.split("[-]"), b = a[0].split("[.]"), c = a[1].split("[.]");
             open = new Time(Integer.parseInt(b[0]), Integer.parseInt(b[1]));
-            close = new Time(Integer.parseInt(c[0]), Integer.parseInt(b[1]));
+            close = new Time(Integer.parseInt(c[0]), Integer.parseInt(c[1]));
         }
 
         public Time getOpen() {
@@ -136,11 +138,13 @@ public class Util {
 
         public static class Time implements Serializable, Comparable<Time> {
             private int h, m;
-            Time (int h, int m) {
+
+            Time(int h, int m) {
                 this.h = h;
                 this.m = m;
             }
-            Time (String s) {
+
+            Time(String s) {
                 String[] ar = s.split("[:]");
                 h = Integer.parseInt(ar[0]);
                 m = Integer.parseInt(ar[1]);
@@ -153,6 +157,7 @@ public class Util {
             public boolean after(Time t) {
                 return !before(t);
             }
+
             public int getH() {
                 return h;
             }
@@ -172,6 +177,14 @@ public class Util {
                     return h - o.h;
                 return m - o.m;
             }
+
+            public String toString() {
+                return getTimeString();
+            }
+        }
+
+        public String toString() {
+            return open + "-" + close;
         }
     }
 

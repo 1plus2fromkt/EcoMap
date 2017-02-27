@@ -15,23 +15,36 @@ import com.twofromkt.ecomap.util.Util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder> {
 
     MapActivity parentActivity;
-    private List<Ecomobile> data;
+    private List<Util.PlaceWithCoord> data = new ArrayList<>();
 
     public TimeTableAdapter(List<Util.PlaceWithCoord> e, MapActivity act) {
+        updateData(e);
         parentActivity = act;
-        data = new ArrayList<>();
-        //TODO: this can't be done in UI
-        for (Util.PlaceWithCoord ec : e) {
+    }
+
+    @MainThread
+    void updateData(List<Util.PlaceWithCoord> newData) {
+        data.clear();
+        for (Util.PlaceWithCoord ec : newData) {
             for (Ecomobile d : ((Ecomobile) ec.place).split()) {
-                data.add(d);
+                data.add(new Util.PlaceWithCoord(d, ec.coordinates));
             }
         }
-        Collections.sort(data);
+        Collections.sort(data, new Comparator<Util.PlaceWithCoord>() {
+            @Override
+            public int compare(Util.PlaceWithCoord x, Util.PlaceWithCoord y) {
+                Ecomobile xe = (Ecomobile) x.place;
+                Ecomobile ye = (Ecomobile) y.place;
+                return xe.compareTo(ye);
+            }
+        });
+        notifyDataSetChanged();
     }
 
     @Override
@@ -42,23 +55,22 @@ class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Ecomobile e = data.get(position);
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        Ecomobile e = (Ecomobile) data.get(position).place;
         holder.address.setText(e.getAddress());
         holder.date.setText(e.getPeriod());
+
+        holder.container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                parentActivity.map.focusOnMarker(data.get(position));
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return data.size();
-    }
-
-    @MainThread
-    void updateData(ArrayList<Util.PlaceWithCoord> newData) {
-        data.clear();
-        for (Util.PlaceWithCoord p : newData)
-            data.add(((Ecomobile) p.place));
-        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

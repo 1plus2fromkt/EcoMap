@@ -11,41 +11,42 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 class SettViewPagerAdapter extends FragmentPagerAdapter {
 
     Sett.TrashSett trashSett;
-    Sett.CafeSett cafeSett;
-    Sett.OtherSett otherSett;
+//    Sett.CafeSett cafeSett;
+//    Sett.OtherSett otherSett;
 
     SettViewPagerAdapter(FragmentManager fm, MapActivity a) {
         super(fm);
         trashSett = new Sett.TrashSett();
         trashSett.setMapActivity(a);
-        cafeSett = new Sett.CafeSett();
-        cafeSett.setMapActivity(a);
-        otherSett = new Sett.OtherSett();
-        otherSett.setMapActivity(a);
+//        cafeSett = new Sett.CafeSett();
+//        cafeSett.setMapActivity(a);
+//        otherSett = new Sett.OtherSett();
+//        otherSett.setMapActivity(a);
     }
 
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
-            case Place.TRASHBOX:
-                return trashSett;
-            case Place.ECOMOBILE: // TODO we do not need ecomobile settings right?
-                return cafeSett;
-            case Place.OTHER:
-                return otherSett;
-
-        }
-        return null;
+        return position == 0 ? trashSett : null;
+//        switch (position) {
+//            case Place.TRASHBOX:
+//                return trashSett;
+//            case Place.ECOMOBILE: // TODO we do not need ecomobile settings right?
+//                return cafeSett;
+//            case Place.OTHER:
+//                return otherSett;
+//
+//        }
+//        return null;
     }
 
     @Override
     public int getCount() {
-        return Consts.CATEGORIES_NUMBER;
+        return 1;
     }
 
     @Override
     public CharSequence getPageTitle(int pos) {
-        return ListViewPagerAdapter.tabNames[pos];
+        return ListViewPagerAdapter.tabNames[0];
     }
 
 }

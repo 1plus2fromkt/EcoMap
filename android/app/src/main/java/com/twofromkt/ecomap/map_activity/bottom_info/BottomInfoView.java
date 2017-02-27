@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.twofromkt.ecomap.place_types.Ecomobile;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.R;
@@ -32,6 +33,7 @@ import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.util.Util;
 
 import static biz.laenger.android.vpbs.R.id.scrollView;
+import static biz.laenger.android.vpbs.R.id.time;
 import static com.twofromkt.ecomap.Consts.TRASH_TYPES_NUMBER;
 
 public class BottomInfoView extends LinearLayout {
@@ -177,11 +179,22 @@ public class BottomInfoView extends LinearLayout {
             return;
         }
         this.currPlace = place;
-        name.setText(place.getName());
+        if (place instanceof Ecomobile) {
+            name.setText(place.getAddress());
+            information.setText("Мы ничего не знаем про это место :(");
+            dayOfWeek[0].setText(((Ecomobile) place).getPeriod());
+            timetable[0].setText("");
+            for (int i = 1; i < 7; i++) {
+                dayOfWeek[i].setText("");
+                timetable[i].setText("");
+            }
+        } else {
+            name.setText(place.getName());
+            information.setText(place.getInformation());
+            showCategories((TrashBox) place);
+            showTimetable(place);
+        }
         address.setText(place.getAddress());
-        information.setText(place.getInformation());
-        showCategories((TrashBox) place);
-        showTimetable(place);
         callButton.setVisibility(place.getPhone() == null ? GONE : VISIBLE);
         siteButton.setVisibility(place.getWebsite() == null ? GONE : VISIBLE);
     }
@@ -200,7 +213,6 @@ public class BottomInfoView extends LinearLayout {
     private void showTimetable(Place place) {
         Util.Timetable workTime = place.getWorkTime();
         if (workTime == null) {
-
             return;
         }
         if (!workTime.checkTimetables()) {

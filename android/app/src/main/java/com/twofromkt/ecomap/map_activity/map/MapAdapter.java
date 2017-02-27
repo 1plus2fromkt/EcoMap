@@ -69,7 +69,7 @@ class MapAdapter implements OnMapReadyCallback,
             Toast.makeText(map.parentActivity, "Unable to find place", Toast.LENGTH_SHORT).show();
             return false;
         }
-        map.loadPlace(p.getId(), p.getCategoryNumber());
+        map.loadPlace(p, p.getCategoryNumber());
         return true;
     }
 
@@ -106,10 +106,8 @@ class MapAdapter implements OnMapReadyCallback,
                 if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
                     map.showTrashMarkers();
                 }
-//                element_map.util.searchNearCafe();
             }
         });
-//        listener.addListener(map.clusterManager);
         map.mMap.setOnCameraIdleListener(listener);
         map.mMap.setOnMarkerClickListener(map.clusterManager);
         map.clusterManager.setOnClusterItemClickListener(this);

@@ -13,6 +13,7 @@ import com.twofromkt.ecomap.db.PlaceResultType;
 import com.twofromkt.ecomap.db.PlacesLoader;
 import com.twofromkt.ecomap.map_activity.MapActivity;
 import com.twofromkt.ecomap.map_activity.search_bar.SearchBarView;
+import com.twofromkt.ecomap.place_types.Ecomobile;
 import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.util.LocationUtil;
@@ -100,7 +101,7 @@ public class MapUtil {
                     int dist1 = (int) LocationUtil.distanceLatLng(currCoords,
                             LocationUtil.getLatLng(o1.place.getLocation()));
                     int dist2 = (int) LocationUtil.distanceLatLng(currCoords,
-                                    LocationUtil.getLatLng(o2.place.getLocation()));
+                            LocationUtil.getLatLng(o2.place.getLocation()));
                     return Integer.compare(dist1, dist2);
                 }
             });
@@ -181,7 +182,7 @@ public class MapUtil {
         map.parentActivity.bottomInfo.collapse();
         Place place = value.place;
         if (place.lite) {
-            map.loadPlace(place.getId(), place.getCategoryNumber());
+            map.loadPlace(place, place.getCategoryNumber());
         } else {
             map.parentActivity.bottomInfo.setPlace(place);
         }
@@ -264,7 +265,8 @@ public class MapUtil {
     void loadAllPlaces() {
         map.parentActivity.searchBar.setProgressBarColor(SearchBarView.PROGRESS_BAR_BLUE);
         map.parentActivity.searchBar.showProgressBar();
-        for (int i = 0; i < 1; i++) {
+//        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+        for (int i = 0; i < 1; i++) { // TODO please kill me...
             PlacesHolder.getInstance().getAll(i).clear();
             Bundle bundle = new Bundle();
             Loader<PlaceResultType> loader;
@@ -278,12 +280,32 @@ public class MapUtil {
         }
     }
 
-    void loadPlace(int id, int category) {
+    public void loadAllPlaces(int id) {
+        map.parentActivity.searchBar.setProgressBarColor(SearchBarView.PROGRESS_BAR_BLUE);
+        map.parentActivity.searchBar.showProgressBar();
+//        for (int i = 0; i < CATEGORIES_NUMBER; i++) {
+        PlacesHolder.getInstance().getAll(id).clear();
+        Bundle bundle = new Bundle();
+        Loader<PlaceResultType> loader;
+        bundle.putInt(PlacesLoader.WHICH_PLACE, id);
+        bundle.putBoolean(LITE, true);
+        bundle.putInt(MODE, PlacesLoader.ALL);
+        //TODO should check if loader is already running
+        loader = map.parentActivity.getSupportLoaderManager()
+                .restartLoader(LOADER, bundle, map.parentActivity.adapter);
+        loader.onContentChanged();
+    }
+
+    void loadPlace(Place place, int category) {
+        if (place instanceof Ecomobile) {
+            map.parentActivity.bottomInfo.setPlace(place);
+            return;
+        }
         Bundle bundle = new Bundle();
         bundle.putInt(PlacesLoader.WHICH_PLACE, category);
         bundle.putBoolean(LITE, false);
         bundle.putInt(MODE, BY_ID);
-        bundle.putInt(ID, id);
+        bundle.putInt(ID, place.getId());
         map.parentActivity.getSupportLoaderManager().restartLoader(LOADER, bundle,
                 map.parentActivity.adapter).onContentChanged();
     }

@@ -19,12 +19,12 @@ public class DBAdapter {
     private static final String[][] tabNames = {
             {"id", "lat", "lng", "rate", "title", "content_text", "address", "img_link", "info",
                     "work_time", "site", "telephone", "e_mail"},
-            {"address", "district", "timetable"},
+            {"address", "lat", "lng", "district", "timetable"},
             {"id"}};
     private static final String[][] tabTypes = {
             {"INT PRIMARY KEY", "DOUBLE", "DOUBLE", "DOUBLE", "TEXT", "TEXT", "TEXT", "TEXT"
                     , "TEXT", "TEXT", "TEXT", "TEXT", "TEXT"},
-            {"TEXT PRIMARY KEY", "TEXT", "TEXT"},
+            {"TEXT PRIMARY KEY", "DOUBLE", "DOUBLE", "TEXT", "TEXT"},
             {"INT PRIMARY KEY"}};
     private static final int[] TAB_N = {
             tabNames[TRASH_ID].length,

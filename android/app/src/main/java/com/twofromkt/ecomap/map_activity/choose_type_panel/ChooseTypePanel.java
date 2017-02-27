@@ -172,10 +172,13 @@ public class ChooseTypePanel extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     setChosen(index, !chosenTypes[index], true);
+                    if (chosenTypes[index]) {
+                        setChosen(index == 0 ? 1 : 0, false, true);
+                    }
                     if (finalI == 2) { //TODO replace it
                         parentActivity.updateDatabase();
                     }
-                    parentActivity.bottomSheet.setNewListPagerAdapter();
+//                    parentActivity.bottomSheet.setNewListPagerAdapter();
                 }
             });
         }

@@ -15,7 +15,6 @@ import com.twofromkt.ecomap.R;
 public class OneList extends Fragment {
     public RecyclerView.Adapter adapter;
     public RecyclerView recycler;
-    boolean n;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +27,6 @@ public class OneList extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
         recycler = (RecyclerView) rootView.findViewById(R.id.search_list);
         recycler.setHasFixedSize(true);
-        Log.d("ONE_LIST", (recycler == null) + "");
         recycler.setAdapter(adapter);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(llm);

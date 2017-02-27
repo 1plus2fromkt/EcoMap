@@ -14,13 +14,14 @@ import java.util.List;
 
 class EcomobilePlace extends Place {
 
-//    int id;
     String address;
     String district;
+    double lat, lng;
     List<EcomobileParser.DateTime> timetable;
 
-    EcomobilePlace(String district, String address, String date, String time) {
-//        this.id = id;
+    EcomobilePlace(String district, double lat, double lng, String address, String date, String time) {
+        this.lat = lat;
+        this.lng = lng;
         this.address = address;
         this.district = district;
         timetable = new ArrayList<>();
@@ -35,7 +36,7 @@ class EcomobilePlace extends Place {
             for (EcomobileParser.DateTime dt : timetable) {
                 timetableString += dt + " | ";
             }
-            String log = "\'" + address + sep + district + sep + timetableString + "\'";
+            String log = "\'" + address + sep + lat + sep + lng + sep + district + sep + timetableString + "\'";
             String schema = DBUtil.getInsertSchema(DataModel.read(Source.ECOMOBILE), log, false);
             st.execute(schema);
         } catch (SQLException e) {

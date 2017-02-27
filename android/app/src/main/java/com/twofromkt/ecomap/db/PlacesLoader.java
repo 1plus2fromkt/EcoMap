@@ -103,6 +103,12 @@ public class PlacesLoader extends AsyncTaskLoader<PlaceResultType> {
         ArrayList<T> ans = new ArrayList<>();
         //TODO: CHANGE rate TO SOMETHING CLEVER
         String order = " ORDER BY rate ASC ", limit = " LIMIT ";
+//        try {
+//            File f = new File(context.getFilesDir(), DBAdapter.getPathToDb(category));
+//            System.out.println(f.getAbsolutePath());
+//            System.out.println(f.length());
+//        } catch (Exception e) {}
+
         try (SQLiteDatabase db = SQLiteDatabase.openDatabase(new File(context.getFilesDir(),
                 DBAdapter.getPathToDb(category)).getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
              Cursor cur = db.rawQuery("SELECT * FROM " + DBAdapter.tableName + " " +

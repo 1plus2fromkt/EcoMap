@@ -26,11 +26,11 @@ public abstract class Place implements Serializable {
             ADDRESS = 6, IMG = 7, INFO = 8, WORK_TIME = 9, SITE = 10, TEL = 11, EMAIL = 12;
 
     @NonNull
-    private Pair<Double, Double> location;
+    Pair<Double, Double> location;
     private int id;
     @NonNull
     private String name;
-    private String website, address;
+    protected String website, address;
     private double rate;
     private int categoryNumber;
     private Timetable workTime;

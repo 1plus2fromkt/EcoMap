@@ -2,15 +2,22 @@ package com.ecomap.server.parser;
 
 import com.ecomap.server.util.Logger;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import static com.ecomap.server.util.NetUtil.readPage;
 
 class EcomobileParser {
     static final String url = "http://ecomobile.infoeco.ru/grafik-stoyanok.html";
+
+    static final String locationsFilename = "ecomobile_locations.txt";
+    static final String unknownFilename = "unknown_locations.txt";
 
     static List<Place> loadPlaces() {
         List<String> page = readPage(url);
@@ -67,12 +74,54 @@ class EcomobileParser {
             district = district.replaceAll("[\'\"]", "");
             address = address.replaceAll("[\'\"]", "");
 
-            result.add(new EcomobilePlace(district, address, date, time));
+            if (!address.equals("Адрес")) {
+                result.add(new EcomobilePlace(district, 0, 0, address, date, time));
+            }
 
             while (!"</tr>".equals(page.get(p++))) {}
         }
 
+        tryGetCoords(result);
+
         return result;
+    }
+
+    private static void tryGetCoords(List<EcomobilePlace> data) {
+        try {
+            File locations = new File(locationsFilename);
+            Scanner in = new Scanner(locations, "UTF-8");
+            List<String> known = new ArrayList<>();
+            while (in.hasNextLine()) {
+                known.add(in.nextLine());
+            }
+            File unknown = new File(unknownFilename);
+            PrintWriter out = new PrintWriter(unknown, "UTF-8");
+
+            List<EcomobilePlace> toDelete = new ArrayList<>();
+
+            cycle:
+            for (EcomobilePlace place : data) {
+                String address = place.address;
+                for (String s : known) {
+                    if (s.contains(address)) {
+                        String[] a = s.split(" ");
+                        double lat = Double.parseDouble(a[a.length - 2]);
+                        double lng = Double.parseDouble(a[a.length - 1]);
+                        place.lat = lat;
+                        place.lng = lng;
+                        continue cycle;
+                    }
+                }
+                out.println(address);
+                toDelete.add(place);
+            }
+            in.close();
+            out.close();
+            Logger.log("Ecomobile : total = " + data.size() + "; to remove = " + toDelete.size());
+            data.removeAll(toDelete);
+        } catch (IOException e) {
+            Logger.err("Can not read location files");
+        }
     }
 
     public static class DateTime {
