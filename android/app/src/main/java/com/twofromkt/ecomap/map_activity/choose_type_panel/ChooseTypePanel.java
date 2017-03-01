@@ -47,6 +47,8 @@ public class ChooseTypePanel extends LinearLayout {
 
     ValueAnimator animator;
 
+    private volatile boolean isChanging;
+
     boolean animating, showing, sliding;
     /**
      * This is needed to determine where to slide when user releases finger.
@@ -81,9 +83,9 @@ public class ChooseTypePanel extends LinearLayout {
     static final private long ANIMATION_DURATION = 200;
 
     static final private int[] IMAGE_IDS = {
-            R.mipmap.trashbox_icon, R.mipmap.cafes_icon, R.mipmap.other_icon};
+            R.mipmap.trashbox_icon, R.mipmap.ecomobile_icon, R.mipmap.other_icon};
     static final private int[] IMAGE_IDS_CHOSEN = {R.mipmap.trashbox_icon_selected,
-            R.mipmap.cafes_icon_selected, R.mipmap.other_icon_chosen};
+            R.mipmap.ecomobile_icon_selected, R.mipmap.other_icon_chosen};
 
     public ChooseTypePanel(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -164,22 +166,21 @@ public class ChooseTypePanel extends LinearLayout {
     }
 
 
-
     private void setListeners() {
         for (int i = 0; i < CATEGORIES_NUMBER; i++) {
             final int index = i;
-            final int finalI = i;
             typeButtons[i].setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (isChanging) {
+                        return;
+                    }
+                    isChanging = true;
                     setChosen(index, !chosenTypes[index], true);
                     if (chosenTypes[index]) {
                         setChosen(index == 0 ? 1 : 0, false, true);
                     }
-                    if (finalI == 2) { //TODO replace it
-                        parentActivity.updateDatabase();
-                    }
-//                    parentActivity.bottomSheet.setNewListPagerAdapter();
+                    isChanging = false;
                 }
             });
         }
@@ -190,7 +191,6 @@ public class ChooseTypePanel extends LinearLayout {
                 stopAnimation();
                 if (event.getAction() == MotionEvent.ACTION_MOVE) {
                     float x = event.getRawX() - slidingOffset - OFFSET_LEFT;
-//                    float len = getWidth() - sideWidth;
                     float len = getWidth();
                     // we don't want panel move to the left side of the screen or
                     // to be hidden on the right side

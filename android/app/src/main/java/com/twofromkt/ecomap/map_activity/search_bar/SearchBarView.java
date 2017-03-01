@@ -41,8 +41,8 @@ public class SearchBarView extends LinearLayout {
     public void attach(MapActivity parentActivity) {
         openMenuButton = (Button) findViewById(R.id.menu_button);
         searchBar = (EditText) findViewById(R.id.search_edit);
-        searchBar.setCursorVisible(false);
-        searchBar.setHint("Search query");
+        searchBar.setCursorVisible(true);
+        searchBar.setHint("Введите сюда адрес");
         searchBox = (LinearLayout) findViewById(R.id.search_box);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setVisibility(GONE);

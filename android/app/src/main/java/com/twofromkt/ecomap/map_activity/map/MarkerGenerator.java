@@ -1,6 +1,8 @@
 package com.twofromkt.ecomap.map_activity.map;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -8,6 +10,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
+
+import com.twofromkt.ecomap.R;
 
 class MarkerGenerator {
 
@@ -17,6 +21,7 @@ class MarkerGenerator {
     private static int widthInDip = 25;
     private static int width, height, offset, stickWidth;
     private static SparseArray<Bitmap> icons;
+    private static Bitmap ecomobileIcon;
 
     /**
      * Default width value in px in case if init was not called
@@ -142,6 +147,16 @@ class MarkerGenerator {
     static void init(DisplayMetrics metrics) {
         MarkerGenerator.metrics = metrics;
         setWidth(widthInDip);
+    }
+
+    static Bitmap getIconEcomobile(Resources resources) {
+        if (ecomobileIcon == null) {
+            Bitmap icon = BitmapFactory.decodeResource(resources, R.mipmap.ecomobile);
+            ecomobileIcon = Bitmap.createBitmap(height, width, Bitmap.Config.ARGB_8888); //TODO
+            Canvas canvas = new Canvas(ecomobileIcon);
+            canvas.drawBitmap(icon, null, new RectF(0, 0, height, width), null);
+        }
+        return ecomobileIcon;
     }
 
     static Bitmap getIcon(boolean[] taken) {

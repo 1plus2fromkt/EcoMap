@@ -127,13 +127,22 @@ public class MapUtil {
         showerThread.start();
     }
 
-    void showEcomobileMarkers() {
-        showPlaces(ECOMOBILE_ID, new Predicate<Place>() {
-            @Override
-            public boolean apply(Place place) {
-                return true;
+    void showEcomobileMarkers() { // TODO remove kostyl'
+        boolean[] needed = {false, false, false, false, false, true, true, true, true, true, false};
+        boolean ok = true;
+        for (int i = 0; i < needed.length; i++) {
+            if (needed[i]) {
+                ok &= map.parentActivity.bottomSheet.isChecked(i);
             }
-        });
+        }
+        if (ok) {
+            showPlaces(ECOMOBILE_ID, new Predicate<Place>() {
+                @Override
+                public boolean apply(Place place) {
+                    return true;
+                }
+            });
+        }
     }
 
     /**

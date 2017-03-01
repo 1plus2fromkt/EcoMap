@@ -5,12 +5,9 @@ import android.os.Parcelable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.twofromkt.ecomap.R;
@@ -27,10 +24,9 @@ public class BottomSheetView extends RelativeLayout {
 
     ViewPagerBottomSheetBehavior bottomList;
     CustomViewPager listViewPager;
-    TrashSett settViewPager;
-    TabLayout listTabLayout; //settTabLayout;
+    TrashSett trashSett;
+    TabLayout listTabLayout;
     ListViewPagerAdapter listPagerAdapter;
-//    SettViewPagerAdapter settPagerAdapter;
 
     RelativeLayout categoriesLayout;
     RelativeLayout listLayout;
@@ -61,10 +57,6 @@ public class BottomSheetView extends RelativeLayout {
         bottomListView = findViewById(R.id.bottom_list);
         bottomList = ViewPagerBottomSheetBehavior.from(bottomListView);
 
-//        fragmentList = (OneList) findViewById(R.id.list_list);
-//        fragmentList.adapter = new ListAdapter(MapView.getShownMarkers().get(0), parentActivity);
-//        fragmentList.attach(this);
-
         listPagerAdapter =
                 new ListViewPagerAdapter(fragmentManager, MapView.getShownMarkers(), parentActivity);
         listViewPager = (CustomViewPager) findViewById(R.id.list_viewpager);
@@ -73,10 +65,8 @@ public class BottomSheetView extends RelativeLayout {
         listTabLayout = (TabLayout) findViewById(R.id.list_tabs);
         listTabLayout.setupWithViewPager(listViewPager);
 
-//        settPagerAdapter = new SettViewPagerAdapter(fragmentManager, parentActivity);
-
-        settViewPager = (TrashSett) findViewById(R.id.sett_viewpager);
-        settViewPager.attach(parentActivity);
+        trashSett = (TrashSett) findViewById(R.id.bottom_sheet_trash_sett);
+        trashSett.attach(parentActivity);
 
 //        settTabLayout.setVisibility(GONE);
         listTabLayout.setVisibility(GONE);
@@ -94,7 +84,6 @@ public class BottomSheetView extends RelativeLayout {
 
     public void focusOnTab(int i) {
         listViewPager.setCurrentItem(i);
-//        settViewPager.setCurrentItem(i);
     }
 
     /**
@@ -105,7 +94,6 @@ public class BottomSheetView extends RelativeLayout {
      * @param newData New data to update with
      */
     public void updateList(int index, ArrayList<Util.PlaceWithCoord> newData) {
-//        Log.d("BOTTOM_SHEET", "update list called, index = " + index);
         listPagerAdapter.updateList(index, newData);
     }
 
@@ -175,12 +163,7 @@ public class BottomSheetView extends RelativeLayout {
         }
     }
 
-    public void setNewListPagerAdapter() {
-        listPagerAdapter.reset(this);
-    }
-
     public boolean isChecked(int i) {
-//        return settPagerAdapter.trashSett.chosen[i];
-        return true;
+        return trashSett.chosen[i];
     }
 }

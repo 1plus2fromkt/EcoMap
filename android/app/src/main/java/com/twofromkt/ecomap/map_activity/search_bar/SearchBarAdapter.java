@@ -15,6 +15,7 @@ import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.place_types.TrashBox;
 import com.twofromkt.ecomap.map_activity.MapActivityUtil;
 import com.twofromkt.ecomap.util.LocationUtil;
+import com.twofromkt.ecomap.util.Util;
 
 import java.util.HashSet;
 
@@ -29,10 +30,14 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+            if (!Util.isOnline(bar.getContext())) {
+                Toast.makeText(bar.parentActivity, "Интернет не работает", Toast.LENGTH_LONG).show();
+                return false;
+            }
             Address address = bar.parentActivity.map.findNearestAddress(
                     bar.searchBar.getText().toString());
             if (address == null) {
-                Toast.makeText(bar.parentActivity, "Address not found", Toast.LENGTH_LONG).show();
+                Toast.makeText(bar.parentActivity, "Не можем найти такой адрес", Toast.LENGTH_LONG).show();
                 return false;
             }
             MapActivityUtil.closeKeyboard(bar.parentActivity);
@@ -51,7 +56,7 @@ class SearchBarAdapter implements EditText.OnEditorActionListener, View.OnClickL
 //            }
 //        }
         if (v == bar.openMenuButton) {
-            Toast.makeText(bar.parentActivity, "Menu in development ¯\\_(ツ)_/¯", Toast.LENGTH_SHORT).show();
+            Toast.makeText(bar.parentActivity, "Это мы пока разрабатываем", Toast.LENGTH_SHORT).show();
 //            bar.parentActivity.drawerLayout.openDrawer(act.nv);
             return;
         }

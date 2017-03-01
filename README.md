@@ -2,10 +2,9 @@
 
 EcoMap is an android app with map to make eco-friendly lifestyle easier. In several taps you can find a lot of garbage collection points for different types of trash. All garbage that you leave here will be recycled. They say that 5 recycled batteries save a little hedgehog!
 
-Latest builds
-* [20.12.16](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dZllsUjgxNnhSYjA)
-* [19.12.16](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dT256MGVYNzNxdXM)
-* [21.01.17](https://drive.google.com/uc?export=download&id=0B8DrxWR6SE_dd2xscU15WUM3djg)
+On Google Play:
+
+[EcoMap](https://play.google.com/store/apps/details?id=com.twofromkt.ecomap)
 
 Features:
 * Map with garbage collection points

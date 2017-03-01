@@ -29,7 +29,7 @@ public class TextUtil {
         if (!(URLUtil.isHttpUrl(source) || URLUtil.isHttpsUrl(source))) {
             source = "http://" + source;
         }
-        if (URLUtil.isValidUrl(source) && !source.equals("")) {
+        if (URLUtil.isValidUrl(source) && !source.equals("http://")) {
             return source;
         } else {
             return null;

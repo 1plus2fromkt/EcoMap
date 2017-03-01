@@ -1,6 +1,5 @@
 package com.twofromkt.ecomap.map_activity.bottom_sheet;
 
-
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
@@ -33,7 +32,7 @@ public class TrashSett extends Sett {
         inflater.inflate(R.layout.fragment_trash_sett, this);
     }
 
-    public void attach(MapActivity parentActivity) {
+    public void attach(final MapActivity parentActivity) {
         mapActivity = parentActivity;
         for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
             try {
@@ -74,7 +73,11 @@ public class TrashSett extends Sett {
                     }
                     trashCategoryButtons[fi].setImageBitmap(
                             BitmapFactory.decodeResource(getResources(), iconId));
-                    mapActivity.map.showTrashMarkers();
+                    if (parentActivity.typePanel.isChosen(0)) { // recycle
+                        mapActivity.map.showTrashMarkers();
+                    } else if (parentActivity.typePanel.isChosen(1)) { // ecomobile
+                        mapActivity.map.showEcomobileMarkers();
+                    }
                 }
             });
         }

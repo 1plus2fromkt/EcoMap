@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,12 +47,13 @@ public class BottomInfoView extends LinearLayout {
     TextView name, information, address;
     NestedScrollView bottomInfoView;
     MapActivity parentActivity;
+    ImageView icon;
 
     Place currPlace;
     TextView[] timetable, dayOfWeek;
     ImageView[] trashTypesIcons;
     LinearLayout trashTypesIconsLayout;
-    Button callButton, routeButton, siteButton;
+    ImageButton callButton, routeButton, siteButton;
 
     private BottomInfoAdapter adapter;
 
@@ -71,9 +73,9 @@ public class BottomInfoView extends LinearLayout {
         adapter = new BottomInfoAdapter(this);
         trashTypesIcons = new ImageView[TRASH_TYPES_NUMBER];
         trashTypesIconsLayout = (LinearLayout) findViewById(R.id.bottom_info_trash_icons_layout);
-        callButton = (Button) findViewById(R.id.bottom_info_call_button);
-        routeButton = (Button) findViewById(R.id.bottom_info_route_button);
-        siteButton = (Button) findViewById(R.id.bottom_info_site_button);
+        callButton = (ImageButton) findViewById(R.id.bottom_info_call_button);
+        routeButton = (ImageButton) findViewById(R.id.bottom_info_route_button);
+        siteButton = (ImageButton) findViewById(R.id.bottom_info_site_button);
         timetable = new TextView[DAYS_IN_WEEK];
         dayOfWeek = new TextView[DAYS_IN_WEEK];
         for (int i = 0; i < DAYS_IN_WEEK; i++) {
@@ -105,6 +107,8 @@ public class BottomInfoView extends LinearLayout {
             icon.setVisibility(VISIBLE);
             trashTypesIcons[i] = icon;
         }
+        icon = (ImageView) findViewById(R.id.bottom_info_type_icon);
+        routeButton.setVisibility(GONE);
         setListeners();
     }
 
@@ -180,6 +184,8 @@ public class BottomInfoView extends LinearLayout {
         }
         this.currPlace = place;
         if (place instanceof Ecomobile) {
+            showCategoriesEcomobile();
+            icon.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.ecomobile_icon));
             name.setText(place.getAddress());
             information.setText("Мы ничего не знаем про это место :(");
             dayOfWeek[0].setText(((Ecomobile) place).getPeriod());
@@ -189,6 +195,7 @@ public class BottomInfoView extends LinearLayout {
                 timetable[i].setText("");
             }
         } else {
+            icon.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.trashbox_icon));
             name.setText(place.getName());
             information.setText(place.getInformation());
             showCategories((TrashBox) place);
@@ -202,6 +209,17 @@ public class BottomInfoView extends LinearLayout {
     private void showCategories(TrashBox trashBox) {
         for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
             if (trashBox.isOfCategory(i)) {
+                trashTypesIcons[i].setVisibility(VISIBLE);
+            } else {
+                trashTypesIcons[i].setVisibility(GONE);
+            }
+        }
+    }
+
+    private void showCategoriesEcomobile() {
+        boolean[] can = {false, false, false, false, false, true, true, true, true, true, false};
+        for (int i = 0; i < TRASH_TYPES_NUMBER; i++) {
+            if (can[i]) {
                 trashTypesIcons[i].setVisibility(VISIBLE);
             } else {
                 trashTypesIcons[i].setVisibility(GONE);

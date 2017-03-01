@@ -1,6 +1,7 @@
 package com.twofromkt.ecomap.map_activity.map;
 
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.twofromkt.ecomap.util.Util;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.twofromkt.ecomap.Consts.ECOMOBILE_ID;
 import static com.twofromkt.ecomap.Consts.TRASH_ID;
 import static com.twofromkt.ecomap.util.LocationUtil.fromLatLngZoom;
 
@@ -105,6 +107,8 @@ class MapAdapter implements OnMapReadyCallback,
             public void onCameraIdle() {
                 if (map.parentActivity.typePanel.isChosen(TRASH_ID)) {
                     map.showTrashMarkers();
+                } else if (map.parentActivity.typePanel.isChosen(ECOMOBILE_ID)) {
+                    map.showEcomobileMarkers();
                 }
             }
         });
@@ -117,6 +121,22 @@ class MapAdapter implements OnMapReadyCallback,
         if (!map.placesLoaded) {
             map.util.loadAllPlaces();
         }
+    }
+
+    private void find() {
+        String rawData = "data here";
+        String[] data = rawData.split("[\n]");
+        for (String s : data) {
+            Address a = map.findNearestAddress(s);
+            String c;
+            if (a == null) {
+                c = null;
+            } else {
+                c = a.getLatitude() + " " + a.getLongitude();
+            }
+            System.out.println("lalale " + s + " " + c);
+        }
+        System.out.println("done");
     }
 
     @Override

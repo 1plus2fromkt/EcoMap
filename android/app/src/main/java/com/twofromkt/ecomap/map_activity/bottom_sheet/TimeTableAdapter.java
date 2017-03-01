@@ -23,7 +23,7 @@ class TimeTableAdapter extends RecyclerView.Adapter<TimeTableAdapter.ViewHolder>
     MapActivity parentActivity;
     private List<Util.PlaceWithCoord> data = new ArrayList<>();
 
-    public TimeTableAdapter(List<Util.PlaceWithCoord> e, MapActivity act) {
+    TimeTableAdapter(List<Util.PlaceWithCoord> e, MapActivity act) {
         updateData(e);
         parentActivity = act;
     }

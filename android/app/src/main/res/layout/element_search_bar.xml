@@ -30,7 +30,7 @@
             android:layout_margin="10dp"
             android:layout_weight="10"
             android:background="@color/cast_expanded_controller_text_color"
-            android:hint="Search query"
+            android:hint="Введите сюда адрес"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:textSize="15sp" />

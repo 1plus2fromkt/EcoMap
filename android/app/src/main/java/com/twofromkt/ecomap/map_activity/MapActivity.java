@@ -142,13 +142,13 @@ public class MapActivity extends FragmentActivity
         Log.d(TAG, "Database download finished");
         searchBar.hideProgressBar();
         String message;
-        if (data.resultSuccess()) {
+        if (data != null && data.resultSuccess()) {
             message = "Database updated";
             updated = true;
         } else {
-            message = "Database update failed";
+            message = "Не получается обновить базу данных";
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

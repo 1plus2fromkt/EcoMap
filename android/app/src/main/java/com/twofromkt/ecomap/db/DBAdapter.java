@@ -49,12 +49,6 @@ public class DBAdapter {
             try (Cursor all = diff.rawQuery("SELECT * FROM " + tableName + ";", null)) {
                 if (!all.moveToFirst())
                     return;
-//                if (num == 0) { // recycle
-//                    Log.d("REPLACE", "replace recycle");
-//                } else {
-//                    Log.d("REPLACE", "replace ecomap");
-//                }
-//                int cnt = 0;
                 do {
 //                    cnt++;
                     // TODO please change this to normal code
@@ -71,7 +65,7 @@ public class DBAdapter {
                         String address = all.getString(0);
                         boolean toDelete = all.getString(all.getColumnCount() - 1).contains("DELETE");
                         if (toDelete) {
-                            curr.execSQL("DELETE FROM " + tableName + " WHERE address=" + address);
+                            curr.execSQL("DELETE FROM " + tableName + " WHERE address=\'" + address + "\'");
                             continue;
                         }
                         String val = collectAllColumns(all, num);

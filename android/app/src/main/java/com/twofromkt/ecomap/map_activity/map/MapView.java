@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -26,10 +25,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
-import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.R;
 import com.twofromkt.ecomap.map_activity.MapActivity;
-import com.twofromkt.ecomap.util.LocationUtil;
+import com.twofromkt.ecomap.place_types.Place;
 import com.twofromkt.ecomap.util.Util;
 
 import java.util.ArrayList;
@@ -153,7 +151,7 @@ public class MapView extends RelativeLayout {
         }
         Location currLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleClient);
         if (currLocation == null) {
-            Log.d("MAP_VIEW", "не получается узнать местоположение");
+//            Toast.makeText(getContext(), "Кажется, выключена геолокация", Toast.LENGTH_LONG).show();
             return DEFAULT_LOCATION;
         } else {
             return currLocation;
@@ -168,6 +166,10 @@ public class MapView extends RelativeLayout {
      * @return the closest address matching the request
      */
     public Address findNearestAddress(String request) {
+        if (!Util.isOnline(getContext())) {
+            Toast.makeText(parentActivity, "Интернет не работает", Toast.LENGTH_LONG).show();
+            return null;
+        }
         Geocoder gc = new Geocoder(parentActivity);
         List<Address> addresses;
         try {

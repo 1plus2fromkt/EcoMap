@@ -9,3 +9,17 @@
 .externalNativeBuild
 projectFilesBackup
 .idea
+android/app/src/release
+android/app/app-release.apk
+android/build/
+android/local.properties
+server/cleaner.java
+server/config/
+server/db_versions.txt
+server/diff*
+server/ecomobile*
+server/lib/
+server/out/
+server/temp*
+server/unknown_*
+server/trash/

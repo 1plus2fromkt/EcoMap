@@ -167,8 +167,15 @@ public class DBUtil {
                                 getFilter.apply(oldRes))
                 ) {
                     if (!result.next()) {
-                        diffSt.execute(DBUtil.getInsertSchema(model,
-                                oldRes.getObject(1).toString() + e + ",\'DELETE\');", false));
+                        String sch = DBUtil.getInsertSchema(model,
+                                oldRes.getObject(1).toString() + e + ",\'DELETE\');", false);
+                        try {
+                            diffSt.execute(DBUtil.getInsertSchema(model,
+                                "\'" + oldRes.getObject(1).toString() + "\'" + e + ",\'DELETE\');", false));
+                        } catch (SQLException ex) {
+                            Logger.log("bad schema = " + sch);
+                            throw ex;
+                        }
                         diffResult.deletedItems++;
                     }
                 }

@@ -104,7 +104,7 @@
                 android:background="@color/colorMainGreen" />
 
             <com.twofromkt.ecomap.map_activity.bottom_sheet.TrashSett
-                android:id="@+id/sett_viewpager"
+                android:id="@+id/bottom_sheet_trash_sett"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@id/toolbar"

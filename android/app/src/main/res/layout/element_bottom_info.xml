@@ -67,29 +67,35 @@
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/bottom_info_call_button"
+                        android:layout_height="100dp"
                         android:layout_width="100dp"
-                        android:layout_height="50dp"
                         android:layout_gravity="center"
-                        android:text="Позвонить"
-                        android:textSize="12dp" />
+                        android:scaleType="fitXY"
+                        android:background="#000000ff"
+                        android:src="@mipmap/call_icon"
+                        />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/bottom_info_route_button"
+                        android:layout_height="100dp"
                         android:layout_width="100dp"
-                        android:layout_height="50dp"
                         android:layout_gravity="center"
-                        android:text="Маршрут"
-                        android:textSize="12dp" />
+                        android:scaleType="fitXY"
+                        android:background="#000000ff"
+                        android:src="@mipmap/call_icon"
+                        />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/bottom_info_site_button"
+                        android:layout_height="100dp"
                         android:layout_width="100dp"
-                        android:layout_height="50dp"
                         android:layout_gravity="center"
-                        android:text="Сайт"
-                        android:textSize="12dp" />
+                        android:scaleType="fitXY"
+                        android:background="#000000ff"
+                        android:src="@mipmap/site_icon"
+                        />
 
                 </LinearLayout>
 
@@ -98,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/bottom_info_action_buttons_layout"
-                    android:layout_marginTop="20dp">
+                    >
 
                     <ImageView
                         android:id="@+id/bottom_info_address_icon"
